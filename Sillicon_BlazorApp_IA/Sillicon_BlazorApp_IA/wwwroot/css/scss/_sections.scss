@@ -1,0 +1,46 @@
+/// generics
+@import './sections/_header.scss';
+@import './sections/_footer.scss';
+
+/// home
+@import './sections/home/_showcase.scss';
+@import './sections/home/_features.scss';
+@import './sections/home/_dark-light-mode.scss';
+@import './sections/home/_manage-your-work';
+@import './sections/home/_download-app.scss';
+@import './sections/home/_integrate-tools.scss';
+@import './sections/home/_subscribe.scss';
+
+/// courses
+@import './sections/_courses.scss';
+
+/// course-details
+@import './sections/_course-details.scss';
+
+///  sign-in
+@import './sections/auth_css/_signIn.scss';
+
+///  sign-up
+@import './sections/auth_css/_signUp.scss';
+
+/// account
+@import './sections/account_css/_details.scss';
+@import './sections/account_css/_saved-courses.scss';
+@import './sections/account_css/_security.scss';
+@import './sections/account_css/_notifications.scss';
+@import './sections/account_css/_massages.scss';
+
+/// contact
+@import './sections/contact/_contact.scss';
+
+
+
+/// 404-error
+@import './sections/_404-error.scss';
+
+/// admin
+/*@import 'sections/_admin.scss';
+*/
+// cookieConsent
+/*@import 'sections/_cookieConsent.scss';
+*/

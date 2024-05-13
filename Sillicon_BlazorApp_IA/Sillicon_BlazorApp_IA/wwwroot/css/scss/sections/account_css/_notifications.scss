@@ -1,0 +1,77 @@
+#notifications {
+
+    .container {
+
+        @include lg {
+            display: flex;
+            gap: 150px;
+        }
+
+        h2 {
+            margin-top: 3rem;
+
+            @include lg {
+                margin-top: 30px;
+            }
+        }
+
+        .form-title {
+
+            form {
+                margin-top: 2rem;
+
+                .input-group {
+                    @include lg {
+                        width:65%;
+                    }
+                }
+
+                .switch-group {
+                    margin-top: 3rem;
+
+                    @include lg {
+                        margin-top: 2rem;
+                    }
+
+                    p {
+                        margin-left: 3.5rem;
+                    }
+
+                    .btn-switch {
+
+                        span {
+                            font-weight: 800;
+                            font-size: 18px;
+                            color: var(--color-gray-900)
+                        }
+
+                        .switch {
+
+                            & input {
+
+                                &:checked + .slider {
+                                    background-color: #22C55E;
+                                }
+                            }
+
+                            .slider {
+                                background-color: var(--color-gray-500);
+                            }
+                        }
+                    }
+                }
+
+                .form-buttons {
+                    margin-top: 3rem;
+                    margin-bottom: 3rem;
+                    display: flex;
+                    gap: 30px;
+
+                    @include lg {
+                        margin-top: 15rem;
+                    }
+                }
+            }
+        }
+    }
+}

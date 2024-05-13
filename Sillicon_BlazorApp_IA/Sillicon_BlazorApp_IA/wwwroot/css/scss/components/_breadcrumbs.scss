@@ -1,0 +1,40 @@
+.breadcrumb {
+    margin: 1rem 0;
+
+    ol {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+
+        i {
+            color: var(--color-gray-600);
+        }
+
+
+        li {
+            padding: 0.2rem;
+
+            a {
+                color: var(--color-gray-600);
+            }
+        }
+
+        .active {
+            margin-left: -0.5rem;
+
+            a {
+                color: var(--color-theme);
+            }
+        }
+
+
+        .breadcrumb-item {
+            + .breadcrumb-item {
+                &::before ::after {
+/*                    color: var(--color-gray-900) !important;
+*/                    color: red !important;
+                }
+            }
+        }
+    }
+}
