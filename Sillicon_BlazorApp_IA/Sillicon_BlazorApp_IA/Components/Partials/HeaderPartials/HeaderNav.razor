@@ -1,0 +1,31 @@
+﻿
+<div id="menu">
+    <nav>
+        <NavLink class="menu-link" href="/#overview" >Overview</NavLink>
+        <NavLink class="menu-link" href="/#features" >Features</NavLink>
+        @* <NavLink class="menu-link" href="/contact">Contact</NavLink> *@
+        <NavLink class="menu-link" href="/courses">Courses</NavLink>
+    </nav>
+</div>
+
+<div class="btn-switch">
+    <span>Light</span>
+    <label class="switch">
+        <input type="checkbox" id="switchMode" checked="isDark" role="checkbox">
+        <span class="slider round"></span>
+    </label>
+    <span>Dark</span>
+</div>
+
+<div class="account-buttons">
+
+@*     <a class="user-logged-in" asp-controller="Account" asp-action="Details"><img class="user-profile-pic" src="~/uploads/user.ProfileImageUrl" alt="Profile picture of user.FirstName user.LastName"></a>
+    *@    
+    <NavLink class="btn-gray" href="/signin"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
+    <NavLink class="btn-theme" href="/signup"><i class="fa-solid fa-user"></i>Sign up</NavLink>
+
+</div>
+
+@code {
+
+}

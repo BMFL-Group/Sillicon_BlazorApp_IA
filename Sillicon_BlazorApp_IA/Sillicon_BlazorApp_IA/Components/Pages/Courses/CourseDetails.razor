@@ -1,0 +1,15 @@
+﻿@page "/coursedetails/{id}"
+@attribute [StreamRendering]
+
+<section class="course-details">
+    
+    <CourseDetailsClient id="@Id"/>
+
+</section>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = null!;
+   
+}

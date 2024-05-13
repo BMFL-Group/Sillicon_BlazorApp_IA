@@ -1,0 +1,45 @@
+﻿@* 
+<header>
+    <div class="container">
+
+        <NavLink id="logo"><img src="images/IconLight.svg" alt="Silicon logo"></NavLink>        
+        
+        <div id="menu">
+            <nav>
+                <NavLink class="menu-link" asp-controller="Home" asp-action="Index" asp-fragment="overview">Overview</NavLink>
+                <NavLink class="menu-link" asp-controller="Home" asp-action="Index" asp-fragment="features">Features</NavLink>
+                <NavLink class="menu-link" asp-controller="Contact" asp-action="Index">Contact</NavLink>
+                <NavLink class="menu-link" asp-controller="Courses" asp-action="Index">Courses</NavLink>
+            </nav>
+        </div>
+
+        <div class="btn-switch">
+            <label>Light</label>
+            <label class="switch">
+                <input type="checkbox" id="switchMode" checked="isDark" role="checkbox">
+                <span class="slider round"></span>
+            </label>
+            <label>Dark</label>
+
+        </div>
+
+        <div class="account-buttons">
+
+                <a class="user-logged-in" asp-controller="Account" asp-action="Details"><img class="user-profile-pic" src="~/uploads/user.ProfileImageUrl" alt="Profile picture of user.FirstName user.LastName"></a>
+               <a class="btn-gray" asp-controller="Auth" asp-action="SignIn"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></a>
+            <a class="btn-theme" asp-controller="Auth" asp-action="SignUp"><i class="fa-regular fa-user"></i><span>Sign up</span></a>
+
+        </div>
+
+        <button class="btn btn-mobile" id="btn-mobile" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+
+        <div id="mobile-menu" aria-expanded="false">
+        </div>
+
+    </div>
+</header>
+
+@code {
+
+}
+ *@

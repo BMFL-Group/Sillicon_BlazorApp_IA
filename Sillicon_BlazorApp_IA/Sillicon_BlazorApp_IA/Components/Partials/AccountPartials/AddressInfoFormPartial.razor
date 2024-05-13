@@ -1,0 +1,47 @@
+﻿
+<div class="adress">
+    <div class="address-form-group">
+
+        <EditForm method="post" novalidate Model="Model">
+
+            <div id="form-addressline_1" class="input-group">
+                <label for="Addressline_1">Address line 1</label>
+                <span for="Addressline_1"></span>
+                <InputText @bind-Value="Model.Addressline_1" id="AddressLine_1" placeholder="Enter your address line" />
+            </div>
+
+            <div id="form-addressline_2" class="input-group">
+                <label for="Addressline_2">Address line 2 <span>(optional)</span></label>
+                <span for="Addressline_2"></span>
+                <InputText @bind-Value="Model.Addressline_2" id="AddressLine_´2" placeholder="Enter your second address line" />
+            </div>
+
+            <div class="postal-city">
+
+                <div id="form-postalcode" class="input-group">
+                    <label for="PostalCode">Postal code</label>
+                    <span for="PostalCode"></span>
+                    <InputText @bind-Value="Model.PostalCode" id="PostalCode" placeholder="Enter your postal code"/>
+                </div>
+
+                <div id="form-city" class="input-group">
+                    <label for="City">City</label>
+                    <span for="City"></span>
+                    <InputText @bind-Value="Model.City" id="City" placeholder="Enter your city" />
+                </div>
+
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn-gray">Cancel</button>
+                <button type="submit" class="btn-theme">Save changes</button>
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private AddressFormModel Model = new AddressFormModel();
+}

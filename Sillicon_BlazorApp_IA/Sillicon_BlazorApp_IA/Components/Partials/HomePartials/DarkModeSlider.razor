@@ -1,0 +1,40 @@
+﻿<section id="@viewMode.Id" class="dark-light-slider">
+    <div class="slider-container" id="sliderContainer">
+
+        <div class="darkside bg-color"></div>
+        <div class="lightside bg-color"></div>
+
+        <div class="text-wrapper">
+            <h1 class="gradient-text">@viewMode.Title</h1>
+        </div>
+
+        <div class="image-container" id="imageContainer">
+            <img class="image-before slider-image" id="mbp-dark" src="@viewMode.ImageOne.ImageUrl" alt="@viewMode.ImageOne.AltText">
+            <img class="image-after slider-image" id="mbp-light" src="@viewMode.ImageTwo.ImageUrl" alt="@viewMode.ImageTwo.AltText">
+        </div>
+
+        <input id="slider" class="slider" type="range" min="0" max="100" value="50" aria-label="percentage of before photo shown">
+        <img class="slider-line" src="/img/blue-slider.svg" alt="">
+
+    </div>
+
+    <script src="/js/darkModeSlider.js"></script>
+</section>
+
+@code {
+    DarkModeSliderModel viewMode = new()
+    {
+        Id = "darkModeSlider",
+        Title = "Switch between Light & Dark mode",
+        ImageOne = new()
+        {
+            ImageUrl = "/img/mbp-dark-full.png",
+            AltText = "before dark image"
+        },
+        ImageTwo = new()
+        {
+            ImageUrl = "/img/mbp-light-full.png",
+            AltText = "after light image"
+        }
+    };
+}

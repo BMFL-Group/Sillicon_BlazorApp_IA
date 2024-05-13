@@ -1,0 +1,44 @@
+﻿
+
+<aside class="profile-menu">
+    <div class="name-email-img">
+        <img src="images/doomguy.jpg" />
+
+        <form enctype="multipart/form-data" method="post" asp-action="UploadImg" asp-controller="Account">
+            <input id="fileUploarder" type="file" name="file" hidden />
+            <label class="btn-circle" for="fileUploarder"><i class="fa-regular fa-refresh"></i></label>
+        </form>
+        <h5>Fidde@* @user!.FirstName @user.LastName *@</h5>
+        <p>EnEmail@hotmail.com@* @user.Email *@</p>
+    </div>
+
+    <nav>
+        @foreach (var item in Model.Links)
+        {
+            <NavLink href="@item.Link.Page">
+                <div class="@CheckURL()"><i class="@item.Symbol"></i>@item.Link.Text</div>
+            </NavLink>
+        }
+    </nav>
+
+</aside>
+
+@code {
+    ProfileMenuModel Model = new ProfileMenuModel();
+    List<string> actions = new() { "accountdetails", "security", "notifications", "messages" ,"courses", "signout" };
+    private int i = 0;
+    // private var user = await UserManager.GetUserAsync(User);
+
+    string CheckURL()
+    {
+        var uri = actions[i];
+        if (navigationManager.ToBaseRelativePath(navigationManager.Uri).ToString().Contains(actions[i].ToString()))
+        {
+            i++;
+            return "button active";
+        }
+
+        i++;
+        return "button";
+    }
+}

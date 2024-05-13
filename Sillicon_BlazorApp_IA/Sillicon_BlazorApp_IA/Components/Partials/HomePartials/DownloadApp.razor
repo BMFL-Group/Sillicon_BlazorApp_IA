@@ -1,0 +1,80 @@
+﻿<section id="@downloadApp.Id" class="download-app">
+    <div class="container">
+        <div class="blue-rectangle">
+
+            <div class="download-left">
+                <img src="/img/@downloadApp.Image.ImageUrl" alt="@downloadApp.Image.AltText">
+            </div>
+
+            <div class="download-right">
+                <h1>@downloadApp.Title</h1>
+
+                <div class="grid-container">
+                    @if (downloadApp.AppDisplays.Count >= 1)
+                    {
+                        foreach (var app in downloadApp.AppDisplays)
+                        {
+                            <div class="App-store store-box">
+                                <p class="title">@app.Title</p>
+                                <span class="stars">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        <i class="fa-solid fa-star"></i>
+                                    }
+                                </span>
+                                <h4 class="description">@app.Description</h4>
+                                <p class="rating">@app.Rating</p>
+                                <NavLink class="app-link" href="@app.Link.Page">
+                                    <img src="/img/@app.Image.ImageUrl" alt="@app.Image.AltText">
+                                </NavLink>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="bottom-rectangle"></div>
+
+</section>
+
+@code {
+    DownloadAppModel downloadApp = new()
+        {
+            Id = "downloadApp",
+            Image = new()
+            {
+                ImageUrl = "smartphone.png",
+                AltText = "Smartphones"
+            },
+            Title = "Download Our App For Any Devices:",
+            AppDisplays =
+                [
+                    new AppDisplayModel()
+            {
+                Title = "App Store",
+                Icon = "fa-solid fa-star",
+                Description = "Editor's Choice",
+                Rating = "rating 4.7, 187K+ reviews",
+                Image = new()
+                {
+                    ImageUrl = "appstore.svg",
+                    AltText = "Apples app store"
+                }
+            },
+            new AppDisplayModel()
+            {
+                Title = "Goole Play",
+                Icon = "fa-solid fa-star",
+                Description = "App of the Day",
+                Rating = "rating 4.8, 30K+ reviews",
+                Image = new()
+                {
+                    ImageUrl = "googleplay.svg",
+                    AltText = "Googles play store"
+                }
+            }
+                ]
+        };
+}

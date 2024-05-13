@@ -1,0 +1,52 @@
+﻿
+<EditForm method="post" Model="Form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="name">
+        <div id="form-firstName" class="input-group">
+            <label for="FirstName">First Name</label>
+            @*           <span for="Form.FirstName"></span>     *@
+            <InputText @bind-Value="Form.FirstName" id="FirstName" placeholder="Enter your first name" />
+        </div>
+
+        <div id="form-lastName" class="input-group">
+            <label for="LastName">Last Name</label>
+            @*          <span for="Form.LastName"></span> *@
+            <InputText id="LastName" @bind-Value="Form.LastName" placeholder="Enter your last name" />
+        </div>
+    </div>
+
+    <div id="form-email" class="input-group">
+        <label for="Email">Email address</label>
+        @*    <span for="Form.Email"></span> *@
+        <InputText id="Email" @bind-Value="Form.Email" placeholder="Enter your email address" />
+    </div>
+
+    <div id="form-password" class="input-group">
+        <label for="Form.Password">Password</label>
+        @*         <span for="Form.Password"></span> *@
+        <InputText @bind-Value="Form.Password" id="Password" placeholder="Enter your password" />
+    </div>
+
+    <div id="form-confirm" class="input-group">
+        <label for="ConfirmPassword">Confirm Password</label>
+        @*    <span for="Form.ConfirmPassword"></span> *@
+        <InputText @bind-Value="Form.ConfirmPassword" id="ConfirmPassword" placeholder="Confirm password" />
+    </div>
+
+    <div id="form-terms" class="checkbox-group">
+        <div class="checkbox">
+            <InputCheckbox id="Terms" @bind-Value="Form.Terms" />
+            <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>
+        </div>
+        <span for="Form.Terms"></span>
+    </div>
+
+    <button type="submit" class="btn-theme">Sign Up</button>
+
+</EditForm>
+
+@code {
+    private SignUpFormModel Form = new SignUpFormModel();
+}

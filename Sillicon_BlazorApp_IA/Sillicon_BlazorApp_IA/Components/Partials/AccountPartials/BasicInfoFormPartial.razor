@@ -1,0 +1,76 @@
+﻿
+<div class="basic-details">
+    <h2>Account details</h2>
+    <h5>Basic info</h5>
+    <div class="details-form-group">
+
+        <EditForm method="post" novalidate Model="Model">
+
+            <div class="names">
+                <div id="form-firstName" class="input-group">
+                    <label for="FirstName">First name</label>
+
+                    @if (Model.IsExternalAccount == true)
+                    {
+                        <InputText class="gray-background" id="FirstName" @bind-Value="Model.FirstName" readonly placeholder="Enter your first name" />
+                    }
+                    else
+                    {
+                        <span for="@Model.FirstName"></span>
+                        <InputText @bind-Value="Model.FirstName" id="FirstName" placeholder="Enter your first name" />
+                    }
+                </div>
+
+                <div id="form-lastName" class="input-group">
+                    <label for="LastName">Last name</label>
+                    @if (Model.IsExternalAccount)
+                    {
+                        <InputText @bind-Value="Model.LastName" id="LastName" class="gray-background" readonly placeholder="Enter your last name" />
+                    }
+                    else
+                    {
+                        <span for="@Model.LastName"></span>
+                        <InputText @bind-Value="Model.LastName" id="LastName" placeholder="Enter your last name" />
+                    }
+                </div>
+            </div>
+
+            <div class="email-phone">
+                <div id="form-email" class="input-group">
+                    <label for="Email">Email address</label>
+                    @if (Model.IsExternalAccount)
+                    {
+                        <InputText class="gray-background" id="Email" @bind-Vale="Model.Email" readonly placeholder="Enter your email address" />
+                    }
+                    else
+                    {
+                        <span for="@Model.Email"></span>
+                        <InputText @bind-Value="Model.Email" id="Email" placeholder="Enter your email address" />
+                    }
+                </div>
+
+                <div id="form-phone" class="input-group">
+                    <label for="Phone">Phone</label>
+                    <span for="@Model.Phone"></span>
+                    <InputText @bind-Value="Model.Phone" id="Phone" placeholder="Enter your phonenumber" />
+                </div>
+            </div>
+
+            <div id="form-bio" class="input-group">
+                <label for="Bio">Bio <span>(optional)</span></label>
+                <InputTextArea @bind-Value="Model.Bio" id="Bio" placeholder="Add a short bio..."></InputTextArea>
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn-gray">Cancel</button>
+                <button type="submit" class="btn-theme">Save changes</button>
+            </div>
+
+        </EditForm>
+    </div>
+    <hr />
+</div>
+
+@code {
+    private BasicInfoFormModel Model = new BasicInfoFormModel();
+}

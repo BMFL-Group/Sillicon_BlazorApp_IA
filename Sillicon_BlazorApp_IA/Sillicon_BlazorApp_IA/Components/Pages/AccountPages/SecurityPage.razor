@@ -1,0 +1,31 @@
+﻿@page "/security"
+<PageTitle>security</PageTitle>
+
+<div class="security">
+    <div class="container">
+        <ProfileMenuPartial /> 
+        <div>
+            <div class="security-form">
+                <h2>Security</h2>
+      @*           <div class="error-msg">@Model.ChangePasswordErrorMessage</div> *@
+                <ChangePasswordFormPartial />
+            </div>
+            <div class="delete-account">
+                <h5>Delete account</h5>
+                <p>
+                    When you delete your account, your public profile will be deactivated immediately. If you
+                    change
+                    your mind before the 14 days are up, sign in with your email and password, and we’ll send
+                    you a
+                    link to reactivate your account.
+                </p>
+ @*                <div class="error-msg">@Model.DeleteAccountErrorMessage</div> *@
+                <DeleteAccountFormPartial />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

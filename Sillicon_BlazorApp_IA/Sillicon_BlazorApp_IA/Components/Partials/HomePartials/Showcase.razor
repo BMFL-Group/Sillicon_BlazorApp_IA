@@ -1,0 +1,51 @@
+﻿@using Infrastructure.Models.Home
+
+
+<section id="@showcase.Id" class="showcase">
+    <div class="container">
+
+        <div class="showcase-left">
+
+            <h1>@showcase.Title</h1>
+            <p class="text">@showcase.SubHeading</p>
+            <NavLink class="btn-theme-s" href="@showcase.Link.Page">@showcase.Link.Text</NavLink>
+            <h6>@showcase.BrandsText</h6>
+
+            <div class="brands">
+                @if (showcase.Brands != null)
+                {
+                    foreach (var brand in showcase.Brands)
+                    {
+                        <img class="sc-logo1" src="@brand.ImageUrl" alt="@brand.AltText">
+                    }
+                }
+            </div>
+
+        </div>
+
+        <div class="showcase-right">
+            <img src="@showcase.ShowcaseImage.ImageUrl" alt="@showcase.ShowcaseImage.AltText">
+        </div>
+
+    </div>
+</section>
+
+@code {
+    ShowcaseModel showcase = new()
+    {
+        Id = "overview",
+        Title = "The Task Management Assistant You're Gonna Love",
+        SubHeading = "We offer you a new generation of task management system. Plan, manage & track all your tasks in one flexible tool.",
+        Link = new() { Page = "/downloads", Text = "Get started for free" },
+        BrandsText = "The largest companies use our tools to work efficiently",
+        Brands =
+            [
+                new() { ImageUrl = "/img/showcase-logo1.svg", AltText = "Logo 1" },
+                new() { ImageUrl = "/img/showcase-logo2.svg", AltText = "Logo 2" },
+                new() { ImageUrl = "/img/showcase-logo3.svg", AltText = "Logo 3" },
+                new() { ImageUrl = "/img/showcase-logo4.svg", AltText = "Logo 4" }
+
+            ],
+        ShowcaseImage = new() { ImageUrl = "/img/showcase-dashboard.png", AltText = "Taskmanager dashboard" }
+    };
+}

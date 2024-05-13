@@ -1,0 +1,351 @@
+﻿@using Infrastructure.Services
+@rendermode InteractiveWebAssembly
+
+
+<div class="top-row">
+
+    <h1>Courses</h1>
+   
+    <div class="top-right">
+
+        <div class="select" id="pageSizeSelect">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                      d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+            </svg>
+
+            <div @onclick="ShowDropDownAsync" class="selected" id="selectedPageSize" data-value="@pagination.PageSize">@pagination.PageSize</div>
+
+            <div class="select-options" id="pageSizeOptions">
+                @for (int i = 1; i <= pagination.TotalItems; i++)
+                {
+                    if (i == pagination.TotalItems)
+                    {
+                        <div class="option" data-value="@i">Show All</div>
+                    }
+                    else
+                    {
+                        <div class="option" data-value="@i">@i</div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="select" id="selectCategory">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                      d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+            </svg>
+
+            @if (!string.IsNullOrEmpty(categoryQuery) && categoryQuery != "all")
+            {
+                <div class="selected" id="selectedCategory">@categoryQuery</div>
+            }
+            else
+            {
+                <div class="selected" id="selectedCategory">All Categories</div>
+
+            }
+            <div class="select-options" id="categorySelectOptions">
+                <div class="option" data-value="all">All Categories</div>
+                @if (categories != null && categories.Count() > 0)
+                {
+                    foreach (var category in categories)
+                    {
+                        <div class="option" data-value="@category.CategoryName">@category.CategoryName</div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="search-wrapper">
+            <input class="search-query" name="searchQuery" id="searchQuery" placeholder="Search courses" />
+            <i class="fa-light fa-search"></i>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="grid-container items">
+
+
+    @if (courses.Count() < 1)
+    {
+        <p>Loading courses...</p>
+    }
+    else
+    {
+        @foreach (var course in courses)
+        {
+            @* <p>@course</p> *@
+
+            <form class="bookmark-form" id="bookmarkForm" method="post" action="/  @* @Url.Action(" BookmarkCourse", "Account" , new { courseId=course.Id }) *@">
+
+@*                 <NavLink class="grid-item card" href="@GenerateUrl("coursedetails", new { Id = course.Id })">
+        *@                                 
+                    <NavLink class="grid-item card" href="@GoToCourseDetails("coursedetails", course.Id)">
+
+                    <div class="img-wrapper">
+                        <img class="course-image" src="/img/courses/@course.ImageUrl" alt="@course.AltText">
+                        <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
+                    </div>
+
+                    <span class="bookmark-circle" onclick="submitForm(event)">
+                        <i class="fa-light fa-bookmark bookmark-empty"></i>
+                        @*                         @if (courses != null)
+                {
+                @foreach (var savedCourse in SavedCourses)
+                {
+                if (course.Id == savedCourse.CourseId)
+                {
+                //gets filled in because the icon i solid.
+                <i class="fa-solid fa-bookmark bookmark-filled"></i>
+                }
+                else
+                {
+                // doesnt get filled in because the icon is only a border.
+                <i class="fa-light fa-bookmark bookmark-empty"></i>
+                }
+                }
+                }
+                else
+                {
+                <i class="fa-light fa-bookmark bookmark-empty"></i>
+                } *@
+                    </span>
+
+                    <div class="text-wrapper">
+
+                        <div class="text-title">
+                            <h5 class="course-title">@course.Title</h5>
+                        </div>
+
+                        <div class="text-rest">
+                            <span class="by">By</span><span class="author">@course.Author</span>
+                            <div class="price-wrapper">
+                                <div class="@(course.DiscountPrice >= 1 ? "discount-price" : "hidden")">@course.Currency@course.DiscountPrice</div>
+                                <div class="@(course.DiscountPrice >= 1 ? "price discount-applied" : "price")">@course.Currency@course.Price</div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="description-wrapper">
+                                @{
+                                    double likesInK = Math.Max(0, (Math.Round(course.NumberOfLikes / 1000.0, 1)));
+
+                                    <span class="description"><i class="fa-light fa-clock"></i> @course.LengthInHours hours</span>
+                                    <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.Rating% (@likesInK K)</span>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </NavLink>
+            </form>
+        }
+    }
+
+</div>
+
+@if (pagination != null && pagination.TotalPages > 1)
+{
+    <div class="pagination">
+
+        @{
+            var totalPages = pagination.TotalPages;
+            var currentPage = pagination.CurrentPage;
+            var previousPage = pagination.CurrentPage - 1;
+            var nextPage = pagination.CurrentPage + 1;
+            var tolerance = 2; // sets the size the number can deivate from currenPage to be printed IF the TotalPages exceed 5.
+            var totalPaginationButtons = 0;
+
+            <a class="btn-gray first-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})"><i class="fa-solid fa-angles-left"></i></a>
+
+            if (previousPage < 1)
+            {
+                previousPage = totalPages;
+            }
+            <a class="btn-gray previous-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = previousPage, pagesize = pagination.PageSize})"><i class="fa-solid fa-angle-left"></i></a>
+
+
+            @for (int i = 1; i <= totalPages && totalPaginationButtons < 5; i++)
+            {
+                if (pagination.TotalPages <= 5)
+                {
+                    if (i == pagination.CurrentPage) // Sets value of the currentpage button.
+                    {
+                        <span class="btn-theme current-page">@i</span>
+                        totalPaginationButtons++;
+                    }
+                    else // Sets value of other pages if there are NO more than 5 total pages.
+                    {
+                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = i, pagesize = pagination.PageSize})">@i</a>
+                        totalPaginationButtons++;
+                    }
+                }
+                else // If more than 5 total pages.
+                {
+                    if (currentPage == 1 && totalPaginationButtons == 0) // Prints the second to last and last page buttons prior to the current page button if current page is page 1.
+                    {
+                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages -1, pagesize = pagination.PageSize})">@Math.Abs(totalPages - 1)</a>
+                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
+                        totalPaginationButtons += 2;
+                    }
+
+                    if (currentPage == 2 && totalPaginationButtons == 0) // Prints the last page prior to printing page 1 if current pages is page 2.
+                    {
+                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
+                        totalPaginationButtons++;
+                    }
+
+                    if (i == pagination.CurrentPage) // Prints the current page button
+                    {
+                        <span class="btn-theme current-page">@i</span>
+                        totalPaginationButtons++;
+
+                        if (pagination.CurrentPage == pagination.TotalPages && totalPaginationButtons >= 3) // If currentpage is the last page then this prints page button 1 and 2.
+                        {
+                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
+                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 2, pagesize = pagination.PageSize})">2</a>
+                            totalPaginationButtons += 2;
+                        }
+                    }
+
+                    else
+                    {
+                        if (Math.Abs(i - pagination.CurrentPage) <= tolerance) // Only prints a total of 2 buttons above or below the currentpage.
+                        {
+                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = i, pagesize = pagination.PageSize})">@i</a>
+                            totalPaginationButtons++;
+                        }
+                        if (pagination.CurrentPage == pagination.TotalPages - 1 && totalPaginationButtons >= 4) // prints page button 1 when on the second to last page.
+                        {
+                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
+                            totalPaginationButtons++;
+                        }
+                        else // skips other numbers
+                        {
+                            continue;
+                        }
+                        if (totalPaginationButtons == 5) // breaks loop when totalbuttons are 5.
+                        {
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            if (nextPage > totalPages)
+            {
+                nextPage = 1;
+            }
+            <a class="btn-gray next-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = nextPage, pagesize = pagination.PageSize})"><i class="fa-solid fa-angle-right"></i></a>
+
+            <a class="btn-gray last-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber =totalPages, pagesize = pagination.PageSize})"><i class="fa-solid fa-angles-right"></i></a>
+
+        }
+    </div>
+}
+
+<div class="get-started">
+    <div class="text-wrapper">
+        <p>Ready to get started?</p>
+        <h2>Take Your<span class="theme-text"> Skill </span>to the Next Level</h2>
+        <button class="btn-theme">Work with us</button>
+    </div>
+    <div class="image-wrapper">
+        <img src="/img/office-worker.png" alt="">
+    </div>
+</div>
+
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var courseResult = await _coursesService.GetAllCourses();
+        courses = courseResult.ReturnCourses;
+        pagination = courseResult.Pagination;
+    }  
+
+    IEnumerable<CategoryModel> categories =
+    [
+            new CategoryModel()
+            {
+                Id = 1,
+                CategoryName = "Frontend Development"
+            },
+    new CategoryModel()
+            {
+                Id = 2,
+                CategoryName = "App Development"
+            },
+    new CategoryModel()
+            {
+                Id = 1,
+                CategoryName = "HTML & CSS"
+            },
+    new CategoryModel()
+            {
+                Id = 1,
+                CategoryName = "Python"
+            },
+    new CategoryModel()
+            {
+                Id = 1,
+                CategoryName = "Game Development"
+            },
+    ];
+
+    IEnumerable<CourseModel> courses = [];
+    Pagination pagination = new();
+    string categoryQuery = "all";
+
+
+
+    // private async Task<CourseResult> GetAllCourses(string category = "", string searchQuery = "", int pageNumber = 1, int pageSize = 6)
+    // {
+    //     try
+    //     {
+    //         var allCoursesResponse = await client.GetAsync($"https://localhost:7034/api/Courses?category={Uri.EscapeDataString(category)}&searchQuery={Uri.EscapeDataString(searchQuery)}&pageNumber={pageNumber}&pageSize={pageSize}&key={_configuration["ApiKey:Secret"]}");
+
+    //         var json = await allCoursesResponse.Content.ReadAsStringAsync();
+    //         var courses = JsonConvert.DeserializeObject<CourseResult>(json);
+
+    //         if (courses != null)
+    //         {
+    //             return courses;
+    //         }
+
+    //     }
+    //     catch (Exception ex) { }
+    //     return null!;
+    // }
+
+    private string GenerateUrl(object parameters)
+    {
+        var baseUrl = navigationManager.BaseUri;
+        var queryString = string.Join("&",
+            parameters.GetType().GetProperties().Select(p => $"{p.Name}={p.GetValue(parameters)}"));
+
+        return $"{baseUrl}?{queryString}";
+    }
+
+    private string GoToCourseDetails(string page, string id)
+    {
+        var baseUrl = navigationManager.BaseUri;
+        return $"{baseUrl}{page}/{id}";
+    }
+
+    protected async Task ShowDropDownAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("showDropDown");
+    }
+
+
+}
+

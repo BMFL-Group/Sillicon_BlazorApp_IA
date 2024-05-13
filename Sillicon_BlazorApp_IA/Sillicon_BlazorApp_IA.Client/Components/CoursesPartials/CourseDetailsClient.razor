@@ -1,0 +1,315 @@
+﻿<PageTitle>Silicon | @course.Title</PageTitle>
+
+@rendermode InteractiveWebAssembly
+
+@if (course == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@course.ImageUrl)"></div>
+
+    <div class="top-container container">
+        <div class="grid-container">
+            <div class="button-wrapper">
+                @if (course.BestSeller)
+                {
+                    <span class="best-seller">Best Seller</span>
+                }
+                <span class="digital">Digital</span>
+            </div>
+
+            <Breadcrumbs />
+
+            <div class="title-wrapper">
+                <h1>@course.Title</h1>
+                <p>Egestas feugiat lorem eu neque suspendisse ullamcorper scelerisque aliquam mauris.</p>
+            </div>
+
+            <div class="ratings-wrapper">
+                <span class="stars">
+                    @{
+                        int maxStars = Convert.ToInt32(Math.Round((course.Rating) / 20.0, MidpointRounding.AwayFromZero)); // takes rating in percentage and splits by 20 (1/5) as max stars are 5.
+                        maxStars = Math.Max(1, Math.Min(5, maxStars)); // Ensure maxStars is between 0 and 5
+                    }
+                    @foreach (var star in Enumerable.Range(1, maxStars)) // render out solid stars between 1 and 5.
+                    {
+                        <i class="fa-solid fa-star"></i>
+                    }
+
+                    @for (int i = (maxStars + 1); i <= 5; i++) // Renders reamaining how stars depending on the amount of solid stars.
+                    {
+                        <i class="fa-light fa-star"></i>
+                    }
+
+                </span>
+
+                @{
+                    double likesInK = Math.Max(0, (Math.Round(course.NumberOfLikes / 1000.0, 1)));
+                    double reviewsInK = Math.Max(0, (Math.Round(course.NumberOfReviews / 1000.0, 1)));
+                }
+
+                <span class="course-details">@course.Rating% (@reviewsInK K reviews)</span>
+                <i class="fa-thin fa-pipe"></i>
+                <i class="fa-regular fa-thumbs-up"></i>
+                <span>@likesInK K likes</span>
+                <i class="fa-thin fa-pipe"></i>
+                <i class="fa-light fa-clock"></i>
+                <span class="course-ingress">@course.LengthInHours hours</span>
+            </div>
+
+            <div class="author-wrapper">
+                <img class="course-instructor-picture" src="/img/albert-flores-small-round.png" alt="">
+                <div class="author-text">
+                    <p class="by">Created By</p>
+                    <p class="author">@course.Author</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="course-description container">
+        <div class="grid-container">
+            <div class="title-box">
+                <h2>Course Description</h2>
+                <p>
+                    Suspendisse natoque sagittis, consequat turpis. Sed tristique tellus morbi magna. At vel senectus
+                    accumsan, arcu mattis id tempor. Tellus sagittis, euismod porttitor sed tortor est id. Feugiat
+                    velit velit, tortor ut. Ut libero cursus nibh lorem urna amet tristique leo. Viverra lorem arcu
+                    nam nunc at ipsum quam. A proin id sagittis dignissim mauris condimentum ornare. Tempus mauris
+                    sed dictum ultrices.
+                </p>
+            </div>
+
+            <div class="what-you-learn-box">
+                <h3>What you'll learn</h3>
+
+                @{
+                    //move string array to WhatYouLearnModel
+                    string[] bulletPoints =
+                    [
+                    "Sed lectus donec amet eu turpis interdum.",
+                "Nulla at consectetur vitae dignissim porttitor.",
+                "Phasellus id vitae dui aliquet mi.",
+                "Integer cursus vitae, odio feugiat iaculis aliquet diam, et purus.",
+                "In aenean dolor diam tortor orci eu."
+                    ];
+
+                    foreach (var bulletPoint in bulletPoints)
+                    {
+                        <p><i class="fa-regular fa-circle-check"></i>@bulletPoint</p>
+                    }
+                }
+
+            </div>
+
+            <div class="course-includes-box">
+                <h3>This course includes:</h3>
+
+                <p><img src="/img/screen.svg" alt="">148 hours on-demand video</p>
+                <p><img src="/img/file.svg" alt="">18 Articles</p>
+                <p><img src="/img/download.svg" alt="">25 downloadable resources</p>
+                <p><img src="/img/infinity.svg" alt="">Full lifetime access</p>
+                <p><img src="/img/trophy.svg" alt="">Certificate of completion</p>
+
+                @if (course.DiscountPrice > 0)
+                {
+                    <span class="discount-price">@course.Currency@course.DiscountPrice</span>
+                    <span class="price strikethrough">@course.Currency@course.Price</span>
+                }
+                else
+                {
+                    <span class="price">@course.Currency@course.Price</span>
+
+                }
+
+                <form class="join-course-wrapper" method="post" asp-action="Bookmarkcourse" asp-controller="Account" asp-route-courseId="@course.Id">
+
+                    <button class="btn-theme" type="submit">join Course</button>
+
+                    @*                     @if (Model.SavedCourses.Count() > 0 && Model.SavedCourses != null)
+                {
+                var isSignedUp = false;
+
+                @foreach (var savedCourse in Model.SavedCourses)
+                {
+                if (course.Id == savedCourse.CourseId)
+                {
+                // As soon as a match is found the lop breaks and prints the HTML inside "if(isSignedUp)". If no matches are found it goes to the else statement.
+                isSignedUp = true;
+                break;
+                }
+                }
+
+                if (isSignedUp)
+                {
+                <button class="btn-delete-all" type="submit">Leave Course</button>
+                <div class="btn">You are signed up <i class="fa-solid fa-thumbs-up"></i></div>
+                }
+                else
+                {
+                <button class="btn-theme" type="submit">Join Course</button>
+                }
+                }
+                else
+                {
+                <button class="btn-theme" type="submit">join Course</button>
+                } *@
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="program-details container">
+        <h2>Program Details</h2>
+        <div class="grid-container">
+            <div class="progression-boxes">
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">1</span></div>
+                        <div class="connector-line"></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">Introduction. Getting started</h3>
+                        <p class="progress-description">
+                            Nulla faucibus mauris pellentesque blandit faucibus non. Sit
+                            ut et at suspendisse gravida hendrerit tempus placerat.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">2</span></div>
+                        <div class="connector-line"></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">The ultimate HTML developer: advanced HTML</h3>
+                        <p class="progress-description">
+                            Lobortis diam elit id nibh ultrices sed penatibus donec.
+                            Nibh iaculis eu sit cras ultricies. Nam eu eget etiam egestas donec scelerisque ut ac
+                            enim. Vitae ac nisl, enim nec accumsan vitae est.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">3</span></div>
+                        <div class="connector-line"></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">CSS & CSS3: basic</h3>
+                        <p class="progress-description">
+                            Duis euismod enim, facilisis risus tellus pharetra lectus
+                            diam neque. Nec ultrices mi faucibus est. Magna ullamcorper potenti elementum ultricies
+                            auctor nec volutpat augue.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">4</span></div>
+                        <div class="connector-line"></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">JavaScript basics for beginners</h3>
+                        <p class="progress-description">
+                            Morbi porttitor risus imperdiet a, nisl mattis. Amet,
+                            faucibus eget in platea vitae, velit, erat eget velit. At lacus ut proin erat.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">5</span></div>
+                        <div class="connector-line last-line"></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">Understanding APIs</h3>
+                        <p class="progress-description">
+                            Risus morbi euismod in congue scelerisque fusce pellentesque
+                            diam consequat. Nisi mauris nibh sed est morbi amet arcu urna. Malesuada feugiat quisque
+                            consectetur elementum diam vitae. Dictumst facilisis odio eu quis maecenas risus odio
+                            fames bibendum.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="outer-circle">
+                        <div class="inner-circle"><span class="number">6</span></div>
+                    </div>
+                    <div class="text-box">
+                        <h3 class="progress-title">C# and .NET from beginner to advanced</h3>
+                        <p class="progress-description">
+                            Quis risus quisque diam diam. Volutpat neque eget eu
+                            faucibus sed urna fermentum risus. Est, mauris morbi nibh massa.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="empty-container"></div>
+        </div>
+    </div>
+
+    <div class="about-author-box container">
+        <div class="grid-wrapper">
+            <div class="image-wrapper"><img src="/img/albert-flores-lg.png" alt=""></div>
+            <div class="bio-wrapper">
+                <p class="sub-heading">Learn from the best</p>
+                <h3 class="about-heading">@course.Author</h3>
+                <p class="text">
+                    Dolor ipsum amet cursus quisque porta adipiscing. Lorem convallis malesuada sed maecenas. Ac
+                    dui at vitae mauris cursus in nullam porta sem. Quis pellentesque elementum ac bibendum. Nunc aliquam in
+                    tortor facilisis. Vulputate eget risus, metus phasellus. Pellentesque faucibus amet, eleifend diam quam
+                    condimentum convallis ultricies placerat. Duis habitasse placerat amet, odio pellentesque rhoncus,
+                    feugiat at. Eget pellentesque tristique felis magna fringilla.
+                </p>
+                <div class="button-wrapper">
+                    <button class="btn-gray subscribers"><i class="fa-brands fa-youtube"></i> 240K subscribers</button>
+                    <button class="btn-gray followers"><i class="fa-brands fa-facebook"></i> 180K followers</button>
+                    <img class="pattern" src="/img/pattern.svg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = null!;
+
+    CourseModel course = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        course = await GetOneCourse(Id);
+    }
+
+    public async Task<CourseModel> GetOneCourse(string id)
+    {
+        try
+        {
+            var courseResponse = await client.GetAsync($"https://localhost:7034/api/Courses/{id}?key={_configuration["ApiKey:Secret"]}");
+
+            var json = await courseResponse.Content.ReadAsStringAsync();
+            var course = JsonConvert.DeserializeObject<CourseModel>(json);
+
+            if (course != null)
+            {
+                return course;
+            }
+
+        }
+        catch (Exception ex) { }
+        return null!;
+    }
+}

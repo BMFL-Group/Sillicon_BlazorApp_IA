@@ -1,0 +1,49 @@
+﻿<section id="@myw.Id" class="manage-your-work">
+    <div class="container">
+
+        <div class="manage-left">
+            <img src="@myw.Image.ImageUrl" alt="@myw.Image.AltText">
+        </div>
+
+        <div class="manage-right">
+            <h2>@myw.Title</h2>
+
+            @if (myw.Checklist.Count >= 1)
+            {
+                foreach (var item in myw.Checklist)
+                {
+                    <p><i class="@item.Icon"></i>@item.Text</p>
+                }
+            }
+
+            <NavLink class="btn-theme" href="@myw.Link.Page">
+                <span>@myw.Link.Text</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </NavLink>
+        </div>
+
+    </div>
+</section>
+
+@code {
+    ManageYourWorkModel myw = new()
+    {
+        Id = "manageYourWork",
+        Title = "Manage Your Work",
+        Image = new()
+        {
+            ImageUrl = "/img/dashboard-regular.png",
+            AltText = "Dashboard"
+        },
+        Checklist =
+        [
+            new CheckListModel() { Text = "Powerful project management" },
+            new CheckListModel() { Text = "Transparent work management" },
+            new CheckListModel() { Text = "Manage work & focus on the most important tasks" },
+            new CheckListModel() { Text = "Track your progress with interactive charts" },
+            new CheckListModel() { Text = "Easiest way to track time spent on tasks" }
+        ],
+        Link = new LinkModel() { Page = "/", Text = "Learn more" }
+    };
+
+}

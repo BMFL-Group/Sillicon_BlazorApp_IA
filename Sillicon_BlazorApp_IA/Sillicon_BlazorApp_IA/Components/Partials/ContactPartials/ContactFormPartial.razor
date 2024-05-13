@@ -1,0 +1,50 @@
+﻿
+<EditForm novalidate Model="Model" class="contact-form">
+
+    @*     @if (TempData?["Message"]?.ToString() == "faild")
+    {
+    <div class="error-message">Enter a valid message, minimum length of 10 characters.</div>
+    }
+    else if (TempData?["Message"]?.ToString() == "sent")
+    {
+    <div class="susccess-message"> Thank you for getting in touch, we will respond as soon as we can.</div>
+    } *@
+
+    <div id="fullname" class="input-group">
+        <label asp-for="Form.FullName">Full name</label>
+        <span asp-validation-for="Form.FullName"></span>
+        <InputText @bind-Value="Model.FullName" placeholder="Enter your full name" />
+    </div>
+
+    <div id="form-email" class="input-group">
+        <label asp-for="Form.Email">Email address</label>
+        <span asp-validation-for="Form.Email"></span>
+        <InputText @bind-Value="Model.Email" placeholder="Enter your email address" />
+    </div>
+
+    <label class="label">Service <span>(optional)</span></label>
+    <InputSelect id="services" @bind-Value="Model.Service">
+        <option disabled selected>Choose the service you are interested in</option>
+        @if (Services != null)
+        {
+            foreach (var service in Services)
+            {
+                <option value="@service">@service</option>
+            }
+        }
+    </InputSelect>
+
+    <div id="message" class="text-area">
+        <label asp-for="Form.Message">Message</label>
+        <span asp-validation-for="Form.Message"></span>
+        <InputTextArea @bind-Value="Model.Message" placeholder="Enter your message here..."></InputTextArea>
+    </div>
+
+    <button type="submit" class="btn-theme-s">Send contact request</button>
+</EditForm>
+
+
+@code {
+    ContactFormModel Model = new ContactFormModel();
+    private List<string>? Services = ["Service 1", "Service 2", "Service 3", "Service 4", "Service 5"];
+}

@@ -1,0 +1,79 @@
+﻿
+<section id="@features.Id" class="features">
+    <div class="container">
+
+        <h1>@features.Title</h1>
+        <span>@features.Text</span>
+
+        <div class="grid-container">
+            @if (features.FeaturesBoxes.Count >= 1)
+            {
+                foreach (var boxes in features.FeaturesBoxes)
+                {
+                    <NavLink class="grid-item" href="@boxes.Link.Page">
+                        <img src="/img/@boxes.Image.ImageUrl" alt="@boxes.Image.AltText">
+                        <h5>@boxes.SubHeading</h5>
+                        <span>@boxes.Text</span>
+                    </NavLink>
+                }
+            }
+        </div>
+
+    </div>
+</section>
+
+@code {
+    FeaturesModel features = new()
+        {
+            Id = "features",
+            Title = "What Do You Get With Our Tool?",
+            Text = "Make sure all your tasks are organized so you can set priorities and focus on what's important.",
+
+            FeaturesBoxes =
+            [
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "chat.svg", AltText = "Chat icon" },
+                    SubHeading = "Comments On Tasks",
+                    Text = "Id mollis consectetur congue egestas egestas suspendisse blandit justo."
+                },
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "presentation.svg", AltText = "graph trending up on screen" },
+                    SubHeading = "Task analytics",
+                    Text = "Non imperdiet facilisis nulla tellus Morbi scelerisque eget adipiscing vulputate."
+                },
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "add-group.svg", AltText = "Group icon" },
+                    SubHeading = "Multiple Assigneess",
+                    Text = "A elementum, imperdiet enim, pretium etiam facilisi in aenean quam mauris."
+                },
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "bell.svg", AltText = "Bell ringing" },
+                    SubHeading = "Notifications",
+                    Text = "Diam, suspendisse velit cras ac. Lobortis diam volutpat, eget pellentesque viverra."
+                },
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "test.svg", AltText = "Checklist" },
+                    SubHeading = "Selections & Subtasks",
+                    Text = "Mi feugiat hac id in. Sit elit placerat lacus nibh lorem ridiculus lectus."
+                },
+                new()
+                {
+                    Link = new LinkModel() { Page = "/features" },
+                    Image = new ImageModel() { ImageUrl = "shield.svg", AltText = "Shield icon" },
+                    SubHeading = "DataSecurity",
+                    Text = "Aliquam malesuada neque eget elit nulla vestibulum nunc cras."
+                }
+            ]
+        };
+
+}

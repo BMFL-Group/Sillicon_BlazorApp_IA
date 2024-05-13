@@ -1,0 +1,38 @@
+﻿@page "/SignIn"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>sign in</PageTitle>
+
+<section class="create-account">
+    <div class="container">
+        <div class="content">
+            <h1>Welcome back</h1>
+            <p>Don't have an account yet? <NavLink href="/SignUp">Sign up here.</NavLink></p>
+
+            @*             @if (!string.IsNullOrEmpty(Model.ErrorMessage) || !string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+            <div class="error-msg">@Model.ErrorMessage</div>
+            } *@
+
+            <SignInFormPartial />
+
+            <div id="forgot"><NavLink href="/">Forgot your password?</NavLink></div>
+
+            <hr />
+
+            <div class="networks">
+                <label>Or sign in with your social network</label>
+                <div class="buttons">
+                    <NavLink class="btn-gray" asp-action="Google" asp-controller="Auth"><i class="fa-brands fa-google"></i>Google</NavLink>
+                    <NavLink class="btn-gray" asp-action="Facebook" asp-controller="Auth"><i class="fa-brands fa-facebook-f"></i>Facebook</NavLink>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+}

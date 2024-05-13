@@ -1,0 +1,14 @@
+﻿<EditForm novalidate Model="Model">
+    <div id="form-delete" class="checkbox-group">
+        <div class="checkbox">
+            <InputCheckbox @bind-Value="@Model.Delete" />
+            <label for="@Model.Delete">Yes, I want to delete my account.</label>
+        </div>
+        <span for="@Model.Delete"></span>
+    </div>
+    <button type="submit" class="btn-theme">Delete</button>
+</EditForm>
+
+@code {
+    DeleteAccountFormModel Model = new DeleteAccountFormModel();
+}

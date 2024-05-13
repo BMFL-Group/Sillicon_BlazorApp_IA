@@ -1,0 +1,48 @@
+﻿@page "/notifications"
+
+<PageTitle>notifications</PageTitle>
+
+<seiction id="notifications">
+    <div class="container">
+        <ProfileMenuPartial />
+        <div class="form-title">
+            <h2>Notifications</h2>
+            <EditForm Model="Form" novalidate>
+                <div class="input-group">
+                    <label for="Email">Preferred email for notifications</label>
+                    <InputText @bind-Value="Form.Email" id="Email" placeholder="example@gamil.com" />
+                    <span for="@Form.Email"></span>
+                </div>
+                <div class="switch-group">
+                    <div class="btn-switch">
+                        <label for="Subscribe" class="switch">
+                            <InputCheckbox @bind-Value="Form.Subscribe" id="Subscribe" checked="IsSubscribing" role="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                        <span>Subscribe to newsletter</span>
+                    </div>
+                    <p>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
+                </div>
+                <div class="switch-group">
+                    <div class="btn-switch">
+                        <label for="DarkMode" class="switch">
+                            <InputCheckbox @bind-Value="Form.DarkMode" id="DarkMode" checked="IsDarkMode" role="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                        <span>Use darkmode theme in application</span>
+                    </div>
+                    <p>Tortor massa porttitor enim tristique neque fermentum sed.</p>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn-theme">Save changes</button>
+                    <button type="reset" class="btn-gray">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</seiction>
+
+@code {
+
+    NotificationsFormModel Form = new NotificationsFormModel();
+}
