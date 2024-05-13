@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.Models;
+﻿using Sillicon_BlazorApp_IA.Data;
+
+namespace Infrastructure.Models;
 
 public class AddressModel
 {
@@ -7,5 +9,5 @@ public class AddressModel
     public string? AddressLine_2 { get; set; }
     public string PostalCode { get; set; } = null!;
     public string City { get; set; } = null!;
-    public ICollection<UserModel> Users { get; set; } = [];
+    public ICollection<ApplicationUser> Users { get; set; } = [];
 }
