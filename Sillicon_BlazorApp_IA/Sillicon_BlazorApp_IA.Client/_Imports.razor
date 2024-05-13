@@ -8,3 +8,15 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
 @using Sillicon_BlazorApp_IA.Client
+
+@using Infrastructure.Services
+@using Infrastructure.Models
+@using Newtonsoft.Json
+@using Sillicon_BlazorApp_IA.Client.Components.BreadcrumbPartials
+
+
+@inject IConfiguration _configuration
+@inject HttpClient client
+@inject NavigationManager navigationManager
+@inject IJSRuntime JSRuntime
+@inject CoursesService _coursesService
