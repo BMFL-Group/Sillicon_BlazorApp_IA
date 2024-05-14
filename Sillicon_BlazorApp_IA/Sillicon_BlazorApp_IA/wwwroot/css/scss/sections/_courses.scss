@@ -77,11 +77,22 @@
                                 background-color: var(--color-gray-300);
                             }
                         }
+
+                        &[aria-expanded="true"] {
+                            display: block;
+                        }
                     }
                 }
 
                 #pageSizeSelect {
                     min-width: 7rem;
+
+                    .select-options {
+
+                        &[aria-expanded="true"] {
+                            display: block;
+                        }
+                    }
 
                     .option {
                         text-align: right;
@@ -296,14 +307,14 @@
             }
 
             .btn-gray {
-                background-color: var(--color-gray-400);                
+                background-color: var(--color-gray-400);
             }
 
             .btn-theme {
                 width: 2.2rem;
                 height: 2.2rem;
 
-                @include md{
+                @include md {
                     width: 2.6rem;
                     height: 2.6rem;
                 }
