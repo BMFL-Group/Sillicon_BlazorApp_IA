@@ -11,6 +11,29 @@
 @using Sillicon_BlazorApp_IA.Client
 @using Sillicon_BlazorApp_IA.Components
 
+@*----------- nya grejer för account --------------------------- *@
+
+@using Sillicon_BlazorApp_IA.Components.Account
+@using Sillicon_BlazorApp_IA.Components.Account.Pages
+@using Sillicon_BlazorApp_IA.Data
+@using Microsoft.AspNetCore.Identity
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Diagnostics
+@using Microsoft.AspNetCore.Authentication
+
+@inject UserManager<ApplicationUser> _userManager
+@inject IdentityRedirectManager _redirectManager
+@inject IUserStore<ApplicationUser> _userStore
+@inject SignInManager<ApplicationUser> _signInManager
+@inject IEmailSender<ApplicationUser> _emailSender
+@inject ILogger<Register> _logger
+
+@* ------------------------------------------------------------ *@
+
 
 @using Sillicon_BlazorApp_IA.Components.Partials
 @using Sillicon_BlazorApp_IA.Components.Partials.HeaderPartials
