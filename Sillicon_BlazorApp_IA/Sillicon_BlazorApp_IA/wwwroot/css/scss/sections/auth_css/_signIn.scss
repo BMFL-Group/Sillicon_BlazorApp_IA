@@ -16,7 +16,7 @@
                 margin-bottom: 25px;
             }
 
-            .error-msg {
+/*            .error-msg {
                 color: var(--color-danger);
                 margin-bottom: 30px;
                 text-align: center;
@@ -24,24 +24,7 @@
                 position: absolute;
                 top: -10px;
                 left: 150px;
-            }
-
-            form{
-
-                .checkbox-group {
-
-                    input {
-                        height: 1.2rem;
-                        width: 1.2rem;
-                    }
-                }
-
-                button {
-                    width: 100%;
-                    @include theme-shadow;
-                    margin-top: 20px;
-                }
-            }
+            }*/
 
             #forgot {
                 display: flex;
