@@ -8,7 +8,7 @@
    
     <div class="top-right">
 
-        <div class="select" id="pageSizeSelect" @onclick="(e) => ToggleDropDown(pageSizeSelect, pageSize)">
+        <div class="select" id="pageSizeSelect" @onclick="(e) => ToggleDropDowns(pageSizeSelect, pageSize)">
 
             <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
                 <path fill="currentColor"
@@ -22,19 +22,19 @@
                 {
                     if (i == pagination.TotalItems)
                     {
-                        <div class="option" data-value="@i">Show All</div>
+                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, pagination.TotalItems, searchQuery)">Show All</div>
                     }
                     else
                     {
-                        int number = @i;
-                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(string.Empty, number, string.Empty)">@i</div>
+                        int thisNumber = @i;
+                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, thisNumber, searchQuery)">@i</div>
                     }
                 }
 
             </div>
         </div>
 
-        <div class="select" id="selectCategory" @onclick="(e) => ToggleDropDown(categorySelect, category)">
+        <div class="select" id="selectCategory" @onclick="(e) => ToggleDropDowns(categorySelect, category)">
 
             <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
                 <path fill="currentColor"
@@ -61,7 +61,7 @@
                     foreach (var category in categories)
                     {
                         var categoryValue = @category.CategoryName;
-                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, 0, string.Empty)">@category.CategoryName</div>
+                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, selectedPageSize, searchQuery)">@category.CategoryName</div>
                     }
                 }
             </div>
@@ -363,7 +363,7 @@
     }
 
     // Shows dropdownmenu on click.
-    private void ToggleDropDown(bool isOpen, string dropdownName)
+    private void ToggleDropDowns(bool isOpen, string dropdownName)
     {
         switch (dropdownName)
         {
@@ -376,6 +376,7 @@
         }
     }
 
+    // Takes in different parameter and sets them based on 
     private async Task FilterCourses(string? category, int pageSize, string? newSearchQuery)
     {
         if (!string.IsNullOrEmpty(category))
