@@ -1,13 +1,17 @@
-﻿<PageTitle>Silicon | @course.Title</PageTitle>
+﻿@rendermode InteractiveWebAssembly
+    
+@* <PageTitle>Silicon | @course.Title</PageTitle> *@
+<PageTitle>Silicon | Course details </PageTitle>
 
-@rendermode InteractiveWebAssembly
 
 @if (course == null)
 {
+    
     <p>Loading...</p>
 }
 else
 {
+
     <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@course.ImageUrl)"></div>
 
     <div class="top-container container">
@@ -298,18 +302,19 @@ else
     {
         try
         {
-            var courseResponse = await client.GetAsync($"https://localhost:7034/api/Courses/{id}?key={_configuration["ApiKey:Secret"]}");
-
-            var json = await courseResponse.Content.ReadAsStringAsync();
-            var course = JsonConvert.DeserializeObject<CourseModel>(json);
-
-            if (course != null)
+            var courseResponse = await client.GetAsync($"{_configuration["ConnectionStrings:CoursesApi"]}/{id}");
+            if (courseResponse != null)
             {
-                return course;
+                var json = await courseResponse.Content.ReadAsStringAsync();
+                var course = JsonConvert.DeserializeObject<CourseModel>(json);
+                if (course != null)
+                {
+                    return course;
+                }                
             }
-
         }
-        catch (Exception ex) { }
+        catch (Exception ex)
+        { /*logic for logging here*/ }
         return null!;
     }
 }

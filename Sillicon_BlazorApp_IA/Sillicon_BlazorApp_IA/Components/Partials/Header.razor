@@ -1,3 +1,4 @@
+@rendermode InteractiveServer
 
 <header>
     <div class="container">
@@ -6,17 +7,34 @@
         
         <HeaderNav />
 
-        <MobileMenuButton />
+        @* <MobileMenuButton /> *@
+        <button class="btn btn-mobile" id="btn-mobile" aria-expanded="false" @onclick="ToggleMenu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-        <div id="mobile-menu" aria-expanded="false">
+        <div id="mobile-menu" @attributes="GetMenuAttributes()">
             <HeaderNav />
         </div>
 
     </div>
 
-    <script src="js/mobileMenu.js"></script>
 </header>
 
 @code {
 
+    //------------------------------------------------------------------
+    private bool isOpen { get; set; } = false;
+
+    private void ToggleMenu()
+    {
+        isOpen = !isOpen;
+    }
+
+    private Dictionary<string, object> GetMenuAttributes()
+    {
+        var attributes = new Dictionary<String, Object>();
+        attributes["aria-expanded"] = isOpen.ToString().ToLower();
+        return attributes;
+    }
+    //------------------------------------------------------------------
 }

@@ -196,21 +196,30 @@
                         width: 100%;
                         border: 1px solid var(--color-gray-400);
                         border-radius: 0.5rem;
-                        padding: 0.5rem;
+                        padding: 0.5rem 0 0.5rem 2rem;
 
                         @include lg {
                             margin-right: 1rem;
                         }
                     }
 
-                    .mail-icon {
-                        display: none;
+                    .fa-envelope {
+                        position: absolute;
+                        top: 0.8125rem;
+                        left: 0.8125rem;
+                        opacity: 0.5;
                     }
 
-                    span {
+/*                    span {
                         position: absolute;
                         top: -65%;
                         right: 0.5rem;
+                    }*/
+
+                    .validation-message {
+                        position: absolute;
+                        bottom: -0.2rem !important;
+                        right: 0.2rem;
                     }
                 }
 
@@ -231,17 +240,17 @@
                     @include text-xs;
                 }
 
-                .success-message, .error-message {
+                .status-message {
                     position: absolute;
-                    right: 0;
-                    bottom: 1.6rem;
-                    margin: 2rem 0 1rem;
-                    padding: 0.2rem 1rem;
+                    bottom: 0;
+                }
 
-                    @include xl {
-                        right: 1rem;
-                        bottom: -100%;
-                    }
+                .success {
+                    color: var(--color-success);
+                }
+                
+                .error {
+                    color: var(--color-danger);
                 }
             }
         }
