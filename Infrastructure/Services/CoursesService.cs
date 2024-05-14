@@ -19,14 +19,19 @@ public class CoursesService
     {
         try
         {
-            var allCoursesResponse = await _httpClient.GetAsync($"https://localhost:7034/api/Courses?category={Uri.EscapeDataString(category)}&searchQuery={Uri.EscapeDataString(searchQuery)}&pageNumber={pageNumber}&pageSize={pageSize}&key={_configuration["ApiKey:Secret"]}");
+            // var allCoursesResponse = await _httpClient.GetAsync($"https://silicon-courses-webapi.azurewebsites.net/api/courses?category={Uri.EscapeDataString(category)}&searchQuery={Uri.EscapeDataString(searchQuery)}&pageNumber={pageNumber}&pageSize={pageSize}&key={_configuration["ApiKey:Secret"]}");
+            var allCoursesResponse = await _httpClient.GetAsync($"{_configuration["ConnectionStrings:CoursesApi"]}?category={Uri.EscapeDataString(category)}&searchQuery={Uri.EscapeDataString(searchQuery)}&pageNumber={pageNumber}&pageSize={pageSize}&key={_configuration["ApiKey:Secret"]}");
 
             var json = await allCoursesResponse.Content.ReadAsStringAsync();
-            var courses = JsonConvert.DeserializeObject<CourseResult>(json);
+            var courses = JsonConvert.DeserializeObject<IEnumerable<CourseModel>>(json);
 
             if (courses != null)
             {
-                return courses;
+                return new CourseResult()
+                {
+                    Pagination = new(),
+                    ReturnCourses = courses,
+                };
             }
 
         }
