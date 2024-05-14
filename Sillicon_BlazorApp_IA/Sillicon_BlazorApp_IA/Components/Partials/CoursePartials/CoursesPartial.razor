@@ -1,5 +1,7 @@
 ﻿@rendermode InteractiveServer
 
+@attribute [StreamRendering]
+
 <div class="top-row">
 
     <h1>Courses</h1>
@@ -24,7 +26,8 @@
                     }
                     else
                     {
-                        <div class="option" data-value="@i">@i</div>
+                        int number = @i;
+                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(string.Empty, number, string.Empty)">@i</div>
                     }
                 }
 
@@ -38,9 +41,13 @@
                       d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
             </svg>
 
-            @if (!string.IsNullOrEmpty(categoryQuery) && categoryQuery != "all")
+            @if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "all")
             {
-                <div class="selected" id="selectedCategory">@categoryQuery</div>
+                <div class="selected" id="selectedCategory">   
+                    
+                    @selectedCategory                        
+
+                </div>
             }
             else
             {
@@ -53,7 +60,8 @@
                 {
                     foreach (var category in categories)
                     {
-                        <div class="option" data-value="@category.CategoryName">@category.CategoryName</div>
+                        var categoryValue = @category.CategoryName;
+                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, 0, string.Empty)">@category.CategoryName</div>
                     }
                 }
             </div>
@@ -156,7 +164,7 @@
             var currentPage = pagination.CurrentPage;
             var previousPage = pagination.CurrentPage - 1;
             var nextPage = pagination.CurrentPage + 1;
-            var tolerance = 2; // sets the size the number can deivate from currenPage to be printed IF the TotalPages exceed 5.
+            var tolerance = 2; // sets the size the number can deviate from currenPage to be printed IF the TotalPages exceed 5.
             var totalPaginationButtons = 0;
 
             <a class="btn-gray first-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})"><i class="fa-solid fa-angles-left"></i></a>
@@ -272,11 +280,18 @@
     protected override async Task OnInitializedAsync()
     {
         var courseResult = await _coursesService.GetAllCourses();
+        await populateCourses(courseResult);
+    }
+
+    private async Task populateCourses(CourseResult courseResult)
+    {
+        // Pagination and its logic Needs to be impemented in API
         courses = courseResult.ReturnCourses;
-        // Needs to be impemented in API
         pagination = courseResult.Pagination;
-        pagination.TotalItems = 10; // Remove in production, this is just to test.
-    }  
+        selectedCategory = courseResult.Category.CategoryName;
+        selectedPageSize = courseResult.Pagination.PageSize;
+        // StateHasChanged();
+    }
 
     private string GoToCourseDetails(string page, string id)
     {
@@ -291,22 +306,22 @@
             Id = 1,
             CategoryName = "Frontend Development"
         },
-        new CategoryModel()
+    new CategoryModel()
             {
                 Id = 2,
                 CategoryName = "App Development"
             },
-        new CategoryModel()
+    new CategoryModel()
             {
                 Id = 1,
                 CategoryName = "HTML & CSS"
             },
-        new CategoryModel()
+    new CategoryModel()
             {
                 Id = 1,
                 CategoryName = "Python"
             },
-        new CategoryModel()
+    new CategoryModel()
             {
                 Id = 1,
                 CategoryName = "Game Development"
@@ -315,12 +330,19 @@
 
 
     //------------------Courses filter here-----------------------------------------
-    
+
+    // category items
     private string category = "category";
     private bool categorySelect { get; set; } = false;
+    private string selectedCategory { get; set; } = "All categories";
 
+    // pageSizeItems
     private string pageSize = "pageSize";
     private bool pageSizeSelect { get; set; } = false;
+    private int selectedPageSize { get; set; } = 0;
+
+    // searchQueryItems
+    private string searchQuery { get; set; } = string.Empty;
 
     // Sets aria-expanded to true or false
     private Dictionary<string, object> GetMenuAttributes(string dropdownName)
@@ -352,6 +374,25 @@
                 categorySelect = !isOpen;
                 break;
         }
+    }
+
+    private async Task FilterCourses(string? category, int pageSize, string? newSearchQuery)
+    {
+        if (!string.IsNullOrEmpty(category))
+        {
+            selectedCategory = category;           
+        }
+        if (pageSize > 0)
+        {
+            selectedPageSize = pageSize;
+        }
+        if (!string.IsNullOrEmpty(newSearchQuery))
+        {
+            searchQuery = newSearchQuery;
+        }
+
+        var courseResult = await _coursesService.GetAllCourses(selectedCategory, searchQuery, 1, selectedPageSize);
+        await populateCourses(courseResult);
     }
 
     private string GenerateUrl(object parameters)
