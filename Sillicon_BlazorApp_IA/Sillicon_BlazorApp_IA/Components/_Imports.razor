@@ -45,10 +45,16 @@
 @using Sillicon_BlazorApp_IA.Components.Partials.AuthPartials
 @using Newtonsoft.Json
 @using Infrastructure.Models.Home
+@using Infrastructure.Services
 @using Sillicon_BlazorApp_IA.Components.Partials.HomePartials
+@using Sillicon_BlazorApp_IA.Components.Partials.CoursePartials
+
 
 @inject NavigationManager navigationManager
 @inject HttpClient client
+@inject CoursesService _coursesService
+@inject IConfiguration _configuration
+
 
 
 @using Infrastructure

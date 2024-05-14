@@ -2134,8 +2134,14 @@ footer .container .display-none {
 .courses .container .top-row .top-right .select .select-options .option:hover {
   background-color: var(--color-gray-300);
 }
+.courses .container .top-row .top-right .select .select-options[aria-expanded=true] {
+  display: block;
+}
 .courses .container .top-row .top-right #pageSizeSelect {
   min-width: 7rem;
+}
+.courses .container .top-row .top-right #pageSizeSelect .select-options[aria-expanded=true] {
+  display: block;
 }
 .courses .container .top-row .top-right #pageSizeSelect .option {
   text-align: right;
