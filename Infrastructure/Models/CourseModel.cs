@@ -31,7 +31,7 @@ public class CourseModel
     public decimal? DiscountPrice { get; set; }
 
     [Required]
-    public int LengthInHours { get; set; }
+    public string LengthInHours { get; set; } = null!;
 
     public int Rating { get; set; } = 0;
 

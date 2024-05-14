@@ -15,7 +15,7 @@ public class CoursesService
         _configuration = configuration;
     }
 
-    public async Task<CourseResult> GetAllCourses(string category = "", string searchQuery = "", int pageNumber = 1, int pageSize = 6)
+    public async Task<CourseResult> GetAllCourses(string category = "all", string searchQuery = "", int pageNumber = 1, int pageSize = 6)
     {
         try
         {
@@ -29,8 +29,19 @@ public class CoursesService
             {
                 return new CourseResult()
                 {
-                    Pagination = new(),
+                    Pagination = new()
+                    {
+                        CurrentPage = pageNumber,
+                        PageNumber = pageNumber,
+                        TotalItems = courses.Count(),
+                        PageSize = pageSize > courses.Count() ? courses.Count() : pageSize,
+                    },
                     ReturnCourses = courses,
+
+                    Category = new()
+                    {
+                        CategoryName = category,
+                    } 
                 };
             }
 
