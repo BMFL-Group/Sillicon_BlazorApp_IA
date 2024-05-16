@@ -62,17 +62,30 @@
                 LastName = SignUpForm.LastName,
                 Email = SignUpForm.Email,
                 UserName = SignUpForm.Email,
-                EmailConfirmed = true //ändra senare
-            };
+                EmailConfirmed = true //ändra sen
+    };
 
         try
         {
+            var alreadyInDataBase = await _userManager.FindByEmailAsync(user.Email);
+
+            if (alreadyInDataBase != null)
+            {
+                StatusMsg = "User already exists.";
+                return;
+            }
+         
             var result = await _userManager.CreateAsync(user, SignUpForm.Password);
             if (!result.Succeeded)
             {
                 StatusMsg = "Unable to register account. Please try again later...";
                 return;
             }
+            else
+            {
+                navigationManager.NavigateTo("/signin?returnUrl=%2Fdetails");
+            }
+
         }
         catch (Exception e)
         {
@@ -83,12 +96,9 @@
       
 
         // await client.PostAsJsonAsync("Be Martin om Urlen till hans VerifyProvidergrej..!", SignUpForm);
-        // if (_userManager.Options.SignIn.RequireConfirmedAccount)
-        // {
-        //     _redirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
-        // }
-
-        // await _signInManager.SignInAsync(user, isPersistent: false);
-        // _redirectManager.RedirectTo(ReturnUrl);
+        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            // _redirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
+        }
     }
 }

@@ -46,7 +46,7 @@
             display: block;
             width: 100%;
 
-            .button {
+            .menu-btn {
                 margin-bottom: 10px;
                 padding: 14px 28px;
                 border-radius: 6px;
@@ -69,6 +69,7 @@
                 }
             }
 
+
             &:hover {
                 text-decoration: none;
             }
@@ -82,6 +83,34 @@
                 i {
                     margin-right: 7px;
                     color: var(--color-white);
+                }
+            }
+        }
+
+        form {
+
+            button {
+                border: none;
+                background-color: transparent;
+                margin-bottom: 10px;
+                padding: 14px 25px;
+                border-radius: 6px;
+                font-weight: 700;
+                color: black;
+                color: var(--color-gray-900);
+                width: 280px;
+                text-align: left;
+
+                &:hover {
+                    background-color: var(--color-theme);
+                    color: white;
+                    @include theme-shadow;
+                }
+
+                i {
+                    margin-right: 7px;
+                    color: var(--color-gray-600);
+                    font-weight: 500;
                 }
             }
         }
