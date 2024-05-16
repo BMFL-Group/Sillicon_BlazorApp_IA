@@ -1,6 +1,4 @@
-﻿
-
-@if (!string.IsNullOrEmpty(StatusMsg))
+﻿@if (!string.IsNullOrEmpty(StatusMsg))
 {
     <div class="error">@StatusMsg</div>
 }
@@ -38,7 +36,7 @@
         <div class="checkbox">
             <InputCheckbox id="Terms" @bind-Value="SignUpForm.Terms" />
             <ValidationMessage For="() => SignUpForm.Terms" />
-            <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>    
+            <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>
         </div>
     </div>
     <button type="submit" class="btn-theme">Sign Up</button>
@@ -63,7 +61,7 @@
                 Email = SignUpForm.Email,
                 UserName = SignUpForm.Email,
                 EmailConfirmed = true //ändra sen
-    };
+            };
 
         try
         {
@@ -74,7 +72,7 @@
                 StatusMsg = "User already exists.";
                 return;
             }
-         
+
             var result = await _userManager.CreateAsync(user, SignUpForm.Password);
             if (!result.Succeeded)
             {
@@ -83,7 +81,7 @@
             }
             else
             {
-                navigationManager.NavigateTo("/signin?returnUrl=%2Fdetails");
+                navigationManager.NavigateTo("Account/Login?returnUrl=%2FAccount%2FManage");
             }
 
         }
@@ -93,7 +91,7 @@
             StatusMsg = "An error occurred while creating the account.";
             return;
         }
-      
+
 
         // await client.PostAsJsonAsync("Be Martin om Urlen till hans VerifyProvidergrej..!", SignUpForm);
         if (_userManager.Options.SignIn.RequireConfirmedAccount)

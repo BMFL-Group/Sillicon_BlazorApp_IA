@@ -52,7 +52,7 @@
         {
             var result = await _signInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.Remember, lockoutOnFailure: false);
             if (result.Succeeded)
-                navigationManager.NavigateTo(ReturnUrl!);
+                _redirectManager.RedirectTo(ReturnUrl!);
             else
                 StatusMsg = "Login failed try again.";
         }
