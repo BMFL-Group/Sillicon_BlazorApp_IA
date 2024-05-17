@@ -96,7 +96,7 @@
                     <NavLink class="grid-item card" href="@GoToCourseDetails("coursedetails", course.Id)">
 
                     <div class="img-wrapper">
-                        <img class="course-image" src="/img/courses/@course.ImageUrl" alt="@course.AltText">
+                        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
 
@@ -131,7 +131,14 @@
                         </div>
 
                         <div class="text-rest">
-                            <span class="by">By</span><span class="author">@course.Author</span>
+                            <span class="by">By</span>
+                            @if (course.Authors != null && course.Authors.Count() > 0)
+                            {
+                                foreach (var author in course.Authors)
+                                {
+                                    <span class="author">@author.Name</span>
+                                }
+                            }
                             <div class="price-wrapper">
                                 <div class="@(course.DiscountPrice >= 1 ? "discount-price" : "hidden")">@course.Currency@course.DiscountPrice</div>
                                 <div class="@(course.DiscountPrice >= 1 ? "price discount-applied" : "price")">@course.Currency@course.Price</div>
@@ -142,7 +149,7 @@
                                     double likesInK = Math.Max(0, (Math.Round(course.NumberOfLikes / 1000.0, 1)));
 
                                     <span class="description"><i class="fa-light fa-clock"></i> @course.LengthInHours hours</span>
-                                    <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.Rating% (@likesInK K)</span>
+                                    <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.RatingInPercentage% (@likesInK K)</span>
                                 }
                             </div>
                         </div>
@@ -272,7 +279,8 @@
 @code {
     //--------------------Fetching Courses here------------------------------------
 
-    IEnumerable<CourseModel> courses = [];
+    //IEnumerable<CourseModel> courses = [];
+    IEnumerable<Course> courses = [];
     Pagination pagination = new();
     string categoryQuery = "all";
 
