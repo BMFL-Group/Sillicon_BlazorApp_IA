@@ -1,4 +1,5 @@
-﻿@if (!string.IsNullOrEmpty(StatusMsg))
+﻿@using Sillicon_BlazorApp_IA.Services
+@if (!string.IsNullOrEmpty(StatusMsg))
 {
     <div class="error">@StatusMsg</div>
 }
@@ -23,6 +24,7 @@
     </div>
     <button type="submit" class="btn-theme">Sign in</button>
 </EditForm>
+
 
 @code {
 
@@ -52,7 +54,9 @@
         {
             var result = await _signInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.Remember, lockoutOnFailure: false);
             if (result.Succeeded)
-                _redirectManager.RedirectTo(ReturnUrl!);
+            {
+                _redirectManager.RedirectTo("Account/Manage");
+            }
             else
                 StatusMsg = "Login failed try again.";
         }

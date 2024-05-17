@@ -6,6 +6,7 @@ using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
 using Sillicon_BlazorApp_IA.Controllers;
 using Sillicon_BlazorApp_IA.Data;
+using Sillicon_BlazorApp_IA.Services;
 
 //NYA APPEN!!!!!!!!
 
@@ -19,11 +20,16 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
+
+
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<CoursesService>();
 builder.Services.AddScoped<SiteSettings>();
+
+builder.Services.AddScoped<AccountService>();
+
 
 builder.Services.AddAuthentication(options =>
     {
@@ -42,7 +48,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequiredLength = 8;
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = false;//ändra trill true sen
+    options.SignIn.RequireConfirmedAccount = true;//ändra trill true sen
 
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()

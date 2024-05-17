@@ -1,4 +1,5 @@
-﻿@if (!string.IsNullOrEmpty(StatusMsg))
+﻿@using Azure.Messaging.ServiceBus
+@if (!string.IsNullOrEmpty(StatusMsg))
 {
     <div class="error">@StatusMsg</div>
 }
@@ -60,7 +61,6 @@
                 LastName = SignUpForm.LastName,
                 Email = SignUpForm.Email,
                 UserName = SignUpForm.Email,
-                EmailConfirmed = true //ändra sen
             };
 
         try
@@ -81,7 +81,31 @@
             }
             else
             {
-                navigationManager.NavigateTo("Account/Login?returnUrl=%2FAccount%2FManage");
+                try
+                {
+                    await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+                    ServiceBusSender sender = client.CreateSender("verification_request");
+                    var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = SignUpForm.Email });
+                    ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+                    await sender.SendMessageAsync(message);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception Signup-sending verifymessage: " + e);
+                }
+                try
+                {
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    {
+                        navigationManager.NavigateTo($"Account/RegisterConfirmation/?email={SignUpForm.Email}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error redirect to verify from signup success" + e);
+                }
+ 
             }
 
         }
@@ -90,13 +114,6 @@
             Debug.WriteLine("Error: {0}", e.Message);
             StatusMsg = "An error occurred while creating the account.";
             return;
-        }
-
-
-        // await client.PostAsJsonAsync("Be Martin om Urlen till hans VerifyProvidergrej..!", SignUpForm);
-        if (_userManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            // _redirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/Account/Manage"
+@using Sillicon_BlazorApp_IA.Services
 
 <PageTitle>details</PageTitle>
 
@@ -16,18 +17,25 @@
 </div>
 
 @code {
-    private ApplicationUser user = default!;
-    private string? username;
+
+
+    // [Parameter]
+    // public string Value { get; set; }
+
+    private ApplicationUser? user;
+
     private string? phoneNumber;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
+    // [Parameter]
+    // [SupplyParameterFromQuery(Name="email")]
+    // public string? Email { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+       
         // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         // username = await UserManager.GetUserNameAsync(user);
         // phoneNumber = await UserManager.GetPhoneNumberAsync(user);
@@ -48,12 +56,5 @@
 
         // await SignInManager.RefreshSignInAsync(user);
         // RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
-    }
-
-    private sealed class InputModel
-    {
-        [Phone]
-        [Display(Name = "Phone number")]
-        public string? PhoneNumber { get; set; }
     }
 }
