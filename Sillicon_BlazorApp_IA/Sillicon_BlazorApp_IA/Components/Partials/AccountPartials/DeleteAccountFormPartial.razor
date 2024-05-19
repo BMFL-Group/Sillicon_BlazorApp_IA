@@ -1,7 +1,7 @@
 ﻿
 @if (!string.IsNullOrEmpty(StatusMsg))
 {
-    <div class="error-message">@StatusMsg</div>    
+    <div class="error-message">@StatusMsg</div>
 }
 
 <EditForm novalidate FormName="deleteForm" Model="DeleteForm" OnValidSubmit="DeleteAccount">
@@ -14,6 +14,7 @@
 </EditForm>
 
 @code {
+
     [SupplyParameterFromForm]
     DeleteAccountFormModel DeleteForm { get; set; } = new();
 
@@ -32,21 +33,22 @@
 
     private async Task DeleteAccount()
     {
-        if (Context != null && User != null)
-        {
-            if (await _userManager.CheckPasswordAsync(User!, DeleteForm.Delete))
-            {         
-                var result = await _userManager.DeleteAsync(User);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignOutAsync();
-                    navigationManager.NavigateTo("/Account/Login");
-                }             
-            }
+        if (Context != null && User != null && await _userManager.CheckPasswordAsync(User,DeleteForm.Delete))
+        {      
+            var result = await _userManager.DeleteAsync(User);
+            if (result.Succeeded)
+            {
+                await _signInManager.SignOutAsync();
+                navigationManager.NavigateTo("/Account/Login");
+            }    
             else
             {
-                StatusMsg = "Wrong password";
+                StatusMsg = "Something went wrong, try again later..";
             }
+        }
+        else
+        {
+            StatusMsg = "Wrong password";
         }
     }
 }
