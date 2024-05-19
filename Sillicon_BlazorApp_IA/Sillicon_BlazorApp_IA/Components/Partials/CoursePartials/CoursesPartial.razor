@@ -294,7 +294,7 @@
     private async Task populateCourses(CourseResult courseResult)
     {
         // Pagination and its logic Needs to be impemented in API
-        courses = courseResult.ReturnCourses;
+        courses = courseResult.Courses;
         pagination = courseResult.Pagination;
         selectedCategory = courseResult.Category.CategoryName;
         selectedPageSize = courseResult.Pagination.PageSize;
@@ -312,7 +312,7 @@
         new CategoryModel()
         {
             Id = 1,
-            CategoryName = "Frontend Development"
+            CategoryName = "FrontEnd"
         },
     new CategoryModel()
             {

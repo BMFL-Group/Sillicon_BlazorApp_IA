@@ -44,7 +44,7 @@ public class ProgramDetails
 
 public class Data
 {
-    public List<Course> GetCourses { get; set; }
+    public CourseResult GetCourses { get; set; }
 }
 
 public class GraphQLResponse

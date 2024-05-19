@@ -29,59 +29,106 @@ public class CoursesService
             #endregion
 
             #region GRAPHQL QUERY
+            //var query = new
+            //{
+            //    query = @" 
+            //    query($filterQuery: CourseFiltersInput!) {
+            //        getCourses($filterQuery: CourseFiltersInput!) {
+            //            courses(filter $filter) {
+            //                id
+            //                title
+            //                imageUri
+            //                altText
+            //                bestSeller                    
+            //                categories
+            //                currency
+            //                price
+            //                discountPrice
+            //                lengthInHours
+            //                ratingInPercentage
+            //                numberOfReviews
+            //                numberOfLikes
+            //                authors {
+            //                    name
+            //                }                    
+            //            }
+            //        }
+            //    }",
+            //    variables = new
+            //    {
+            //        filterQuery = new
+            //        {
+            //            category = category,
+            //            searchQuery = searchQuery,
+            //            pageSize = pageSize,
+            //            pageNumber = pageNumber,
+            //        }
+            //    }
+            //};
+            //
             var query = new
             {
-                    query = @"
-                {
-                    getCourses {
-                        id
-                        title
-                        imageUri
-                        altText
-                        bestSeller                    
-                        categories
-                        currency
-                        price
-                        discountPrice
-                        lengthInHours
-                        ratingInPercentage
-                        numberOfReviews
-                        numberOfLikes
-                        authors {
-                            name
-                        }                    
+                query = @"
+                query($filterQuery: CourseFiltersInput!) {
+                    getCourses(filterQuery: $filterQuery) {
+                        courses {
+                            id
+                            title
+                            imageUri
+                            altText
+                            bestSeller                    
+                            categories
+                            currency
+                            price
+                            discountPrice
+                            lengthInHours
+                            ratingInPercentage
+                            numberOfReviews
+                            numberOfLikes
+                            authors {
+                                name
+                            }                    
+                        }
                     }
-                }"
-            };  
+                }",
+                variables = new
+                {
+                    filterQuery = new
+                    {
+                        category = category,
+                        searchQuery = searchQuery,
+                        pageSize = pageSize,
+                        pageNumber = pageNumber,
+                    }
+                }
+            };
+
 
             var queryJson = JsonConvert.SerializeObject(query);
             var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
-            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:GraphQlApi"]}", content);
+            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:LocalGraphQlApi"]}", content);
 
             var json = await allCoursesResponse.Content.ReadAsStringAsync();
             var graphQLResponse = JsonConvert.DeserializeObject<GraphQLResponse>(json);
-            if (graphQLResponse != null)
+            if (graphQLResponse != null && graphQLResponse.Data != null && graphQLResponse.Data.GetCourses != null)
             {
-                var courses = graphQLResponse.Data.GetCourses;
-                if (courses != null)
-                {
-                    return new CourseResult()
-                    {
-                        Pagination = new()
-                        {
-                            CurrentPage = pageNumber,
-                            PageNumber = pageNumber,
-                            TotalItems = courses.Count(),
-                            PageSize = pageSize > courses.Count() ? courses.Count() : pageSize,
-                        },
-                        ReturnCourses = courses,
+                //return graphQLResponse.Data.Courses;
 
-                        Category = new()
-                        {
-                            CategoryName = category,
-                        }
-                    };
-                }
+                return new CourseResult()
+                {
+                    Pagination = graphQLResponse.Data.GetCourses.Pagination,
+                    Courses = graphQLResponse.Data.GetCourses.Courses,
+
+                    Category = new()
+                    {
+                        CategoryName = category,
+                    }
+                };
+
+            }
+            else
+            {
+                return new CourseResult();
             }
 
             #endregion
