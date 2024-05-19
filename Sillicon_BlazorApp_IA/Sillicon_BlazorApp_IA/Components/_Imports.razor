@@ -24,6 +24,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Diagnostics
 @using Microsoft.AspNetCore.Authentication
+@using Azure.Messaging.ServiceBus
 
 @inject UserManager<ApplicationUser> _userManager
 @inject IdentityRedirectManager _redirectManager
@@ -31,9 +32,8 @@
 @inject SignInManager<ApplicationUser> _signInManager
 @inject IEmailSender<ApplicationUser> _emailSender
 @inject ILogger<Register> _logger
-
+@inject IHttpContextAccessor _httpAccessor
 @* ------------------------------------------------------------ *@
-
 
 @using Sillicon_BlazorApp_IA.Components.Partials
 @using Sillicon_BlazorApp_IA.Components.Partials.HeaderPartials
@@ -49,7 +49,6 @@
 
 @inject NavigationManager navigationManager
 @inject HttpClient client
-
 
 @using Infrastructure
 @using Infrastructure.Models

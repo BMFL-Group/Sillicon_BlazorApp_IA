@@ -1,5 +1,6 @@
 ﻿@page "/security"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
 <PageTitle>security</PageTitle>
 
 <div class="security">
@@ -8,7 +9,6 @@
         <div>
             <div class="security-form">
                 <h2>Security</h2>
-      @*           <div class="error-msg">@Model.ChangePasswordErrorMessage</div> *@
                 <ChangePasswordFormPartial />
             </div>
             <div class="delete-account">
@@ -20,7 +20,6 @@
                     you a
                     link to reactivate your account.
                 </p>
- @*                <div class="error-msg">@Model.DeleteAccountErrorMessage</div> *@
                 <DeleteAccountFormPartial />
             </div>
         </div>

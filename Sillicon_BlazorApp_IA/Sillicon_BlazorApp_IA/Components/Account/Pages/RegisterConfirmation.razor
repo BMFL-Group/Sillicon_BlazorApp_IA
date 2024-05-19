@@ -1,4 +1,5 @@
 ﻿@page "/Account/RegisterConfirmation"
+@using Azure.Messaging.ServiceBus
 @rendermode InteractiveServer
 
 <PageTitle>Register confirmation</PageTitle>
@@ -52,53 +53,44 @@
 
     protected async Task OnValidSubmit()
     {
-        if(ConfirmForm.Code != null)
+        if (ConfirmForm.Code != null)
         {
             var codePackage = new VerifyCodeAndEmailModel
                 {
                     Email = Email!,
                     Code = ConfirmForm.Code
                 };
-
-            var result = await client.PostAsJsonAsync("https://verificationprovider-silicon-bmfl.azurewebsites.net/api/validate?code=GbOXUAI3llMgMuohXjxi-9FSb39XkUwlNmruMCxLZMH5AzFuIlLcNQ==", codePackage);
-            if (result.IsSuccessStatusCode)
+            try
             {
-                var user = await _userManager.FindByEmailAsync(Email!);
-                if (user != null)
+                var result = await client.PostAsJsonAsync("https://verificationprovider-silicon-bmfl.azurewebsites.net/api/validate?code=GbOXUAI3llMgMuohXjxi-9FSb39XkUwlNmruMCxLZMH5AzFuIlLcNQ==", codePackage);
+                if (result.IsSuccessStatusCode)
                 {
-                    user.EmailConfirmed = true;
-                    await _userManager.UpdateAsync(user);
-
-                    try
+                    var user = await _userManager.FindByEmailAsync(Email!);
+                    if (user != null)
                     {
+                        user.EmailConfirmed = true;
+                        await _userManager.UpdateAsync(user);
                         navigationManager.NavigateTo("/");
                     }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine("Error redirect to Login from verify success" + e);
-                    }
-
+                }
+                else
+                {
+                    statusMessage = "Invalid code";
+                    return;
                 }
             }
-            else
-            {
-                statusMessage = "Invalid code";
-                return;
-            }
+            catch (Exception e) { Debug.WriteLine($"Error sending code to verificationProvider: {e}"); }
         }
-      
     }
 
     private async Task ResendCode()
     {
-        var result = await client.PostAsJsonAsync("någon länk till kön", new { Email = Email });
-        if (result.IsSuccessStatusCode)
-        {
-            statusMessage = "Code resend";
-        }
-        else
-        {
-            statusMessage = "Unable to resend code..";
-        }
+        await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+        ServiceBusSender sender = client.CreateSender("verification_request");
+        var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = Email! });
+        ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+        await sender.SendMessageAsync(message);
+
+        statusMessage = "Code resend";
     }
 }

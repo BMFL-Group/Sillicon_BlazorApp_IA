@@ -31,14 +31,5 @@ namespace Sillicon_BlazorApp_IA.Services
             }
             return null!;
         }
-
-        public async Task<bool> SignIn(SignInFormModel model)
-        {
-            var result = await _manager.PasswordSignInAsync(model.Email, model.Password, model.Remember, lockoutOnFailure: false);
-            if (result.Succeeded)
-                return true;
-            else 
-                return false;
-        }
     }
 }
