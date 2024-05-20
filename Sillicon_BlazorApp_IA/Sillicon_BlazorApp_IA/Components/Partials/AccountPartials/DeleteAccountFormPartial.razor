@@ -1,14 +1,55 @@
-﻿<EditForm novalidate Model="Model">
-    <div id="form-delete" class="checkbox-group">
-        <div class="checkbox">
-            <InputCheckbox @bind-Value="@Model.Delete" />
-            <label for="@Model.Delete">Yes, I want to delete my account.</label>
-        </div>
-        <span for="@Model.Delete"></span>
+﻿
+@if (!string.IsNullOrEmpty(ErrorMessageMessage))
+{
+    <div class="error-message">@ErrorMessageMessage</div>
+}
+
+<EditForm novalidate FormName="deleteForm" Model="DeleteForm" OnValidSubmit="DeleteAccount">
+    <div id="form-delete" class="input-group">
+        <InputText id="delete" type="password" @bind-Value="DeleteForm.Delete" placeholder="Enter your password.." />
+        <ValidationMessage For="() => DeleteForm.Delete" />
     </div>
     <button type="submit" class="btn-theme">Delete</button>
 </EditForm>
 
 @code {
-    DeleteAccountFormModel Model = new DeleteAccountFormModel();
+
+    [SupplyParameterFromForm(FormName = "deleteForm")]
+    private DeleteAccountFormModel DeleteForm { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext? Context { get; set; } = default!;
+
+    [Parameter]
+    public ApplicationUser? User { get; set; }
+
+    private string? ErrorMessageMessage { get; set; }
+
+    private async Task DeleteAccount()
+    {
+        if (Context != null && User != null && await _userManager.CheckPasswordAsync(User, DeleteForm.Delete))
+        {
+            try
+            {
+                var result = await _userManager.DeleteAsync(User);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignOutAsync();                 
+                }
+                else
+                {
+                    ErrorMessageMessage = "Something went wrong, try again later..";
+                    return;
+                }
+
+            }
+            catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); }
+            navigationManager.NavigateTo("/Account/Login");        
+        }
+        else
+            ErrorMessageMessage = "Wrong password";
+    }
 }
+
+
+

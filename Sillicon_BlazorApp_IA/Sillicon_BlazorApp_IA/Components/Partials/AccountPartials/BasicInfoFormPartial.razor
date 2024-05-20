@@ -1,10 +1,13 @@
-﻿
+﻿@using Sillicon_BlazorApp_IA.Services
+
 <div class="basic-details">
     <h2>Account details</h2>
     <h5>Basic info</h5>
     <div class="details-form-group">
 
         <EditForm method="post" novalidate Model="Model">
+
+            <p>@Model.FirstName</p>
 
             <div class="names">
                 <div id="form-firstName" class="input-group">
@@ -72,5 +75,40 @@
 </div>
 
 @code {
+
+    private readonly AccountService _service;
+
+    // public BasicInfoFormPartial(AccountService service)
+    // {
+    //     _service = service;
+    //     user = _service.ActiveUser;
+
+    //     if (user != null)
+    //     {
+    //         Model.FirstName = user.FirstName;
+    //         Model.LastName = user.LastName;
+    //         Model.Email = user.Email!;
+    //     }
+    // }
+
     private BasicInfoFormModel Model = new BasicInfoFormModel();
+
+    private ApplicationUser? user;
+
+    // protected override void OnAfterRender(bool firstRender)
+    // {
+    //     user = _service.ActiveUser;
+    //     if (user != null)
+    //     {
+    //         Model.FirstName = user.FirstName;
+    //         Model.LastName = user.LastName;
+    //         Model.Email = user.Email!;
+    //     }
+    // }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+ 
+
+    // }
 }
