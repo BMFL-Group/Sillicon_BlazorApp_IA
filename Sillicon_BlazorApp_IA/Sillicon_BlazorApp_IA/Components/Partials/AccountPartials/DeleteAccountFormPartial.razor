@@ -1,55 +1,53 @@
 ﻿
-@if (!string.IsNullOrEmpty(StatusMsg))
+@if (!string.IsNullOrEmpty(ErrorMessageMessage))
 {
-    <div class="error-message">@StatusMsg</div>
+    <div class="error-message">@ErrorMessageMessage</div>
 }
 
 <EditForm novalidate FormName="deleteForm" Model="DeleteForm" OnValidSubmit="DeleteAccount">
     <div id="form-delete" class="input-group">
-        <div class="checkbox">
-            <InputText id="delete" type="password" @bind-Value="DeleteForm.Delete" placeholder="Enter your password.." />
-        </div>
+        <InputText id="delete" type="password" @bind-Value="DeleteForm.Delete" placeholder="Enter your password.." />
+        <ValidationMessage For="() => DeleteForm.Delete" />
     </div>
     <button type="submit" class="btn-theme">Delete</button>
 </EditForm>
 
 @code {
 
-    [SupplyParameterFromForm]
-    DeleteAccountFormModel DeleteForm { get; set; } = new();
+    [SupplyParameterFromForm(FormName = "deleteForm")]
+    private DeleteAccountFormModel DeleteForm { get; set; } = new();
 
     [CascadingParameter]
     private HttpContext? Context { get; set; } = default!;
 
-    [SupplyParameterFromQuery]
-    public string? StatusMsg { get; set; }
+    [Parameter]
+    public ApplicationUser? User { get; set; }
 
-    private ApplicationUser? User;
-
-    protected override async Task OnInitializedAsync()
-    {
-        User = await _userManager.GetUserAsync(Context!.User);
-    }
+    private string? ErrorMessageMessage { get; set; }
 
     private async Task DeleteAccount()
     {
-        if (Context != null && User != null && await _userManager.CheckPasswordAsync(User,DeleteForm.Delete))
-        {      
-            var result = await _userManager.DeleteAsync(User);
-            if (result.Succeeded)
+        if (Context != null && User != null && await _userManager.CheckPasswordAsync(User, DeleteForm.Delete))
+        {
+            try
             {
-                await _signInManager.SignOutAsync();
-                navigationManager.NavigateTo("/Account/Login");
-            }    
-            else
-            {
-                StatusMsg = "Something went wrong, try again later..";
+                var result = await _userManager.DeleteAsync(User);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignOutAsync();                 
+                }
+                else
+                {
+                    ErrorMessageMessage = "Something went wrong, try again later..";
+                    return;
+                }
+
             }
+            catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); }
+            navigationManager.NavigateTo("/Account/Login");        
         }
         else
-        {
-            StatusMsg = "Wrong password";
-        }
+            ErrorMessageMessage = "Wrong password";
     }
 }
 
