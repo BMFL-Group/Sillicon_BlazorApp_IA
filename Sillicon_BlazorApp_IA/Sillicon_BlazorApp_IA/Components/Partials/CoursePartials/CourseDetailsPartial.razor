@@ -3,7 +3,7 @@
 @if (course == null)
 {
     <PageTitle>Silicon | loading course...</PageTitle>    
-    <p>Loading...</p>
+    <p class="container">Loading...</p>
 }
 else
 {
@@ -67,9 +67,9 @@ else
                     <p class="author">
                         @if (course.Authors != null)
                         {
-                            foreach (var name in course.Authors)
+                            foreach (var author in course.Authors)
                             {
-                                <span>@name</span>
+                                <span>@author.Name</span>
                             }
                         }
                     </p>
@@ -270,9 +270,9 @@ else
                 <h3 class="about-heading">
                     @if (course.Authors != null)
                     {
-                        foreach(var name in course.Authors)
+                        foreach(var author in course.Authors)
                         {
-                            <span>@name</span>
+                            <span>@author.Name</span>
                         }                        
                     }
                 </h3>
@@ -297,7 +297,7 @@ else
     [Parameter]
     public string Id { get; set; } = null!;
 
-    Course course = new();
+    Course course = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -313,17 +313,6 @@ else
             {
                 return courseResponse;
             }
-
-            // var courseResponse = await client.GetAsync($"{_configuration["ConnectionStrings:CoursesApi"]}/{id}");
-            // if (courseResponse != null)
-            // {
-            //     var json = await courseResponse.Content.ReadAsStringAsync();
-            //     var course = JsonConvert.DeserializeObject<CourseModel>(json);
-            //     if (course != null)
-            //     {
-            //         return course;
-            //     }                
-            // }
         }
         catch (Exception ex)
         { /*logic for logging here*/ }

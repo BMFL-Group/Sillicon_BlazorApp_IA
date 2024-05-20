@@ -199,7 +199,7 @@ public class CoursesService
                 }",
                 variables = new
                 {
-                    id = "cffca440-48e4-4335-9966-946502e57c7c"
+                    id = id
                 }
             };
 
@@ -209,10 +209,11 @@ public class CoursesService
             if(singleCourseResponse.IsSuccessStatusCode)
             {
                 var json = await singleCourseResponse.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<Course>(json);
+                var result = JsonConvert.DeserializeObject<GraphQLResponse>(json);
                 if (result != null)
                 {
-                    return result;
+                    Course resultCourse = result.Data.getCourseById;
+                    return resultCourse;
                 }
             }
             #endregion
