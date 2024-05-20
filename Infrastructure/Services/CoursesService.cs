@@ -114,57 +114,6 @@ public class CoursesService
         try
         {
             #region GRAPHQL QUERY
-            //var query = new
-            //{
-            //    query = @"
-            //    query GetCourseById($id: StringInput!) {
-            //        getCourseById(id: $id) {
-            //            id
-            //            title
-
-            //    }",
-            //    variables = new
-            //    {
-            //        id = id
-            //    }
-            //};
-            //var query = new
-            //{
-            //    query = @"
-            //    query GetCourseById($id: StringInput!) {
-            //        getCourseById(id: $id) {
-            //            id
-            //            title
-            //            imageUri
-            //            altText
-            //            bestSeller
-            //            categories
-            //            currency
-            //            price
-            //            discountPrice
-            //            lengthInHours
-            //            ratingInPercentage
-            //            numberOfReviews
-            //            numberOfLikes
-            //            authors {
-            //                name
-            //            }
-            //            content {
-            //                description
-            //                courseIncludes
-            //                programDetails {
-            //                    id
-            //                    title
-            //                    description
-            //                }
-            //            }
-            //    }",
-            //    variables = new
-            //    {
-            //        id = id
-            //    }
-            //};
-
             var query = new
             {
                 query = @"
@@ -205,15 +154,19 @@ public class CoursesService
 
             var queryJson = JsonConvert.SerializeObject(query);
             var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
+
             var singleCourseResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:LocalGraphQlApi"]}", content);
             if(singleCourseResponse.IsSuccessStatusCode)
             {
                 var json = await singleCourseResponse.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<GraphQLResponse>(json);
-                if (result != null)
+                if (result != null && result.Data != null && result.Data.GetCourseById != null)
                 {
-                    Course resultCourse = result.Data.getCourseById;
-                    return resultCourse;
+                    Course resultCourse = result.Data.GetCourseById;
+                    if (resultCourse != null)
+                    {
+                        return resultCourse;
+                    }
                 }
             }
             #endregion
