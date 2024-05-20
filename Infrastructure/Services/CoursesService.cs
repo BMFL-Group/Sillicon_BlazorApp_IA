@@ -76,7 +76,7 @@ public class CoursesService
 
             var queryJson = JsonConvert.SerializeObject(query);
             var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
-            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:GraphQlApi"]}", content);
+            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:LocalGraphQlApi"]}", content);
             if (allCoursesResponse.IsSuccessStatusCode)
             {
                 var json = await allCoursesResponse.Content.ReadAsStringAsync();

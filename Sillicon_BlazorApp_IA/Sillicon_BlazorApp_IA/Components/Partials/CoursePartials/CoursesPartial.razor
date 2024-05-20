@@ -64,13 +64,14 @@
 
             }
             <div class="select-options" id="categorySelectOptions" @attributes="GetMenuAttributes(category)">
-                <div class="option" data-value="all">All Categories</div>
-                @if (categories != null && categories.Count() > 0)
+               
+@*                 <div class="option" data-value="all" @onclick="(e) => FilterCourses(, searchQuery, pageNumber ,selectedPageSize)">All Categories</div>
+ *@             @if (categories != null && categories.Count() > 0)
                 {
                     foreach (var category in categories)
                     {
-                        var categoryValue = @category.CategoryName;
-                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
+                        @* var categoryValue = @category.CategoryValue; *@
+                        <div class="option" data-value="@category.CategoryValue" @onclick="(e) => FilterCourses(category.CategoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
                     }
                 }
             </div>
@@ -324,36 +325,36 @@
 
     IEnumerable<CategoryModel> categories =
     [
+        new CategoryModel()
+        {
+            CategoryValue = "all",
+            CategoryName = "All Categories"
+        },
          new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "HTML",
             CategoryName = "HTML"
         },
         new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "FrontEnd",
             CategoryName = "FrontEnd"
         },
         new CategoryModel()
         {
-            Id = 2,
+            CategoryValue = "CSS",
             CategoryName = "CSS"
         },
         new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "JavaScript",
             CategoryName = "JavaScript"
         },
         new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "Web Developer",
             CategoryName = "Web Developer"
         },
-        // new CategoryModel()
-        // {
-        //     Id = 1,
-        //     CategoryName = "Game Development"
-        // },
 ];
 
 
