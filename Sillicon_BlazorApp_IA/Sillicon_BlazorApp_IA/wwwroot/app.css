@@ -3557,8 +3557,29 @@ footer .container .display-none {
     margin-top: 30px;
   }
 }
+#notifications .container .form-title {
+  position: relative;
+}
 #notifications .container .form-title form {
   margin-top: 2rem;
+}
+#notifications .container .form-title form .error-message {
+  position: absolute;
+  top: 15px;
+}
+@media (min-width: 992px) {
+  #notifications .container .form-title form .error-message {
+    top: 43px;
+  }
+}
+#notifications .container .form-title form .success-message {
+  position: absolute;
+  top: 45px;
+}
+@media (min-width: 992px) {
+  #notifications .container .form-title form .success-message {
+    top: 75px;
+  }
 }
 @media (min-width: 992px) {
   #notifications .container .form-title form .input-group {

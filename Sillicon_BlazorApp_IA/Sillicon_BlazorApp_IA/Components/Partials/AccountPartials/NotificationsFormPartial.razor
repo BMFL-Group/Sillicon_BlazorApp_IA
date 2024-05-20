@@ -1,17 +1,17 @@
 ﻿@using Infrastructure.Models.Forms
 @rendermode InteractiveServer
 
-@if (!string.IsNullOrEmpty(StatusMessage))
-{
-    <div class="success-message">@StatusMessage</div>
-}
-else if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="error-message">@ErrorMessage</div>
-}
 
 <EditForm Model="Form" FormName="form" OnValidSubmit="SubscribeSubmit" novalidate>
     <DataAnnotationsValidator />
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="success-message">@StatusMessage</div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
 
     <div class="input-group">
         <label for="Email">Preferred email for notifications</label>
@@ -21,7 +21,7 @@ else if (!string.IsNullOrEmpty(ErrorMessage))
     <div class="switch-group">
         <div class="btn-switch">
             <label for="Subscribe" class="switch">
-                <InputCheckbox @bind-Value="Form.Subscribe" id="Subscribe"  role="checkbox" />
+                <InputCheckbox @bind-Value="Form.Subscribe" id="Subscribe" checked="CheckSubscription()" />
                 <span class="slider round"></span>
                 <ValidationMessage For="() => Form.Subscribe" />
             </label>
@@ -33,7 +33,7 @@ else if (!string.IsNullOrEmpty(ErrorMessage))
     <div class="switch-group">
         <div class="btn-switch">
             <label for="DarkMode" class="switch">
-                <InputCheckbox @bind-Value="Form.DarkMode" id="DarkMode" checked="IsDarkMode" role="checkbox" />
+                <InputCheckbox @bind-Value="Form.DarkMode" id="DarkMode" checked="IsDarkMode" />
                 <span class="slider round"></span>
                 <ValidationMessage For="() => Form.DarkMode" />
             </label>
@@ -59,7 +59,6 @@ else if (!string.IsNullOrEmpty(ErrorMessage))
     private string? StatusMessage { get; set; }
     private string? ErrorMessage { get; set; }
 
-
     private async Task SubscribeSubmit(EditContext context)
     {
         if (User != null && Form != null && Form.Email != null)
@@ -73,8 +72,8 @@ else if (!string.IsNullOrEmpty(ErrorMessage))
                     var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Subscribe?code=jYf27X54n1bcCN5_hkPi-bEE5pcSX2kp_Uiplh0QDiUsAzFuZanPRg%3D%3D", subscibeModel);
                     if (result.IsSuccessStatusCode)
                     {
+                        ErrorMessage = "";
                         StatusMessage = "You are now a subscriber!";
-                        StateHasChanged();
                     }
                 }
                 catch (Exception e) { Debug.WriteLine($"Error at SubscribeSubmit: {e.Message}"); }
@@ -84,37 +83,14 @@ else if (!string.IsNullOrEmpty(ErrorMessage))
                 var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Unsubscribe?code=nf9P6RZL4OXjbD3jR7W5dfIUVFwH4UlJK0Fb3RglfPAbAzFuOdFs1A%3D%3D", subscibeModel);
                 if (result.IsSuccessStatusCode)
                 {
+                    StatusMessage = "";
                     ErrorMessage = "You have ended your subscription.";
-                    StateHasChanged();
                 }
             }
         }
     }
 
-    private async Task<bool> CheckSubscription()
-    {
-        // var user = await _userManager.GetUserAsync(Context!.User);
-        if (User != null && User.Email != null)
-        {
-            var subscibeModel = new SubscribeModel { Email = User.Email };
-            var IsSubscribing = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D", subscibeModel);
-           
-            if (IsSubscribing.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return false;
-    }
 
-    private bool IsSubscribing()
-    {
-        return Form.Subscribe = !Form.Subscribe;
-    }
 
     // private async Task DarkModeSubmit()
     // {

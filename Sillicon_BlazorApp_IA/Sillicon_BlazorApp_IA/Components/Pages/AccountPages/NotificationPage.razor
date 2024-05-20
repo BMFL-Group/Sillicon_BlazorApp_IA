@@ -1,7 +1,6 @@
 ﻿@page "/notifications"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
-
 <PageTitle>notifications</PageTitle>
 
 <section id="notifications">
@@ -29,6 +28,26 @@
         User = await _userManager.GetUserAsync(Context!.User);
         if(User != null && User.Email != null)
             Form.Email = User.Email;
+
+        Form!.Subscribe = await CheckSubscription();
     }
 
+    private async Task<bool> CheckSubscription()
+    {
+        if (User != null && User.Email != null)
+        {
+            var subscibeModel = new SubscribeModel { Email = User.Email };
+            var IsSubscribing = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D", subscibeModel);
+
+            if (IsSubscribing.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
 }
