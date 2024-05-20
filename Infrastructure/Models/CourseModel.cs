@@ -44,12 +44,12 @@ public class ProgramDetails
 
 public class Data
 {
-    public CourseResult GetCourses { get; set; }
+    public CourseResult GetCourses { get; set; } = new();
 }
 
 public class GraphQLResponse
 {
-    public Data Data { get; set; }
+    public Data Data { get; set; } = new();
 }
 
 public class CourseModel

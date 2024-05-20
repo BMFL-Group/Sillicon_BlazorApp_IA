@@ -15,19 +15,28 @@
                       d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
             </svg>
 
-            <div class="selected" id="selectedPageSize" data-value="@pagination.PageSize">@pagination.PageSize</div>
+            <div class="selected" id="selectedPageSize" data-value="@pagination.PageSize">
+                @if(pagination.TotalItems < pagination.PageSize)
+                {
+                    @pagination.TotalItems
+                }
+                else
+                {
+                    @pagination.PageSize                    
+                }
+            </div>
 
             <div class="select-options" id="pageSizeOptions" @attributes="GetMenuAttributes(pageSize)">
                 @for (int i = 1; i <= pagination.TotalItems; i++)
                 {
                     if (i == pagination.TotalItems)
                     {
-                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, pagination.TotalItems, searchQuery)">Show All</div>
+                        <div class="option" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, 1, pagination.TotalItems)">Show All</div>
                     }
                     else
                     {
                         int thisNumber = @i;
-                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, thisNumber, searchQuery)">@i</div>
+                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, pageNumber, thisNumber)">@i</div>
                     }
                 }
 
@@ -61,14 +70,14 @@
                     foreach (var category in categories)
                     {
                         var categoryValue = @category.CategoryName;
-                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, selectedPageSize, searchQuery)">@category.CategoryName</div>
+                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
                     }
                 }
             </div>
-        </div>
+        </div>               
 
         <div class="search-wrapper">
-            <input class="search-query" name="searchQuery" id="searchQuery" placeholder="Search courses" />
+            <input class="search-query" name="searchQuery" id="searchQuery" placeholder="Search courses" @bind="searchQuery" @oninput="OnInput" />
             <i class="fa-light fa-search"></i>
         </div>
 
@@ -162,7 +171,7 @@
 
 </div>
 
-@if (pagination != null && pagination.TotalPages > 1)
+@if (pagination != null && pagination.TotalPages >= 1)
 {
     <div class="pagination">
 
@@ -174,92 +183,100 @@
             var tolerance = 2; // sets the size the number can deviate from currenPage to be printed IF the TotalPages exceed 5.
             var totalPaginationButtons = 0;
 
-            <a class="btn-gray first-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})"><i class="fa-solid fa-angles-left"></i></a>
-
+            //------------Sets first and previous pages------------
             if (previousPage < 1)
             {
                 previousPage = totalPages;
             }
-            <a class="btn-gray previous-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = previousPage, pagesize = pagination.PageSize})"><i class="fa-solid fa-angle-left"></i></a>
-
+            // first page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, 1, selectedPageSize)"><i class="fa-solid fa-angles-left"></i></button>
+            // previous page
+            <button class="btn-gray previous-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, previousPage, selectedPageSize)"><i class="fa-solid fa-angle-left"></i></button>
+            //-----------------------------------------------------
 
             @for (int i = 1; i <= totalPages && totalPaginationButtons < 5; i++)
             {
                 if (pagination.TotalPages <= 5)
                 {
-                    if (i == pagination.CurrentPage) // Sets value of the currentpage button.
+                    if (i == pagination.CurrentPage) // Sets value of the current page button.
                     {
                         <span class="btn-theme current-page">@i</span>
                         totalPaginationButtons++;
                     }
                     else // Sets value of other pages if there are NO more than 5 total pages.
                     {
-                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = i, pagesize = pagination.PageSize})">@i</a>
+                        int thisPageNumber = i;
+                        <button class="btn-gray" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, thisPageNumber, selectedPageSize)">@i</button>
                         totalPaginationButtons++;
                     }
                 }
-                else // If more than 5 total pages.
-                {
-                    if (currentPage == 1 && totalPaginationButtons == 0) // Prints the second to last and last page buttons prior to the current page button if current page is page 1.
-                    {
-                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages -1, pagesize = pagination.PageSize})">@Math.Abs(totalPages - 1)</a>
-                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
-                        totalPaginationButtons += 2;
-                    }
+                #region Advanced pagination - currently commented out
+                // else // If more than 5 total pages.
+                // {
+                //     if (currentPage == 1 && totalPaginationButtons == 0) // Prints the second to last and last page buttons prior to the current page button if current page is page 1.
+                //     {
+                //         <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages -1, pagesize = pagination.PageSize})">@Math.Abs(totalPages - 1)</a>
+                //         <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
+                //         totalPaginationButtons += 2;
+                //     }
 
-                    if (currentPage == 2 && totalPaginationButtons == 0) // Prints the last page prior to printing page 1 if current pages is page 2.
-                    {
-                        <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
-                        totalPaginationButtons++;
-                    }
+                //     if (currentPage == 2 && totalPaginationButtons == 0) // Prints the last page prior to printing page 1 if current pages is page 2.
+                //     {
+                //         <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = totalPages, pagesize = pagination.PageSize})">@totalPages</a>
+                //         totalPaginationButtons++;
+                //     }
 
-                    if (i == pagination.CurrentPage) // Prints the current page button
-                    {
-                        <span class="btn-theme current-page">@i</span>
-                        totalPaginationButtons++;
+                //     if (i == pagination.CurrentPage) // Prints the current page button
+                //     {
+                //         <span class="btn-theme current-page">@i</span>
+                //         totalPaginationButtons++;
 
-                        if (pagination.CurrentPage == pagination.TotalPages && totalPaginationButtons >= 3) // If currentpage is the last page then this prints page button 1 and 2.
-                        {
-                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
-                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 2, pagesize = pagination.PageSize})">2</a>
-                            totalPaginationButtons += 2;
-                        }
-                    }
+                //         if (pagination.CurrentPage == pagination.TotalPages && totalPaginationButtons >= 3) // If currentpage is the last page then this prints page button 1 and 2.
+                //         {
+                //             <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
+                //             <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 2, pagesize = pagination.PageSize})">2</a>
+                //             totalPaginationButtons += 2;
+                //         }
+                //     }
 
-                    else
-                    {
-                        if (Math.Abs(i - pagination.CurrentPage) <= tolerance) // Only prints a total of 2 buttons above or below the currentpage.
-                        {
-                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = i, pagesize = pagination.PageSize})">@i</a>
-                            totalPaginationButtons++;
-                        }
-                        if (pagination.CurrentPage == pagination.TotalPages - 1 && totalPaginationButtons >= 4) // prints page button 1 when on the second to last page.
-                        {
-                            <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
-                            totalPaginationButtons++;
-                        }
-                        else // skips other numbers
-                        {
-                            continue;
-                        }
-                        if (totalPaginationButtons == 5) // breaks loop when totalbuttons are 5.
-                        {
-                            break;
-                        }
-                    }
-                }
-
+                //     else
+                //     {
+                //         if (Math.Abs(i - pagination.CurrentPage) <= tolerance) // Only prints a total of 2 buttons above or below the currentpage.
+                //         {
+                //             <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = i, pagesize = pagination.PageSize})">@i</a>
+                //             totalPaginationButtons++;
+                //         }
+                //         if (pagination.CurrentPage == pagination.TotalPages - 1 && totalPaginationButtons >= 4) // prints page button 1 when on the second to last page.
+                //         {
+                //             <a class="btn-gray" href="@GenerateUrl(new { category = categoryQuery, pageNumber = 1, pagesize = pagination.PageSize})">1</a>
+                //             totalPaginationButtons++;
+                //         }
+                //         else // skips other numbers
+                //         {
+                //             continue;
+                //         }
+                //         if (totalPaginationButtons == 5) // breaks loop when totalbuttons are 5.
+                //         {
+                //             break;
+                //         }
+                //     }
+                // }
+                #endregion
             }
 
+            //------------Sets next and last pages----------------
             if (nextPage > totalPages)
             {
                 nextPage = 1;
             }
-            <a class="btn-gray next-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber = nextPage, pagesize = pagination.PageSize})"><i class="fa-solid fa-angle-right"></i></a>
-
-            <a class="btn-gray last-page" href="@GenerateUrl(new { category = categoryQuery, pageNumber =totalPages, pagesize = pagination.PageSize})"><i class="fa-solid fa-angles-right"></i></a>
+            // next page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, nextPage, selectedPageSize)"><i class="fa-solid fa-angle-right"></i></button>
+            // last page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, totalPages, selectedPageSize)"><i class="fa-solid fa-angles-right"></i></button>
+            //-----------------------------------------------------
 
         }
+
     </div>
 }
 
@@ -279,26 +296,24 @@
 @code {
     //--------------------Fetching Courses here------------------------------------
 
-    //IEnumerable<CourseModel> courses = [];
     IEnumerable<Course> courses = [];
-    Pagination pagination = new();
+    Pagination pagination { get; set; } = new();
     string categoryQuery = "all";
+    int pageNumber { get; set; } = 1;
 
     // Gets courses from CoursesService
     protected override async Task OnInitializedAsync()
     {
-        var courseResult = await _coursesService.GetAllCourses();
+        var courseResult = await _coursesService.GetAllCoursesAsync();
         await populateCourses(courseResult);
     }
 
     private async Task populateCourses(CourseResult courseResult)
     {
-        // Pagination and its logic Needs to be impemented in API
         courses = courseResult.Courses;
         pagination = courseResult.Pagination;
         selectedCategory = courseResult.Category.CategoryName;
-        selectedPageSize = courseResult.Pagination.PageSize;
-        // StateHasChanged();
+        selectedPageSize = courseResult.Pagination.PageSize;         
     }
 
     private string GoToCourseDetails(string page, string id)
@@ -309,32 +324,37 @@
 
     IEnumerable<CategoryModel> categories =
     [
+         new CategoryModel()
+        {
+            Id = 1,
+            CategoryName = "HTML"
+        },
         new CategoryModel()
         {
             Id = 1,
             CategoryName = "FrontEnd"
         },
-    new CategoryModel()
-            {
-                Id = 2,
-                CategoryName = "App Development"
-            },
-    new CategoryModel()
-            {
-                Id = 1,
-                CategoryName = "HTML & CSS"
-            },
-    new CategoryModel()
-            {
-                Id = 1,
-                CategoryName = "Python"
-            },
-    new CategoryModel()
-            {
-                Id = 1,
-                CategoryName = "Game Development"
-            },
-    ];
+        new CategoryModel()
+        {
+            Id = 2,
+            CategoryName = "CSS"
+        },
+        new CategoryModel()
+        {
+            Id = 1,
+            CategoryName = "JavaScript"
+        },
+        new CategoryModel()
+        {
+            Id = 1,
+            CategoryName = "Web Developer"
+        },
+        // new CategoryModel()
+        // {
+        //     Id = 1,
+        //     CategoryName = "Game Development"
+        // },
+];
 
 
     //------------------Courses filter here-----------------------------------------
@@ -351,6 +371,10 @@
 
     // searchQueryItems
     private string searchQuery { get; set; } = string.Empty;
+
+    // sets cancellation token for searchQuery onKeyupEvent.
+    private CancellationTokenSource cts = new CancellationTokenSource();
+
 
     // Sets aria-expanded to true or false
     private Dictionary<string, object> GetMenuAttributes(string dropdownName)
@@ -384,23 +408,28 @@
         }
     }
 
-    // Takes in different parameter and sets them based on 
-    private async Task FilterCourses(string? category, int pageSize, string? newSearchQuery)
+    private async Task OnInput(ChangeEventArgs e)
     {
-        if (!string.IsNullOrEmpty(category))
-        {
-            selectedCategory = category;           
-        }
-        if (pageSize > 0)
-        {
-            selectedPageSize = pageSize;
-        }
-        if (!string.IsNullOrEmpty(newSearchQuery))
-        {
-            searchQuery = newSearchQuery;
-        }
+        searchQuery = e.Value!.ToString()!;
 
-        var courseResult = await _coursesService.GetAllCourses(selectedCategory, searchQuery, 1, selectedPageSize);
+        cts.Cancel();
+        cts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(300, cts.Token); // Adjust the delay as needed
+            await FilterCourses(selectedCategory, searchQuery, pageNumber, selectedPageSize);
+        }
+        catch (TaskCanceledException)
+        {
+
+        }
+    }
+
+    // Takes in different parameter and sets them based on 
+    private async Task FilterCourses(string category, string newSearchQuery, int pageNumber, int pageSize)
+    {
+        var courseResult = await _coursesService.GetAllCoursesAsync(category, newSearchQuery, pageNumber, pageSize);
         await populateCourses(courseResult);
     }
 

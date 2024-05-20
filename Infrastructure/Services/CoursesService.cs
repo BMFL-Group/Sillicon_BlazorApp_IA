@@ -17,7 +17,7 @@ public class CoursesService
         _configuration = configuration;
     }
 
-    public async Task<CourseResult> GetAllCourses(string category = "all", string searchQuery = "", int pageNumber = 1, int pageSize = 6)
+    public async Task<CourseResult> GetAllCoursesAsync(string category = "all", string searchQuery = "", int pageNumber = 1, int pageSize = 6)
     {
         try
         {
@@ -29,43 +29,7 @@ public class CoursesService
             #endregion
 
             #region GRAPHQL QUERY
-            //var query = new
-            //{
-            //    query = @" 
-            //    query($filterQuery: CourseFiltersInput!) {
-            //        getCourses($filterQuery: CourseFiltersInput!) {
-            //            courses(filter $filter) {
-            //                id
-            //                title
-            //                imageUri
-            //                altText
-            //                bestSeller                    
-            //                categories
-            //                currency
-            //                price
-            //                discountPrice
-            //                lengthInHours
-            //                ratingInPercentage
-            //                numberOfReviews
-            //                numberOfLikes
-            //                authors {
-            //                    name
-            //                }                    
-            //            }
-            //        }
-            //    }",
-            //    variables = new
-            //    {
-            //        filterQuery = new
-            //        {
-            //            category = category,
-            //            searchQuery = searchQuery,
-            //            pageSize = pageSize,
-            //            pageNumber = pageNumber,
-            //        }
-            //    }
-            //};
-            //
+
             var query = new
             {
                 query = @"
@@ -88,6 +52,13 @@ public class CoursesService
                             authors {
                                 name
                             }                    
+                        },
+                        pagination {
+                            currentPage
+                            pageNumber
+                            totalItems
+                            pageSize
+                            totalPages    
                         }
                     }
                 }",
@@ -103,32 +74,33 @@ public class CoursesService
                 }
             };
 
-
             var queryJson = JsonConvert.SerializeObject(query);
             var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
-            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:LocalGraphQlApi"]}", content);
-
-            var json = await allCoursesResponse.Content.ReadAsStringAsync();
-            var graphQLResponse = JsonConvert.DeserializeObject<GraphQLResponse>(json);
-            if (graphQLResponse != null && graphQLResponse.Data != null && graphQLResponse.Data.GetCourses != null)
+            var allCoursesResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:GraphQlApi"]}", content);
+            if (allCoursesResponse.IsSuccessStatusCode)
             {
-                //return graphQLResponse.Data.Courses;
-
-                return new CourseResult()
+                var json = await allCoursesResponse.Content.ReadAsStringAsync();
+                var graphQLResponse = JsonConvert.DeserializeObject<GraphQLResponse>(json);
+                if (graphQLResponse != null && graphQLResponse.Data != null && graphQLResponse.Data.GetCourses != null && graphQLResponse.Data.GetCourses.Pagination != null)
                 {
-                    Pagination = graphQLResponse.Data.GetCourses.Pagination,
-                    Courses = graphQLResponse.Data.GetCourses.Courses,
+                    //return graphQLResponse.Data.Courses;
 
-                    Category = new()
+                    return new CourseResult()
                     {
-                        CategoryName = category,
-                    }
-                };
+                        Pagination = graphQLResponse.Data.GetCourses.Pagination,
+                        Courses = graphQLResponse.Data.GetCourses.Courses,
 
+                        Category = new()
+                        {
+                            CategoryName = category,
+                        }
+                    };
+                }
             }
             else
             {
                 return new CourseResult();
+                //insert error message here...
             }
 
             #endregion
@@ -137,106 +109,115 @@ public class CoursesService
         return null!;
     }
 
-    //public async Task<string> GetSchemaAsync()
-    //{
-    //    var introspectionQuery = new
-    //    {
-    //        query = @"
-    //        {
-    //            __schema {
-    //                queryType { name }
-    //                mutationType { name }
-    //                subscriptionType { name }
-    //                types {
-    //                    ...FullType
-    //                }
-    //                directives {
-    //                    name
-    //                    description
-    //                    locations
-    //                    args {
-    //                        ...InputValue
-    //                    }
-    //                }
-    //            }
-    //        }
+    public async Task<Course> GetOneCourseByIdAsync(string id)
+    {
+        try
+        {
+            #region GRAPHQL QUERY
+            //var query = new
+            //{
+            //    query = @"
+            //    query GetCourseById($id: StringInput!) {
+            //        getCourseById(id: $id) {
+            //            id
+            //            title
 
-    //        fragment FullType on __Type {
-    //            kind
-    //            name
-    //            description
-    //            fields(includeDeprecated: true) {
-    //                name
-    //                description
-    //                args {
-    //                    ...InputValue
-    //                }
-    //                type {
-    //                    ...TypeRef
-    //                }
-    //                isDeprecated
-    //                deprecationReason
-    //            }
-    //            inputFields {
-    //                ...InputValue
-    //            }
-    //            interfaces {
-    //                ...TypeRef
-    //            }
-    //            enumValues(includeDeprecated: true) {
-    //                name
-    //                description
-    //                isDeprecated
-    //                deprecationReason
-    //            }
-    //            possibleTypes {
-    //                ...TypeRef
-    //            }
-    //        }
+            //    }",
+            //    variables = new
+            //    {
+            //        id = id
+            //    }
+            //};
+            //var query = new
+            //{
+            //    query = @"
+            //    query GetCourseById($id: StringInput!) {
+            //        getCourseById(id: $id) {
+            //            id
+            //            title
+            //            imageUri
+            //            altText
+            //            bestSeller
+            //            categories
+            //            currency
+            //            price
+            //            discountPrice
+            //            lengthInHours
+            //            ratingInPercentage
+            //            numberOfReviews
+            //            numberOfLikes
+            //            authors {
+            //                name
+            //            }
+            //            content {
+            //                description
+            //                courseIncludes
+            //                programDetails {
+            //                    id
+            //                    title
+            //                    description
+            //                }
+            //            }
+            //    }",
+            //    variables = new
+            //    {
+            //        id = id
+            //    }
+            //};
 
-    //        fragment InputValue on __InputValue {
-    //            name
-    //            description
-    //            type { ...TypeRef }
-    //            defaultValue
-    //        }
+            var query = new
+            {
+                query = @"
+                query GetCourseById($id: String!) {
+                    getCourseById(id: $id) {
+                        id
+                        title
+                        imageUri
+                        altText
+                        bestSeller
+                        categories
+                        currency
+                        price
+                        discountPrice
+                        lengthInHours
+                        ratingInPercentage
+                        numberOfReviews
+                        numberOfLikes
+                        authors {
+                            name
+                        }
+                        content {
+                            description
+                            courseIncludes
+                            programDetails {
+                                id
+                                title
+                                description
+                            }
+                        }
+                    }
+                }",
+                variables = new
+                {
+                    id = "cffca440-48e4-4335-9966-946502e57c7c"
+                }
+            };
 
-    //        fragment TypeRef on __Type {
-    //            kind
-    //            name
-    //            ofType {
-    //                kind
-    //                name
-    //                ofType {
-    //                    kind
-    //                    name
-    //                    ofType {
-    //                        kind
-    //                        name
-    //                    }
-    //                }
-    //            }
-    //        }"
-    //    };
-
-    //    // Serialize the introspection query to JSON
-    //    var queryJson = JsonConvert.SerializeObject(introspectionQuery);
-
-    //    // Create the StringContent for the POST request
-    //    var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
-
-    //    // Send the POST request
-    //    var response = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:GraphQlApi"]}", content);
-
-    //    // Ensure the response was successful
-    //    response.EnsureSuccessStatusCode();
-
-    //    // Read the response content
-    //    var responseString = await response.Content.ReadAsStringAsync();
-
-    //    return responseString;
- 
-    //}
-
-
+            var queryJson = JsonConvert.SerializeObject(query);
+            var content = new StringContent(queryJson, Encoding.UTF8, "application/json");
+            var singleCourseResponse = await _httpClient.PostAsync($"{_configuration["ConnectionStrings:LocalGraphQlApi"]}", content);
+            if(singleCourseResponse.IsSuccessStatusCode)
+            {
+                var json = await singleCourseResponse.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<Course>(json);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            #endregion
+        }
+        catch (Exception ex) { }
+        return null!;
+    }
 }

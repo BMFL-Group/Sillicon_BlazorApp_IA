@@ -9,7 +9,7 @@ else
 {
     <PageTitle>Silicon | @course.Title</PageTitle>
 
-    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@course.ImageUrl)"></div>
+    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@course.ImageUri)"></div>
 
     <div class="top-container container">
         <div class="grid-container">
@@ -31,7 +31,7 @@ else
             <div class="ratings-wrapper">
                 <span class="stars">
                     @{
-                        int maxStars = Convert.ToInt32(Math.Round((course.Rating) / 20.0, MidpointRounding.AwayFromZero)); // takes rating in percentage and splits by 20 (1/5) as max stars are 5.
+                        int maxStars = Convert.ToInt32(Math.Round((course.RatingInPercentage) / 20.0, MidpointRounding.AwayFromZero)); // takes rating in percentage and splits by 20 (1/5) as max stars are 5.
                         maxStars = Math.Max(1, Math.Min(5, maxStars)); // Ensure maxStars is between 0 and 5
                     }
                     @foreach (var star in Enumerable.Range(1, maxStars)) // render out solid stars between 1 and 5.
@@ -51,7 +51,7 @@ else
                     double reviewsInK = Math.Max(0, (Math.Round(course.NumberOfReviews / 1000.0, 1)));
                 }
 
-                <span class="course-details">@course.Rating% (@reviewsInK K reviews)</span>
+                <span class="course-details">@course.RatingInPercentage% (@reviewsInK K reviews)</span>
                 <i class="fa-thin fa-pipe"></i>
                 <i class="fa-regular fa-thumbs-up"></i>
                 <span>@likesInK K likes</span>
@@ -64,7 +64,15 @@ else
                 <img class="course-instructor-picture" src="/img/albert-flores-small-round.png" alt="">
                 <div class="author-text">
                     <p class="by">Created By</p>
-                    <p class="author">@course.Author</p>
+                    <p class="author">
+                        @if (course.Authors != null)
+                        {
+                            foreach (var name in course.Authors)
+                            {
+                                <span>@name</span>
+                            }
+                        }
+                    </p>
                 </div>
             </div>
         </div>
@@ -87,9 +95,9 @@ else
                 <h3>What you'll learn</h3>
 
                 @{
-                    if (course.CourseContent != null && course.CourseContent.Strings != null && course.CourseContent.Strings.Count() > 0)
+                    if (course.Content != null && course.Content.Courseincludes != null && course.Content.Courseincludes.Count() > 0)
                     {
-                        foreach ( var bulletPoint in course.CourseContent.Strings)
+                        foreach ( var bulletPoint in course.Content.Courseincludes)
                         {
                             <p><i class="fa-regular fa-circle-check"></i>@bulletPoint</p>
                         }                        
@@ -259,7 +267,15 @@ else
             <div class="image-wrapper"><img src="/img/albert-flores-lg.png" alt=""></div>
             <div class="bio-wrapper">
                 <p class="sub-heading">Learn from the best</p>
-                <h3 class="about-heading">@course.Author</h3>
+                <h3 class="about-heading">
+                    @if (course.Authors != null)
+                    {
+                        foreach(var name in course.Authors)
+                        {
+                            <span>@name</span>
+                        }                        
+                    }
+                </h3>
                 <p class="text">
                     Dolor ipsum amet cursus quisque porta adipiscing. Lorem convallis malesuada sed maecenas. Ac
                     dui at vitae mauris cursus in nullam porta sem. Quis pellentesque elementum ac bibendum. Nunc aliquam in
@@ -281,27 +297,33 @@ else
     [Parameter]
     public string Id { get; set; } = null!;
 
-    CourseModel course = new();
+    Course course = new();
 
     protected override async Task OnInitializedAsync()
     {
         course = await GetOneCourse(Id);
     }
 
-    public async Task<CourseModel> GetOneCourse(string id)
+    public async Task<Course> GetOneCourse(string id)
     {
         try
         {
-            var courseResponse = await client.GetAsync($"{_configuration["ConnectionStrings:CoursesApi"]}/{id}");
+            var courseResponse = await _coursesService.GetOneCourseByIdAsync(id);
             if (courseResponse != null)
             {
-                var json = await courseResponse.Content.ReadAsStringAsync();
-                var course = JsonConvert.DeserializeObject<CourseModel>(json);
-                if (course != null)
-                {
-                    return course;
-                }                
+                return courseResponse;
             }
+
+            // var courseResponse = await client.GetAsync($"{_configuration["ConnectionStrings:CoursesApi"]}/{id}");
+            // if (courseResponse != null)
+            // {
+            //     var json = await courseResponse.Content.ReadAsStringAsync();
+            //     var course = JsonConvert.DeserializeObject<CourseModel>(json);
+            //     if (course != null)
+            //     {
+            //         return course;
+            //     }                
+            // }
         }
         catch (Exception ex)
         { /*logic for logging here*/ }
