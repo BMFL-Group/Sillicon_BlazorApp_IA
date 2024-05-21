@@ -6,11 +6,28 @@
 <section class="courses">
 
     <div class="container">
-        <CoursesPartial />
+        <CoursesPartial User="User"/>
     </div>
 
 </section>
 
 @code {
+    [CascadingParameter]
+    private HttpContext? _context { get; set; } = default;
+
+    private ApplicationUser User { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //lägg till user logik här
+        if (_context != null)
+        {
+            var user = await _userManager.GetUserAsync(_context.User);
+            if(user != null)
+            {
+                User = user;
+            }
+        }
+    }
 
 }
