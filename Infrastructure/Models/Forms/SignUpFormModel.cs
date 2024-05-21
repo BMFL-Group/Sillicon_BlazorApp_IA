@@ -18,7 +18,6 @@ namespace Infrastructure.Models.Forms
         [Required(ErrorMessage = "Invalid email")]
         public string Email { get; set; } = null!;
 
-        [Display(Name = "Password", Prompt = "Enter your password", Order = 3)]
         [Required(ErrorMessage = "Invalid password")]
         [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", ErrorMessage = "Invalid password")]
         public string Password { get; set; } = null!;

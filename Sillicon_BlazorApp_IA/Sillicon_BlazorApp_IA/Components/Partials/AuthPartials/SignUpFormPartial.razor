@@ -1,5 +1,4 @@
 ﻿
-
 @if (!string.IsNullOrEmpty(StatusMsg))
 {
     <div class="error">@StatusMsg</div>
@@ -38,7 +37,7 @@
         <div class="checkbox">
             <InputCheckbox id="Terms" @bind-Value="SignUpForm.Terms" />
             <ValidationMessage For="() => SignUpForm.Terms" />
-            <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>    
+            <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>
         </div>
     </div>
     <button type="submit" class="btn-theme">Sign Up</button>
@@ -62,33 +61,41 @@
                 LastName = SignUpForm.LastName,
                 Email = SignUpForm.Email,
                 UserName = SignUpForm.Email,
-                EmailConfirmed = true //ändra senare
             };
-
         try
         {
+            var alreadyInDataBase = await _userManager.FindByEmailAsync(user.Email);
+            if (alreadyInDataBase != null)
+            {
+                StatusMsg = "User already exists.";
+                return;
+            }
+
             var result = await _userManager.CreateAsync(user, SignUpForm.Password);
             if (!result.Succeeded)
             {
                 StatusMsg = "Unable to register account. Please try again later...";
                 return;
             }
+            else
+            {
+                await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+                ServiceBusSender sender = client.CreateSender("verification_request");
+                var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = SignUpForm.Email });
+                ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+                await sender.SendMessageAsync(message);
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    navigationManager.NavigateTo($"Account/RegisterConfirmation/?email={SignUpForm.Email}");
+                }
+            }
         }
         catch (Exception e)
         {
-            Debug.WriteLine("Error: {0}", e.Message);
+            Debug.WriteLine($"Error sending email to generate code to email: {e}");
             StatusMsg = "An error occurred while creating the account.";
             return;
         }
-      
-
-        // await client.PostAsJsonAsync("Be Martin om Urlen till hans VerifyProvidergrej..!", SignUpForm);
-        // if (_userManager.Options.SignIn.RequireConfirmedAccount)
-        // {
-        //     _redirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
-        // }
-
-        // await _signInManager.SignInAsync(user, isPersistent: false);
-        // _redirectManager.RedirectTo(ReturnUrl);
     }
 }
