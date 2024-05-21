@@ -6,7 +6,7 @@
 <div class="account-details">
     <div class="container">
         <ProfileMenuPartial />
-        <BasicInfoFormPartial />
+        <BasicInfoFormPartial BasicFormModel="BasicFormModel"  />
         <div class="address">
             <h5>Address Info</h5>
             <div class="adress">
@@ -18,29 +18,33 @@
 
 @code {
 
-
-    // [Parameter]
-    // public string Value { get; set; }
-
-    private ApplicationUser? user;
-
-    private string? phoneNumber;
-
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    // [Parameter]
-    // [SupplyParameterFromQuery(Name="email")]
-    // public string? Email { get; set; }
+    private ApplicationUser User { get; set; } = null!;
+
+    [SupplyParameterFromForm(FormName = "BasicFormModel")]
+    private BasicInfoFormModel BasicFormModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-       
-        // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        // username = await UserManager.GetUserNameAsync(user);
-        // phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+        if(HttpContext != null)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                User = user;
 
-        // Input.PhoneNumber ??= phoneNumber;
+                if (User != null)
+                {
+                    BasicFormModel.FirstName = User.FirstName;
+                    BasicFormModel.LastName = User.LastName;
+                    BasicFormModel.Email = User.Email ?? "";
+                    BasicFormModel.Phone = User.PhoneNumber ?? "";
+                    BasicFormModel.Bio = User.Biography;
+                }
+            }
+        }
     }
 
     private async Task OnValidSubmitAsync()

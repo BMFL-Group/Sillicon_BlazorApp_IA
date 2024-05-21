@@ -4,111 +4,106 @@
     <h2>Account details</h2>
     <h5>Basic info</h5>
     <div class="details-form-group">
+            <EditForm Model="BasicFormModel" FormName="basicformmodel" OnValidSubmit="UpdateBasicInfo" novalidate>
 
-        <EditForm method="post" novalidate Model="Model">
+                <p>@BasicFormModel.FirstName</p>
 
-            <p>@Model.FirstName</p>
+                <div class="names">
+                    <div id="form-firstName" class="input-group">
+                        <label for="FirstName">First name</label>
 
-            <div class="names">
-                <div id="form-firstName" class="input-group">
-                    <label for="FirstName">First name</label>
+                        @if (BasicFormModel.IsExternalAccount == true)
+                        {
+                            <InputText class="gray-background" id="FirstName" @bind-Value="BasicFormModel.FirstName" readonly placeholder="Enter your first name" />
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.FirstName" />
+                            @*             <span for="@BasicFormModel.FirstName"></span> *@
+                            <InputText @bind-Value="BasicFormModel.FirstName" id="FirstName" placeholder="Enter your first name" />
+                        }
+                    </div>
 
-                    @if (Model.IsExternalAccount == true)
-                    {
-                        <InputText class="gray-background" id="FirstName" @bind-Value="Model.FirstName" readonly placeholder="Enter your first name" />
-                    }
-                    else
-                    {
-                        <span for="@Model.FirstName"></span>
-                        <InputText @bind-Value="Model.FirstName" id="FirstName" placeholder="Enter your first name" />
-                    }
+                    <div id="form-lastName" class="input-group">
+                        <label for="LastName">Last name</label>
+                        @if (BasicFormModel.IsExternalAccount)
+                        {
+                            <InputText @bind-Value="BasicFormModel.LastName" id="LastName" class="gray-background" readonly placeholder="Enter your last name" />
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.LastName" />
+                            @*              <span for="@BasicFormModel.LastName"></span> *@
+                            <InputText @bind-Value="BasicFormModel.LastName" id="LastName" placeholder="Enter your last name" />
+                        }
+                    </div>
                 </div>
 
-                <div id="form-lastName" class="input-group">
-                    <label for="LastName">Last name</label>
-                    @if (Model.IsExternalAccount)
-                    {
-                        <InputText @bind-Value="Model.LastName" id="LastName" class="gray-background" readonly placeholder="Enter your last name" />
-                    }
-                    else
-                    {
-                        <span for="@Model.LastName"></span>
-                        <InputText @bind-Value="Model.LastName" id="LastName" placeholder="Enter your last name" />
-                    }
-                </div>
-            </div>
+                <div class="email-phone">
+                    <div id="form-email" class="input-group">
+                        <label for="Email">Email address</label>
+                        @if (BasicFormModel.IsExternalAccount)
+                        {
+                            <InputText class="gray-background" id="Email" @bind-Vale="BasicFormModel.Email" readonly placeholder="Enter your email address" />
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.Email" />
+                            @*     <span for="@BasicFormModel.Email"></span> *@
+                            <InputText @bind-Value="BasicFormModel.Email" id="Email" placeholder="Enter your email address" />
+                        }
+                    </div>
 
-            <div class="email-phone">
-                <div id="form-email" class="input-group">
-                    <label for="Email">Email address</label>
-                    @if (Model.IsExternalAccount)
-                    {
-                        <InputText class="gray-background" id="Email" @bind-Vale="Model.Email" readonly placeholder="Enter your email address" />
-                    }
-                    else
-                    {
-                        <span for="@Model.Email"></span>
-                        <InputText @bind-Value="Model.Email" id="Email" placeholder="Enter your email address" />
-                    }
+                    <div id="form-phone" class="input-group">
+                        <label for="Phone">Phone</label>
+                        <ValidationMessage For="() => BasicFormModel.Phone" />
+                        @*    <span for="@BasicFormModel.Phone"></span> *@
+                        <InputText @bind-Value="BasicFormModel.Phone" id="Phone" placeholder="Enter your phonenumber" />
+                    </div>
                 </div>
 
-                <div id="form-phone" class="input-group">
-                    <label for="Phone">Phone</label>
-                    <span for="@Model.Phone"></span>
-                    <InputText @bind-Value="Model.Phone" id="Phone" placeholder="Enter your phonenumber" />
+                <div id="form-bio" class="input-group">
+                    <label for="Bio">Bio <span>(optional)</span></label>
+                    <InputTextArea @bind-Value="BasicFormModel.Bio" id="Bio" placeholder="Add a short bio..."></InputTextArea>
                 </div>
-            </div>
 
-            <div id="form-bio" class="input-group">
-                <label for="Bio">Bio <span>(optional)</span></label>
-                <InputTextArea @bind-Value="Model.Bio" id="Bio" placeholder="Add a short bio..."></InputTextArea>
-            </div>
+                <div class="buttons">
+                    <button type="button" class="btn-gray">Cancel</button>
+                    <button type="submit" class="btn-theme">Save changes</button>
+                </div>
 
-            <div class="buttons">
-                <button type="button" class="btn-gray">Cancel</button>
-                <button type="submit" class="btn-theme">Save changes</button>
-            </div>
-
-        </EditForm>
+            </EditForm> 
     </div>
     <hr />
 </div>
 
 @code {
 
-    private readonly AccountService _service;
 
-    // public BasicInfoFormPartial(AccountService service)
-    // {
-    //     _service = service;
-    //     user = _service.ActiveUser;
 
-    //     if (user != null)
-    //     {
-    //         Model.FirstName = user.FirstName;
-    //         Model.LastName = user.LastName;
-    //         Model.Email = user.Email!;
-    //     }
-    // }
+    // [SupplyParameterFromForm(FormName = "basicmodelform")]
 
-    private BasicInfoFormModel Model = new BasicInfoFormModel();
+    // [CascadingParameter]
+    [Parameter]
+    public BasicInfoFormModel BasicFormModel { get; set; } = null!;
 
-    private ApplicationUser? user;
+    // [Parameter]
+    // public ApplicationUser? User { get; set; }
 
-    // protected override void OnAfterRender(bool firstRender)
-    // {
-    //     user = _service.ActiveUser;
-    //     if (user != null)
-    //     {
-    //         Model.FirstName = user.FirstName;
-    //         Model.LastName = user.LastName;
-    //         Model.Email = user.Email!;
-    //     }
-    // }
+    protected override async Task OnInitializedAsync()
+    {
+        // if(User != null)
+        // {
+        //     BasicFormModel.FirstName = User.FirstName;
+        //     BasicFormModel.LastName = User.LastName;
+        //     BasicFormModel.Email = User.Email ?? "";
+        //     BasicFormModel.Phone = User.PhoneNumber ?? "";
+        //     BasicFormModel.Bio = User.Biography;
+        // }
+    }
 
-    // protected override async Task OnInitializedAsync()
-    // {
- 
-
-    // }
+    private async Task UpdateBasicInfo()
+    {
+        
+    }
 }
