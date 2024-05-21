@@ -64,13 +64,13 @@
 
             }
             <div class="select-options" id="categorySelectOptions" @attributes="GetMenuAttributes(category)">
-                <div class="option" data-value="all">All Categories</div>
-                @if (categories != null && categories.Count() > 0)
+               
+             @if (categories != null && categories.Count() > 0)
                 {
                     foreach (var category in categories)
                     {
-                        var categoryValue = @category.CategoryName;
-                        <div class="option" data-value="@category.CategoryName" @onclick="(e) => FilterCourses(categoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
+                        @* var categoryValue = @category.CategoryValue; *@
+                        <div class="option" data-value="@category.CategoryValue" @onclick="(e) => FilterCourses(category.CategoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
                     }
                 }
             </div>
@@ -99,9 +99,7 @@
             @* <p>@course</p> *@
 
             <form class="bookmark-form" id="bookmarkForm" method="post" action="/  @* @Url.Action(" BookmarkCourse", "Account" , new { courseId=course.Id }) *@">
-
-@*                 <NavLink class="grid-item card" href="@GenerateUrl("coursedetails", new { Id = course.Id })">
-        *@                                 
+                                                 
                     <NavLink class="grid-item card" href="@GoToCourseDetails("coursedetails", course.Id)">
 
                     <div class="img-wrapper">
@@ -189,9 +187,9 @@
                 previousPage = totalPages;
             }
             // first page
-            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, 1, selectedPageSize)"><i class="fa-solid fa-angles-left"></i></button>
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, 1, selectedPageSize)"><i class="fa-solid fa-angles-left"></i></button>
             // previous page
-            <button class="btn-gray previous-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, previousPage, selectedPageSize)"><i class="fa-solid fa-angle-left"></i></button>
+            <button class="btn-gray previous-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, previousPage, selectedPageSize)"><i class="fa-solid fa-angle-left"></i></button>
             //-----------------------------------------------------
 
             @for (int i = 1; i <= totalPages && totalPaginationButtons < 5; i++)
@@ -206,7 +204,7 @@
                     else // Sets value of other pages if there are NO more than 5 total pages.
                     {
                         int thisPageNumber = i;
-                        <button class="btn-gray" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, thisPageNumber, selectedPageSize)">@i</button>
+                        <button class="btn-gray" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, thisPageNumber, selectedPageSize)">@i</button>
                         totalPaginationButtons++;
                     }
                 }
@@ -270,9 +268,9 @@
                 nextPage = 1;
             }
             // next page
-            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, nextPage, selectedPageSize)"><i class="fa-solid fa-angle-right"></i></button>
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, nextPage, selectedPageSize)"><i class="fa-solid fa-angle-right"></i></button>
             // last page
-            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(categoryQuery, searchQuery, totalPages, selectedPageSize)"><i class="fa-solid fa-angles-right"></i></button>
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, totalPages, selectedPageSize)"><i class="fa-solid fa-angles-right"></i></button>
             //-----------------------------------------------------
 
         }
@@ -324,36 +322,36 @@
 
     IEnumerable<CategoryModel> categories =
     [
-         new CategoryModel()
+        new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "all",
+            CategoryName = "All Categories"
+        },
+     new CategoryModel()
+        {
+            CategoryValue = "HTML",
             CategoryName = "HTML"
         },
-        new CategoryModel()
+    new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "FrontEnd",
             CategoryName = "FrontEnd"
         },
-        new CategoryModel()
+    new CategoryModel()
         {
-            Id = 2,
+            CategoryValue = "CSS",
             CategoryName = "CSS"
         },
-        new CategoryModel()
+    new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "JavaScript",
             CategoryName = "JavaScript"
         },
-        new CategoryModel()
+    new CategoryModel()
         {
-            Id = 1,
+            CategoryValue = "Web Developer",
             CategoryName = "Web Developer"
         },
-        // new CategoryModel()
-        // {
-        //     Id = 1,
-        //     CategoryName = "Game Development"
-        // },
 ];
 
 
@@ -430,6 +428,7 @@
     private async Task FilterCourses(string category, string newSearchQuery, int pageNumber, int pageSize)
     {
         var courseResult = await _coursesService.GetAllCoursesAsync(category, newSearchQuery, pageNumber, pageSize);
+        selectedCategory = category;
         await populateCourses(courseResult);
     }
 
