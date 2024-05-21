@@ -4,10 +4,12 @@ namespace Infrastructure.Models.Account
 {
     public class BasicInfoFormModel
     {
-        [Required(ErrorMessage = "Invalid first name")]
+        [Required]
+        [MinLength(2, ErrorMessage = "Invalid first name, minimum of two characters")]
         public string FirstName { get; set; } = null!;
 
-        [Required(ErrorMessage = "Invalid last name")]
+        [Required]
+        [MinLength(2, ErrorMessage = "Invalid last name, minimum of two characters")]
         public string LastName { get; set; } = null!;
 
         [DataType(DataType.EmailAddress)]
@@ -16,8 +18,7 @@ namespace Infrastructure.Models.Account
         public string Email { get; set; } = null!;
 
         [DataType(DataType.PhoneNumber)]
-        [Required(ErrorMessage = "phone is required")]
-        public string Phone { get; set; } = null!;
+        public string? Phone { get; set; } 
 
         [DataType(DataType.MultilineText)]
         public string? Bio { get; set; }

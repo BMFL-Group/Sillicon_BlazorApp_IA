@@ -3340,6 +3340,9 @@ footer .container .display-none {
     margin-left: 20px;
   }
 }
+.account-details .container .basic-details .details-form-group .valid.modified:not([type=checkbox]) {
+  outline: none;
+}
 .account-details .container .basic-details .details-form-group .names {
   display: flex;
   flex-direction: column;
@@ -3377,6 +3380,9 @@ footer .container .display-none {
   .account-details .container .address {
     margin-left: 20px;
   }
+}
+.account-details .container .address .address-form-group .valid.modified:not([type=checkbox]) {
+  outline: none;
 }
 .account-details .container .address .address-form-group .postal-city {
   display: flex;

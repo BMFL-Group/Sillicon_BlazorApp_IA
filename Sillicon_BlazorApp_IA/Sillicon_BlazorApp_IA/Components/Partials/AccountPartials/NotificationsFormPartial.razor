@@ -70,6 +70,11 @@
                 try
                 {
                     var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Subscribe?code=jYf27X54n1bcCN5_hkPi-bEE5pcSX2kp_Uiplh0QDiUsAzFuZanPRg%3D%3D", subscibeModel);
+
+
+                    //Skicka Epost!!!!!!!
+
+
                     if (result.IsSuccessStatusCode)
                     {
                         ErrorMessage = "";
