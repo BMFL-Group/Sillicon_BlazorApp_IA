@@ -2,9 +2,7 @@
 
 public class CourseResult
 {
+    public IEnumerable<Course> Courses { get; set; } = [];
     public Pagination Pagination { get; set; } = new();
-
-    public IEnumerable<CourseModel> ReturnCourses { get; set; } = [];
-
     public CategoryModel Category { get; set; } = new();
 }

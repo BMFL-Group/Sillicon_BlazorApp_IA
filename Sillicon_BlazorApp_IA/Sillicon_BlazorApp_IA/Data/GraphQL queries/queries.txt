@@ -1,0 +1,71 @@
+           
+           This query is for getting all courses from GraphQL API
+
+           var query = new
+            {
+                query = @"
+            {
+                getCourses {
+                    id
+                    title
+                    ingress
+                    imageUri
+                    altText
+                    bestSeller
+                    isDigital
+                    categories
+                    currency
+                    price
+                    discountPrice
+                    lengthInHours
+                    ratingInPercentage
+                    numberOfReviews
+                    numberOfLikes
+                    authors {
+                        name
+                    }
+                    content {
+                        description
+                        courseIncludes
+                        programDetails {
+                            id
+                            title
+                            description
+                        }
+                    }
+                    programDetails {
+                        id
+                        title
+                        description
+                    }
+                }
+            }"
+            };
+
+
+            This Query is for fetching all courses for the courses page from GraphQL API
+
+              var query = new
+            {
+                    query = @"
+                {
+                    getCourses {
+                        id
+                        title
+                        imageUri
+                        altText
+                        bestSeller                    
+                        categories
+                        currency
+                        price
+                        discountPrice
+                        lengthInHours
+                        ratingInPercentage
+                        numberOfReviews
+                        numberOfLikes
+                        authors {
+                            name
+                        }                    
+                    }
+                }"
+            };
