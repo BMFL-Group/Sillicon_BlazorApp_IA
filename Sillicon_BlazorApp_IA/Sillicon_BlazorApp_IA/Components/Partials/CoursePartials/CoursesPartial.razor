@@ -5,7 +5,7 @@
 <div class="top-row">
 
     <h1>Courses</h1>
-   
+
     <div class="top-right">
 
         <div class="select" id="pageSizeSelect" @onclick="(e) => ToggleDropDowns(pageSizeSelect, pageSize)">
@@ -88,7 +88,7 @@
 <div class="grid-container items">
 
 
-    @if (courses.Count() < 1)
+    @if (courses.Count() < 1 || User == null)
     {
         <p>Loading courses...</p>
     }
@@ -298,6 +298,9 @@
     Pagination pagination { get; set; } = new();
     string categoryQuery = "all";
     int pageNumber { get; set; } = 1;
+
+    [Parameter]
+    public ApplicationUser? User { get; set; } = null;
 
     // Gets courses from CoursesService
     protected override async Task OnInitializedAsync()
