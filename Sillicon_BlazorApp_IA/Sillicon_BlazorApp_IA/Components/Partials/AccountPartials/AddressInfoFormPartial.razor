@@ -88,17 +88,24 @@
         var user = await _userManager.FindByIdAsync(User.Id);
         if (user != null)
         {
-            var address = _dataContext.Addresses.FirstOrDefault(x => x.AddressLine_1 == AddressForm.Addressline_1 && x.City == AddressForm.City && x.PostalCode == AddressForm.PostalCode);
+
+            //retunerar null när en ny användare anger samma adress, varför??
+            var address = _dataContext.Addresses.FirstOrDefault(x => x.AddressLine_1 == AddressForm.Addressline_1 && x.City == AddressForm.City && x.PostalCode == AddressForm.PostalCode && x.AddressLine_2 == AddressForm.Addressline_2);
 
             if (address is null)
             {
-                var newAddress = FormMapper.MapNewAddressFromForm(AddressForm);
+                var newAddress = FormMapper.MapNewAddress(AddressForm, user);
                 try
                 {
                     _dataContext.Addresses.Add(newAddress);
                     await _dataContext.SaveChangesAsync();
+
                     user!.AddressId = newAddress.Id;
+                    FormMapper.MapNewUserAddress(AddressForm, user);
+                    user.Address = user.Address;
                     await _userManager.UpdateAsync(user);
+
+
                 }
                 catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); return; }
                 SuccessMessage = "Address added successfully.";
@@ -106,6 +113,32 @@
             else if (address != null)
             {
                 user!.AddressId = address.Id;
+                FormMapper.MapNewUserAddress(AddressForm, user);
+
+                if (!address.Users.Any(x => x.Id == user.Id))
+                {
+                    address.Users.Add(new ApplicationUser
+                        {
+                            Id = user.Id,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Email = user.Email,
+                            UserName = user.Email,
+                            PhoneNumber = user.PhoneNumber,
+                            Biography = user.Biography
+                        });
+                }
+                else
+                {
+                    var existingUser = address.Users.FirstOrDefault(x => x.Id == user.Id);
+
+                    existingUser.FirstName = user.FirstName;
+                    existingUser.LastName = user.LastName;
+                    existingUser.Email = user.Email;
+                    existingUser.UserName = user.Email;
+                    existingUser.PhoneNumber = user.PhoneNumber;
+                    existingUser.Biography = user.Biography;
+                }
                 try
                 {
                     await _userManager.UpdateAsync(user);
@@ -118,3 +151,6 @@
         }
     }
 }
+
+  
+

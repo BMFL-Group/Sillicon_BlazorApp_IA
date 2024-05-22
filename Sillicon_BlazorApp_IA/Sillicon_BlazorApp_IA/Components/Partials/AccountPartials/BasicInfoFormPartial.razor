@@ -86,27 +86,33 @@
     [Parameter]
     public BasicInfoFormModel BasicFormModel { get; set; } = null!;
 
+    // [CascadingParameter]
+    // private HttpContext HttpContext { get; set; } = null!;
+
     [Parameter]
     public ApplicationUser User { get; set; } = null!;
 
     private string SuccessMessage { get; set; } = "";
     private string ErrorMessage { get; set; } = "";
 
+  
+
     private async Task UpdateBasicInfo()
     {
-        if (User != null && BasicFormModel != null)
+        var user = await _userManager.FindByIdAsync(User.Id);
+        if (user != null && BasicFormModel != null)
         {
-            var userToUpdate = await _userManager.FindByIdAsync(User.Id);
+            var userToUpdate = await _userManager.FindByIdAsync(user.Id);
             if (userToUpdate != null)
             {
-                FormMapper.MapNewValuesFromForm(BasicFormModel, userToUpdate);
+                FormMapper.MapNewUserValues(BasicFormModel, userToUpdate);
                 try
                 {
                     var update = await _userManager.UpdateAsync(userToUpdate);
                     if (update.Succeeded)
                     {
                         ErrorMessage = "";
-                        SuccessMessage = "User updated successfully";   
+                        SuccessMessage = "User updated successfully";
                     }
                     else
                     {

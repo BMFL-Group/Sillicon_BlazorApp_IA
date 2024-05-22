@@ -6,11 +6,11 @@
 <div class="account-details">
     <div class="container">
         <ProfileMenuPartial />
-        <BasicInfoFormPartial BasicFormModel="BasicFormModel" User="User" />
+        <BasicInfoFormPartial BasicFormModel="BasicFormModel" User="User"/>
         <div class="address">
             <h5>Address Info</h5>
             <div class="adress">
-                <AddressInfoFormPartial AddressForm="AddressForm" User="User" />
+                <AddressInfoFormPartial AddressForm="AddressForm" User="User"/>
             </div>
         </div>
     </div>
@@ -21,7 +21,7 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private AddressModel Address { get; set; } = null!;
+    // private AddressModel Address { get; set; } = null!;
 
     private ApplicationUser User { get; set; } = null!;
 
@@ -40,14 +40,11 @@
             {
                 User = user;                                                                                                                                                                                                   
                
-                if (User != null)
-                {
-                    BasicFormModel.FirstName = User.FirstName;
-                    BasicFormModel.LastName = User.LastName;
-                    BasicFormModel.Email = User.Email ?? "";
-                    BasicFormModel.Phone = User.PhoneNumber ?? "";
-                    BasicFormModel.Bio = User.Biography;
-                }
+                BasicFormModel.FirstName = user.FirstName;
+                BasicFormModel.LastName = user.LastName;
+                BasicFormModel.Email = user.Email ?? "";
+                BasicFormModel.Phone = user.PhoneNumber ?? "";
+                BasicFormModel.Bio = user.Biography;
             }
         }
     }

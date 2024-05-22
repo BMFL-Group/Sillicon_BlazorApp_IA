@@ -2,6 +2,7 @@
 using Infrastructure.Models;
 using Sillicon_BlazorApp_IA.Data;
 using Microsoft.Azure.Amqp.Framing;
+using System.Net;
 
 namespace Sillicon_BlazorApp_IA.Services
 {
@@ -12,7 +13,7 @@ namespace Sillicon_BlazorApp_IA.Services
         /// </summary>
         /// <param name="form">Form model</param>
         /// <param name="user">User model</param>
-        public static void MapNewValuesFromForm(BasicInfoFormModel form, ApplicationUser user)
+        public static void MapNewUserValues(BasicInfoFormModel form, ApplicationUser user)
         {
             user.FirstName = form.FirstName;
             user.LastName = form.LastName;
@@ -22,31 +23,42 @@ namespace Sillicon_BlazorApp_IA.Services
             user.Biography = form.Bio;
             user.UserName = form.Email;
         }
-
-        /// <summary>
-        /// Adds the values from a form to the adress model.
-        /// </summary>
-        /// <param name="form">Form model</param>
-        /// <param name="user">User model</param>
-        public static void MapNewValuesFromForm(AddressFormModel form, AddressModel address)
+        public static void MapNewUserAddress(AddressFormModel form, ApplicationUser user)
         {
-            address.AddressLine_1 = form.Addressline_1;
-            address.AddressLine_2 = form.Addressline_2;
-            address.PostalCode = form.PostalCode;
-            address.City = form.City;
+            if(user != null && form != null)
+            {
+                if (user.Address == null)
+                    user.Address = new AddressModel();
+
+                user!.Address.AddressLine_1 = form.Addressline_1;
+                user.Address.AddressLine_2 = form.Addressline_2 ?? "";
+                user.Address.PostalCode = form.PostalCode;
+                user.Address.City = form.City;
+            }       
         }
 
-        public static AddressModel MapNewAddressFromForm(AddressFormModel form)
+        public static AddressModel MapNewAddress(AddressFormModel form, ApplicationUser user)
         {
             if (form != null)
             {
                 var newAddress = new AddressModel
                 {
                     AddressLine_1 = form.Addressline_1,
-                    AddressLine_2 = form.Addressline_2,
+                    AddressLine_2 = form.Addressline_2 ?? "",
                     PostalCode = form.PostalCode,
-                    City = form.City
+                    City = form.City,
                 };
+                newAddress.Users.Add(user);
+                //newAddress.Users.Add(new ApplicationUser
+                //{
+                //    Id = user.Id,
+                //    FirstName = user.FirstName,
+                //    LastName = user.LastName,
+                //    Email = user.Email,
+                //    UserName = user.Email,
+                //    PhoneNumber = user.PhoneNumber,
+                //    Biography = user.Biography
+                //});
 
                 return newAddress;
             }
