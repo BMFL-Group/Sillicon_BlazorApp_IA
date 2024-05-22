@@ -1,10 +1,18 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
-    <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
-            <NotAuthorized>
-                <RedirectToLogin />
-            </NotAuthorized>
-        </AuthorizeRouteView>
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿
+<CascadingValue Name="ModePolicy" Value="ModePolicy">
+    <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+                <NotAuthorized>
+                    <RedirectToLogin />
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+    </Router>
+</CascadingValue>
+
+@code{
+    [CascadingParameter(Name = "ModePolicy")]
+    public string ModePolicy { get; set; } = null!;
+}

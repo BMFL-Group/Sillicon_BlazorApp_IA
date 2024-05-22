@@ -21,6 +21,8 @@
 </header>
 
 @code {
+    [CascadingParameter(Name = "ModePolicy")]
+    public string Theme { get; set; } = null!;
 
     //------------------------------------------------------------------
     private bool isOpen { get; set; } = false;

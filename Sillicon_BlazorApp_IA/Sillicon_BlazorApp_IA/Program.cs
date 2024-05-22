@@ -25,6 +25,7 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<CoursesService>();
@@ -77,6 +78,7 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -86,5 +88,8 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+app.MapControllers();
+
 
 app.Run();

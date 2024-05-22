@@ -4,24 +4,23 @@ using System.Diagnostics;
 
 namespace Sillicon_BlazorApp_IA.Controllers;
 
+
 public class SiteSettings : Controller
 {
-    private readonly HttpContextAccessor _contextAccessor;
-
-    public IActionResult ChangeTheme(string theme)
+    [HttpGet("/api/changetheme/{theme}")]
+    //[HttpPost]
+    public async Task<IActionResult> ChangeTheme(string theme)
     {
         try
         {
             var options = new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.Strict
-            };
+                //SameSite = SameSiteMode.Lax,
+                Secure = true                
+            };            
 
-            if (_contextAccessor != null)
-            {
-                _contextAccessor.HttpContext.Response.Cookies.Append("theme", theme, options);  
-            }
+            Response.Cookies.Append("theme", theme, options);
             return Ok(theme);
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }

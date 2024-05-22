@@ -42,24 +42,30 @@
 </div>
 
 @code {
-    private bool IsDarkMode { get; set; } = false;
-    private string Theme { get; set; } = "light";
+    [CascadingParameter(Name = "ModePolicy")]
+    public string Theme { get; set; } = null!;
 
-    private void ToggleDarkMode()
+    private bool IsDarkMode { get; set; } = false;
+
+    private async Task ToggleDarkMode()
     {
         IsDarkMode = !IsDarkMode;
-        Theme = IsDarkMode ? "dark" : "light";
-       ChangeTheme(Theme);
+        var themeString = IsDarkMode ? "dark" : "light";
+        await ChangeTheme(themeString);
     }
 
-    private void ChangeTheme(string Theme)
+    private async Task ChangeTheme(string themeString)
     {
         try
         {
-            var response = siteSettings.ChangeTheme(Theme);
-            if (response != null)
+            var baseUrl = navigationManager.BaseUri;
+            var apiUrl = baseUrl.TrimEnd('/') + "/api/changetheme";
+            var response = await client.GetAsync($"{apiUrl}/{themeString}");
+            if (response.IsSuccessStatusCode)
             {
-                navigationManager.Refresh();
+                var result = await response.Content.ReadAsStringAsync();
+                // Theme = result!;
+                StateHasChanged();
             }            
         }
         catch (Exception ex)
