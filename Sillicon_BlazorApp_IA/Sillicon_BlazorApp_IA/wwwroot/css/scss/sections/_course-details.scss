@@ -112,7 +112,7 @@
                                 font-size: 0.8125rem;
                                 color: var(--color-black);
 
-                                @include xl{ 
+                                @include xl {
                                     font-size: 1rem;
                                     color: var(--color-white);
                                 }
@@ -469,6 +469,33 @@
                             @include xxl {
                                 height: 10.5rem;
                             }
+                        }
+
+                        .last-line {
+                            position: absolute;
+                            top: 108%;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            height: 2rem;
+                            width: 0.1rem;
+                            background-color: var(--color-gray-000);
+                            z-index: 1000;
+
+ /**/                           @include md {
+                                height: 8rem;
+                            }
+
+                            /*@include lg {
+                                height: 6rem;
+                            }
+
+                            @include xl {
+                                height: 12rem;
+                            }
+
+                            @include xxl {
+                                height: 10.5rem;
+                            }*/
                         }
                     }
 

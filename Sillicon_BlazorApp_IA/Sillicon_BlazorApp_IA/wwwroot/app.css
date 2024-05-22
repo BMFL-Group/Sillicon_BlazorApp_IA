@@ -3058,6 +3058,33 @@ footer .container .display-none {
     height: 10.5rem;
   }
 }
+.course-details .program-details .grid-container .progression-boxes .progress-box .outer-circle .last-line {
+  position: absolute;
+  top: 108%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 2rem;
+  width: 0.1rem;
+  background-color: var(--color-gray-000);
+  z-index: 1000;
+  /**/
+  /*@include lg {
+      height: 6rem;
+  }
+
+  @include xl {
+      height: 12rem;
+  }
+
+  @include xxl {
+      height: 10.5rem;
+  }*/
+}
+@media (min-width: 768px) {
+  .course-details .program-details .grid-container .progression-boxes .progress-box .outer-circle .last-line {
+    height: 8rem;
+  }
+}
 .course-details .program-details .grid-container .progression-boxes .progress-box .text-box .progress-title {
   line-height: 160%;
   font-weight: 400;

@@ -2,7 +2,7 @@
 
 @if (course == null)
 {
-    <PageTitle>Silicon | loading course...</PageTitle>    
+    <PageTitle>Silicon | loading course...</PageTitle>
     <p class="container">Loading...</p>
 }
 else
@@ -25,7 +25,7 @@ else
 
             <div class="title-wrapper">
                 <h1>@course.Title</h1>
-                <p>Egestas feugiat lorem eu neque suspendisse ullamcorper scelerisque aliquam mauris.</p>
+                <p>@course.Ingress</p>
             </div>
 
             <div class="ratings-wrapper">
@@ -67,9 +67,15 @@ else
                     <p class="author">
                         @if (course.Authors != null)
                         {
+                            int i = 0;
                             foreach (var author in course.Authors)
                             {
-                                <span>@author.Name</span>
+                                <span class="author">@author.Name</span>
+                                i++;
+                                if (course.Authors.Count() != i)
+                                {
+                                    <span> & </span>
+                                }
                             }
                         }
                     </p>
@@ -83,11 +89,10 @@ else
             <div class="title-box">
                 <h2>Course Description</h2>
                 <p>
-                    Suspendisse natoque sagittis, consequat turpis. Sed tristique tellus morbi magna. At vel senectus
-                    accumsan, arcu mattis id tempor. Tellus sagittis, euismod porttitor sed tortor est id. Feugiat
-                    velit velit, tortor ut. Ut libero cursus nibh lorem urna amet tristique leo. Viverra lorem arcu
-                    nam nunc at ipsum quam. A proin id sagittis dignissim mauris condimentum ornare. Tempus mauris
-                    sed dictum ultrices.
+                    @if (course != null && course.Content != null && course.Content.Description != null)
+                    {
+                        @course.Content.Description
+                    }
                 </p>
             </div>
 
@@ -95,12 +100,12 @@ else
                 <h3>What you'll learn</h3>
 
                 @{
-                    if (course.Content != null && course.Content.Courseincludes != null && course.Content.Courseincludes.Count() > 0)
+                    if (course != null && course.Content != null && course.Content.Courseincludes != null && course.Content.Courseincludes.Count() > 0)
                     {
-                        foreach ( var bulletPoint in course.Content.Courseincludes)
+                        foreach (var bulletPoint in course.Content.Courseincludes)
                         {
                             <p><i class="fa-regular fa-circle-check"></i>@bulletPoint</p>
-                        }                        
+                        }
                     }
                 }
 
@@ -109,20 +114,20 @@ else
             <div class="course-includes-box">
                 <h3>This course includes:</h3>
 
-                <p><img src="/img/screen.svg" alt="">148 hours on-demand video</p>
-                <p><img src="/img/file.svg" alt="">18 Articles</p>
-                <p><img src="/img/download.svg" alt="">25 downloadable resources</p>
-                <p><img src="/img/infinity.svg" alt="">Full lifetime access</p>
-                <p><img src="/img/trophy.svg" alt="">Certificate of completion</p>
+                <p><img src="/img/screen.svg" alt="">@course.Content.Courseincludes[0]</p>
+                <p><img src="/img/file.svg" alt="">@course.Content.Courseincludes[1]</p>
+                <p><img src="/img/download.svg" alt="">@course.Content.Courseincludes[2]s</p>
+                <p><img src="/img/infinity.svg" alt="">@course.Content.Courseincludes[3]</p>
+                <p><img src="/img/trophy.svg" alt="">@course.Content.Courseincludes[4]</p>
 
-                @if (course.DiscountPrice > 0)
+                @if (course.DiscountPrice >= 1)
                 {
-                    <span class="discount-price">@course.Currency@course.DiscountPrice</span>
-                    <span class="price strikethrough">@course.Currency@course.Price</span>
+                    <span class="discount-price">@course.Currency@course.DiscountPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    <span class="price strikethrough">@course.Currency@course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
                 }
                 else
                 {
-                    <span class="price">@course.Currency@course.Price</span>
+                    <span class="price">@course.Currency@course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
 
                 }
 
@@ -130,7 +135,7 @@ else
 
                     <button class="btn-theme" type="submit">join Course</button>
 
-                    @*                     @if (Model.SavedCourses.Count() > 0 && Model.SavedCourses != null)
+                    @* @if (Model.SavedCourses.Count() > 0 && Model.SavedCourses != null)
                 {
                 var isSignedUp = false;
 
@@ -170,92 +175,47 @@ else
         <h2>Program Details</h2>
         <div class="grid-container">
             <div class="progression-boxes">
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">1</span></div>
-                        <div class="connector-line"></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">Introduction. Getting started</h3>
-                        <p class="progress-description">
-                            Nulla faucibus mauris pellentesque blandit faucibus non. Sit
-                            ut et at suspendisse gravida hendrerit tempus placerat.
-                        </p>
-                    </div>
-                </div>
 
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">2</span></div>
-                        <div class="connector-line"></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">The ultimate HTML developer: advanced HTML</h3>
-                        <p class="progress-description">
-                            Lobortis diam elit id nibh ultrices sed penatibus donec.
-                            Nibh iaculis eu sit cras ultricies. Nam eu eget etiam egestas donec scelerisque ut ac
-                            enim. Vitae ac nisl, enim nec accumsan vitae est.
-                        </p>
-                    </div>
-                </div>
+                @if (course != null && course.Content != null && course.Content.ProgramDetails != null)
+                {
+                    int progressBoxes = 0;
+                    @foreach (var progressBox in course.Content.ProgramDetails)
+                    {
+                        progressBoxes++;
+                        if (progressBoxes <= Math.Abs(course.Content.ProgramDetails.Count() - 1))
+                        {
+                            <div class="progress-box">
+                                <div class="outer-circle">
+                                    <div class="inner-circle"><span class="number">@progressBox.Id</span></div>
+                                    <div class="connector-line"></div>
+                                </div>
+                                <div class="text-box">
+                                    <h3 class="progress-title">@progressBox.Title</h3>
+                                    <p class="progress-description">
+                                        @progressBox.Description[0]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                        else if (progressBoxes == course.Content.ProgramDetails.Count())
+                        {
+                            <div class="progress-box">
+                                <div class="outer-circle">
+                                    <div class="inner-circle"><span class="number">@progressBox.Id</span></div>
+                                    <div class="connector-line last-line"></div>
+                                </div>
+                                <div class="text-box">
+                                    <h3 class="progress-title">@progressBox.Title</h3>
+                                    <p class="progress-description">
+                                        @progressBox.Description[0]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
 
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">3</span></div>
-                        <div class="connector-line"></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">CSS & CSS3: basic</h3>
-                        <p class="progress-description">
-                            Duis euismod enim, facilisis risus tellus pharetra lectus
-                            diam neque. Nec ultrices mi faucibus est. Magna ullamcorper potenti elementum ultricies
-                            auctor nec volutpat augue.
-                        </p>
-                    </div>
-                </div>
 
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">4</span></div>
-                        <div class="connector-line"></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">JavaScript basics for beginners</h3>
-                        <p class="progress-description">
-                            Morbi porttitor risus imperdiet a, nisl mattis. Amet,
-                            faucibus eget in platea vitae, velit, erat eget velit. At lacus ut proin erat.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">5</span></div>
-                        <div class="connector-line last-line"></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">Understanding APIs</h3>
-                        <p class="progress-description">
-                            Risus morbi euismod in congue scelerisque fusce pellentesque
-                            diam consequat. Nisi mauris nibh sed est morbi amet arcu urna. Malesuada feugiat quisque
-                            consectetur elementum diam vitae. Dictumst facilisis odio eu quis maecenas risus odio
-                            fames bibendum.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="progress-box">
-                    <div class="outer-circle">
-                        <div class="inner-circle"><span class="number">6</span></div>
-                    </div>
-                    <div class="text-box">
-                        <h3 class="progress-title">C# and .NET from beginner to advanced</h3>
-                        <p class="progress-description">
-                            Quis risus quisque diam diam. Volutpat neque eget eu
-                            faucibus sed urna fermentum risus. Est, mauris morbi nibh massa.
-                        </p>
-                    </div>
-                </div>
 
             </div>
             <div class="empty-container"></div>
@@ -268,17 +228,17 @@ else
             <div class="bio-wrapper">
                 <p class="sub-heading">Learn from the best</p>
                 <h3 class="about-heading">
-                    @if (course.Authors != null)
+                    @if (course != null && course.Authors != null)
                     {
-                        foreach(var author in course.Authors)
+                        foreach (var author in course.Authors)
                         {
                             <span>@author.Name</span>
-                        }                        
+                        }
                     }
                 </h3>
                 <p class="text">
                     Dolor ipsum amet cursus quisque porta adipiscing. Lorem convallis malesuada sed maecenas. Ac
-                    dui at vitae mauris cursus in nullam porta sem. Quis pellentesque elementum ac bibendum. Nunc aliquam in
+                    dui at vitae mauris in nullam porta sem. Quis pellentesque elementum ac bibendum. Nunc aliquam in
                     tortor facilisis. Vulputate eget risus, metus phasellus. Pellentesque faucibus amet, eleifend diam quam
                     condimentum convallis ultricies placerat. Duis habitasse placerat amet, odio pellentesque rhoncus,
                     feugiat at. Eget pellentesque tristique felis magna fringilla.

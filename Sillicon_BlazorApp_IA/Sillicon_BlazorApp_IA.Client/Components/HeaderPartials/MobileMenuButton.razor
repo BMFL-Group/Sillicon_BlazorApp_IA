@@ -1,8 +1,39 @@
-﻿@* <button class="btn btn-mobile" id="btn-mobile" aria-expanded="false" @onclick="">
-    <i class="fa-solid fa-bars"></i>
-</button>
+﻿@* <div class="btn-switch">
+    <span>Light</span>
+    <label class="switch">
+        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onclick="ToggleDarkMode">
+        <span class="slider round"></span>
+    </label>
+    <span>Dark</span>
+</div>
+
+<p>@Theme</p>
 
 @code {
-    public string OpenMenu { get; set; } = 
+    private bool IsDarkMode { get; set; } = false;
+    private string Theme { get; set; } = "light";
+
+    private void ToggleDarkMode()
+    {
+        IsDarkMode = !IsDarkMode;
+        Theme = IsDarkMode ? "dark" : "light";
+        ChangeTheme(Theme);
+    }
+
+    private void ChangeTheme(string Theme)
+    {
+        try
+        {
+            var response = siteSettings.ChangeTheme(Theme);
+            if (response != null)
+            {
+                navigationManager.Refresh();
+            }
+        }
+        catch (Exception ex)
+        {
+            //Handle exception here
+        }
+    }
 }
  *@

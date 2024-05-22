@@ -24,6 +24,8 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<CoursesService>();
 builder.Services.AddScoped<SiteSettings>();
