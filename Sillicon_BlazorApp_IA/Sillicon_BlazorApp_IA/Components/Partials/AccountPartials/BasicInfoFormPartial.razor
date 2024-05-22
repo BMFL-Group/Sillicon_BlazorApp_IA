@@ -99,19 +99,14 @@
             var userToUpdate = await _userManager.FindByIdAsync(User.Id);
             if (userToUpdate != null)
             {
-                // MapFormValues(BasicFormModel, userToUpdate);
                 FormMapper.MapNewValuesFromForm(BasicFormModel, userToUpdate);
-
                 try
                 {
                     var update = await _userManager.UpdateAsync(userToUpdate);
                     if (update.Succeeded)
                     {
                         ErrorMessage = "";
-                        SuccessMessage = "User updated successfully";
-                        User = userToUpdate;
-
-             
+                        SuccessMessage = "User updated successfully";   
                     }
                     else
                     {
@@ -121,8 +116,6 @@
                 }
                 catch (Exception e) { Debug.WriteLine($"UPDATE ERROR ::: {e.Message}"); };
             }
-            // AddnewFormValues(BasicFormModel, User);
-            // FormMapper.MapNewValuesFromForm(BasicFormModel, User);
         }
     }
 }
