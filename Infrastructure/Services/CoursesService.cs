@@ -121,6 +121,7 @@ public class CoursesService
                     getCourseById(id: $id) {
                         id
                         title
+                        ingress
                         imageUri
                         altText
                         bestSeller
@@ -138,6 +139,7 @@ public class CoursesService
                         content {
                             description
                             courseIncludes
+                            whatYouLearn
                             programDetails {
                                 id
                                 title
