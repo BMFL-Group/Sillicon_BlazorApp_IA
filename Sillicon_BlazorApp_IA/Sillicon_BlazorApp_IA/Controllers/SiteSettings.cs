@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Primitives;
 using System.Diagnostics;
 
 namespace Sillicon_BlazorApp_IA.Controllers;
@@ -17,14 +18,26 @@ public class SiteSettings : Controller
         {
             var options = new CookieOptions
             {
-                Expires = DateTimeOffset.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.None,
-                Secure = true,
-                Path = "/"
+                MaxAge = TimeSpan.FromMinutes(2)
+                //Expires = DateTimeOffset.UtcNow.AddDays(30),
+                //SameSite = SameSiteMode.Lax,
+                //HttpOnly = true,
+                //Secure = true,
+                //Path = "/"
             };
 
             
             Response.Cookies.Append("theme", theme, options);
+
+            var setCookieValue = new StringValues();
+
+            var certificate = HttpContext.Connection.GetClientCertificateAsync;
+            var hasSetCookieHeader = HttpContext.Response.Headers.ContainsKey("Set-Cookie");
+            if (hasSetCookieHeader)
+            {
+                setCookieValue = HttpContext.Response.Headers["Set-Cookie"];
+                // Now you can work with the value of the Set-Cookie header
+            }
 
             return Ok(theme);
         }

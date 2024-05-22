@@ -13,10 +13,18 @@ using Sillicon_BlazorApp_IA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAntiforgery(x =>
+//builder.Services.AddAntiforgery(x =>
+//{
+//    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//    x.Cookie.SameSite = SameSiteMode.None;
+//});
+
+builder.Services.AddCors(x =>
 {
-    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    x.Cookie.SameSite = SameSiteMode.None;
+    x.AddDefaultPolicy(x =>
+    {
+        x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
 });
 
 // Add services to the container.
