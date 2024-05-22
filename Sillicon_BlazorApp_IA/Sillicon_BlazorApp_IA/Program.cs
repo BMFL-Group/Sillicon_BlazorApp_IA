@@ -1,4 +1,5 @@
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,12 @@ using Sillicon_BlazorApp_IA.Services;
 //NYA APPEN!!!!!!!!
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAntiforgery(x =>
+{
+    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    x.Cookie.SameSite = SameSiteMode.None;
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

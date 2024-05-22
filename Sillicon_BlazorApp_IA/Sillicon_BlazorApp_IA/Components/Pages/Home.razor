@@ -12,5 +12,6 @@
 <Subscribe />
 
 @code {
-
+    [CascadingParameter(Name = "ModePolicy")]
+    public string ModePolicy { get; set; } = null!;
 }

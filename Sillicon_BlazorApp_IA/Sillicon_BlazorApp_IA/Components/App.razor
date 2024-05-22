@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <param-Policy = "@HttpContext.Request.Cookies["theme"]" />
+    <param-Policy = "@HttpContext.Request.Cookies["theme"]" ?? "light" />
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 </body>
@@ -23,5 +23,5 @@
 
 @code {
     [CascadingParameter(Name = "ModePolicy")]
-    public string Theme { get; set; } = null!;
+    public string theme { get; set; } = "test";
 }
