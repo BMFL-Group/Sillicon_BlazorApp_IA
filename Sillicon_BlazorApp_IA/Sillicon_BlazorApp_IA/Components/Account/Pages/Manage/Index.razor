@@ -10,7 +10,7 @@
         <div class="address">
             <h5>Address Info</h5>
             <div class="adress">
-                <AddressInfoFormPartial />
+                <AddressInfoFormPartial AddressForm="AddressForm" User="User" />
             </div>
         </div>
     </div>
@@ -21,20 +21,25 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
+    private AddressModel Address { get; set; } = null!;
+
     private ApplicationUser User { get; set; } = null!;
 
     [SupplyParameterFromForm(FormName = "basicmodelform")]
     private BasicInfoFormModel BasicFormModel { get; set; } = new();
 
+    [SupplyParameterFromForm(FormName = "addressform")]
+    private AddressFormModel AddressForm { get; set; } = new();
+
     protected override async Task OnInitializedAsync()
     {
-        if(HttpContext != null)
+        if (HttpContext != null)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                User = user;
-
+                User = user;                                                                                                                                                                                                   
+               
                 if (User != null)
                 {
                     BasicFormModel.FirstName = User.FirstName;

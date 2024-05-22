@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Models.Account;
 using Infrastructure.Models;
 using Sillicon_BlazorApp_IA.Data;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace Sillicon_BlazorApp_IA.Services
 {
@@ -19,6 +20,7 @@ namespace Sillicon_BlazorApp_IA.Services
             user.UserName = form.Email;
             user.PhoneNumber = form.Phone;
             user.Biography = form.Bio;
+            user.UserName = form.Email;
         }
 
         /// <summary>
@@ -33,6 +35,22 @@ namespace Sillicon_BlazorApp_IA.Services
             address.PostalCode = form.PostalCode;
             address.City = form.City;
         }
-  
+
+        public static AddressModel MapNewAddressFromForm(AddressFormModel form)
+        {
+            if (form != null)
+            {
+                var newAddress = new AddressModel
+                {
+                    AddressLine_1 = form.Addressline_1,
+                    AddressLine_2 = form.Addressline_2,
+                    PostalCode = form.PostalCode,
+                    City = form.City
+                };
+
+                return newAddress;
+            }
+            return null!;
+        }
     }
 }

@@ -1,33 +1,34 @@
-﻿
+﻿@rendermode InteractiveServer
+
 <div class="adress">
     <div class="address-form-group">
 
-        <EditForm Model="AddressModel" FormName="addressname" OnInvalidSubmit="UpdateAddress" novalidate>
+        <EditForm Model="AddressForm" FormName="addressform" OnValidSubmit="UpdateAddress" novalidate>
             <DataAnnotationsValidator />
 
             <div id="form-addressline_1" class="input-group">
                 <label for="Addressline_1">Address line 1</label>
-                <ValidationMessage For="() => AddressModel.Addressline_1" />
-                <InputText @bind-Value="AddressModel.Addressline_1" id="AddressLine_1" placeholder="Enter your address line" />
+                <ValidationMessage For="() => AddressForm.Addressline_1" />
+                <InputText @bind-Value="AddressForm.Addressline_1" id="AddressLine_1" placeholder="Enter your address line" />
             </div>
 
             <div id="form-addressline_2" class="input-group">
                 <label for="Addressline_2">Address line 2 <span>(optional)</span></label>
-                <ValidationMessage For="() => AddressModel.Addressline_2" />
-                <InputText @bind-Value="AddressModel.Addressline_2" id="AddressLine_´2" placeholder="Enter your second address line" />
+                <ValidationMessage For="() => AddressForm.Addressline_2" />
+                <InputText @bind-Value="AddressForm.Addressline_2" id="AddressLine_´2" placeholder="Enter your second address line" />
             </div>
 
             <div class="postal-city">
                 <div id="form-postalcode" class="input-group">
                     <label for="PostalCode">Postal code</label>
-                    <ValidationMessage For="() => AddressModel.PostalCode" />
-                    <InputText @bind-Value="AddressModel.PostalCode" id="PostalCode" placeholder="Enter your postal code" />
+                    <ValidationMessage For="() => AddressForm.PostalCode" />
+                    <InputText @bind-Value="AddressForm.PostalCode" id="PostalCode" placeholder="Enter your postal code" />
                 </div>
 
                 <div id="form-city" class="input-group">
                     <label for="City">City</label>
-                    <ValidationMessage For="() => AddressModel.City" />
-                    <InputText @bind-Value="AddressModel.City" id="City" placeholder="Enter your city" />
+                    <ValidationMessage For="() => AddressForm.City" />
+                    <InputText @bind-Value="AddressForm.City" id="City" placeholder="Enter your city" />
                 </div>
             </div>
 
@@ -35,16 +36,85 @@
                 <button type="button" class="btn-gray">Cancel</button>
                 <button type="submit" class="btn-theme">Save changes</button>
             </div>
+
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div class="success-message">@SuccessMessage</div>
+            }
+            else if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="error-message">@ErrorMessage</div>
+            }
         </EditForm>
     </div>
 </div>
 
 
 @code {
-    private AddressFormModel AddressModel = new AddressFormModel();
+
+    [Parameter]
+    public AddressFormModel AddressForm { get; set; } = null!;
+
+    [Parameter]
+    public AddressModel Address { get; set; } = null!;
+
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
+
+    private string SuccessMessage { get; set; } = "";
+
+    private string ErrorMessage { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            var address = await _dataContext.Addresses.FindAsync(User.AddressId);
+            if (address != null)
+            {
+                AddressForm.Addressline_1 = address.AddressLine_1;
+                AddressForm.Addressline_2 = address.AddressLine_2 ?? "";
+                AddressForm.City = address.City;
+                AddressForm.PostalCode = address.PostalCode;
+            }
+        }
+    }
 
     private async Task UpdateAddress()
     {
-        
+        SuccessMessage = "";
+        ErrorMessage = "";
+
+        var user = await _userManager.FindByIdAsync(User.Id);
+        if (user != null)
+        {
+            var address = _dataContext.Addresses.FirstOrDefault(x => x.AddressLine_1 == AddressForm.Addressline_1 && x.City == AddressForm.City && x.PostalCode == AddressForm.PostalCode);
+
+            if (address is null)
+            {
+                var newAddress = FormMapper.MapNewAddressFromForm(AddressForm);
+                try
+                {
+                    _dataContext.Addresses.Add(newAddress);
+                    await _dataContext.SaveChangesAsync();
+                    user!.AddressId = newAddress.Id;
+                    await _userManager.UpdateAsync(user);
+                }
+                catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); return; }
+                SuccessMessage = "Address added successfully.";
+            }
+            else if (address != null)
+            {
+                user!.AddressId = address.Id;
+                try
+                {
+                    await _userManager.UpdateAsync(user);
+                }
+                catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); return; }
+                SuccessMessage = "Address updated successfully.";
+            }
+            else
+                ErrorMessage = "Something went wrong, try again later";
+        }
     }
 }
