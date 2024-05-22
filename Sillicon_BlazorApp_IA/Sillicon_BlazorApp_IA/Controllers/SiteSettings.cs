@@ -6,6 +6,8 @@ namespace Sillicon_BlazorApp_IA.Controllers;
 
 public class SiteSettings : Controller
 {
+    private readonly HttpContextAccessor _contextAccessor;
+
     public IActionResult ChangeTheme(string theme)
     {
         try
@@ -16,7 +18,10 @@ public class SiteSettings : Controller
                 SameSite = SameSiteMode.Strict
             };
 
-            //_httpContextAccessor.HttpContext.Response.Cookies.Append("theme", theme, options);
+            if (_contextAccessor != null)
+            {
+                _contextAccessor.HttpContext.Response.Cookies.Append("theme", theme, options);  
+            }
             return Ok(theme);
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
