@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Models.Account;
 using Infrastructure.Models;
 using Sillicon_BlazorApp_IA.Data;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace Sillicon_BlazorApp_IA.Services
 {
