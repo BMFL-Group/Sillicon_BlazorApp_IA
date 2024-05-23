@@ -21,8 +21,6 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    // private AddressModel Address { get; set; } = null!;
-
     private ApplicationUser User { get; set; } = null!;
 
     [SupplyParameterFromForm(FormName = "basicmodelform")]
@@ -38,13 +36,8 @@
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                User = user;                                                                                                                                                                                                   
-               
-                BasicFormModel.FirstName = user.FirstName;
-                BasicFormModel.LastName = user.LastName;
-                BasicFormModel.Email = user.Email ?? "";
-                BasicFormModel.Phone = user.PhoneNumber ?? "";
-                BasicFormModel.Bio = user.Biography;
+                User = user;
+                AutoMapper.MapNewFormValues(BasicFormModel, user);
             }
         }
     }
