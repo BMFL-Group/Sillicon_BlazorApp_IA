@@ -19,7 +19,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //lägg till user logik här
         if (_context != null)
         {
             var user = await _userManager.GetUserAsync(_context.User);

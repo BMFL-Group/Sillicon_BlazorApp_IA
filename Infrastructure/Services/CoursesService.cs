@@ -176,4 +176,23 @@ public class CoursesService
         catch (Exception ex) { }
         return null!;
     }
+
+    public async Task<IEnumerable<SavedCoursesModel>> GetSavedCoursesAsync(string userId)
+    {
+        try
+        {
+            var saveCoursesResponse = await _httpClient.GetAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/user/{userId}");
+            if (saveCoursesResponse.IsSuccessStatusCode)
+            {
+                var json = await saveCoursesResponse.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<IEnumerable<SavedCoursesModel>>(json);
+                if (result != null && result.Count() > 0)
+                {
+                    return result;
+                }
+            }
+        }
+        catch(Exception ex) { }
+        return null!;
+    }
 }
