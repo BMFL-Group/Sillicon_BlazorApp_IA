@@ -1,4 +1,4 @@
-.account-saved-courses {
+.saved-courses {
     display: grid;
     grid-template-columns: auto;
     grid-template-areas:
@@ -15,12 +15,9 @@
         gap: 8rem;
         padding: 2rem 0;
     }
+   background-color: red !important; 
 
-    .sidebar {
-        grid-area: sidebar;
-    }
-
-    .content-box-saved-courses {
+    .courses {
         grid-area: details;
 
         .top-wrapper {
@@ -119,9 +116,9 @@
                         transform: translate(-50%, -50%);
                         color: var(--color-black);
                     }
-                    /*                    .marked {
+                                        .marked {
                         color: var(--color-warning);
-                    }*/
+                    }
                 }
 
                 .text-wrapper {
@@ -184,7 +181,7 @@
                 }
             }
         }
-        /*        .grid-container {
+                .grid-container {
             display: grid;
             grid-template-columns: auto;
             margin: 2rem 0 4rem;
@@ -293,6 +290,6 @@
                     }
                 }
             }
-        }*/
+        }
     }
 }
