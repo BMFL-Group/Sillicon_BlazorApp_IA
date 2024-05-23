@@ -181,7 +181,7 @@ public class CoursesService
     {
         try
         {
-            var saveCoursesResponse = await _httpClient.GetAsync($"https://localhost:7251/api/SavedCourses/user/{userId}");
+            var saveCoursesResponse = await _httpClient.GetAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/user/{userId}");
             if (saveCoursesResponse.IsSuccessStatusCode)
             {
                 var json = await saveCoursesResponse.Content.ReadAsStringAsync();
