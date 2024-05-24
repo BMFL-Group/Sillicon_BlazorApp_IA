@@ -1,0 +1,124 @@
+﻿@rendermode InteractiveServer
+
+<div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
+    <div class="img-wrapper">
+        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+        <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
+    </div>
+
+    <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@UserId" />
+
+    <div class="text-wrapper">
+
+        <div class="text-title">
+            <h5 class="course-title">@course.Title</h5>
+        </div>
+
+        <div class="text-rest">
+            <span class="by">By</span>
+            @if (course.Authors != null && course.Authors.Count() > 0)
+            {
+                int i = 0;
+                foreach (var author in course.Authors)
+                {
+                    <span class="author">@author.Name</span>
+                    i++;
+                    if (course.Authors.Count() != i)
+                    {
+                        <span> & </span>
+                    }
+                }
+            }
+            <div class="price-wrapper">
+                <div class="@(course.DiscountPrice >= 1 ? "discount-price" : "hidden")">@course.Currency@course.DiscountPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</div>
+                <div class="@(course.DiscountPrice >= 1 ? "price discount-applied" : "price")">@course.Currency@course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</div>
+            </div>
+            <div class="divider"></div>
+            <div class="description-wrapper">
+                @{
+                    double likesInK = Math.Max(0, (Math.Round(course.NumberOfLikes / 1000.0, 1)));
+
+                    <span class="description"><i class="fa-light fa-clock"></i> @course.LengthInHours hours</span>
+                    <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.RatingInPercentage% (@likesInK K)</span>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Course? course { get; set; }
+
+    [Parameter]
+    public SavedCoursesModel? savedCourse { get; set; }
+
+    [Parameter]
+    public string? UserId { get; set; }
+
+    public string? isBookmarkedValue { get; set; }
+
+    string navigateToPage { get; set; } = "coursedetails";
+    
+    bool isLoaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadLocalStorageData();
+            }
+            catch
+            {
+                SetItemInLocalStorage("isBookmarked", "false");
+                await LoadLocalStorageData();
+            }
+            finally
+            {
+                isLoaded = true;
+                StateHasChanged(); // Notify Blazor to re-render the component
+            }
+        }
+    }
+
+    public async Task LoadLocalStorageData()
+    {
+        isBookmarkedValue = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "isBookmarked");
+    }
+
+
+    public async Task SetItemInLocalStorage(string key, string value)
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
+    public async Task<string> GetItemFromLocalStorage(string key)
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<string>("localStorage.getItem", key);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+        return null!;
+    }
+
+
+    private async Task GoToCourseDetails(string page, string id)
+    {
+        bool isBookmarked = await GetItemFromLocalStorage("isBookmarked") == "false";
+
+        //bool isBookmarked = isBookmarkedValue == "false";
+
+        if (isBookmarked)
+        {
+            var baseUrl = navigationManager.BaseUri;
+            navigationManager.NavigateTo($"{baseUrl}{page}/{id}");
+        }
+    }
+}
