@@ -130,6 +130,22 @@
                         }
                     }
 
+                    .course-enrolled {
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        background-color: var(--color-success);
+                        padding: 0.5rem 3rem;
+                        margin: 1rem -3rem;
+                        transform: rotateZ(315deg);
+                        //border-radius: 0.2rem;
+
+                        span {
+                            padding: 0.2rem;
+                            color: white;
+                        }
+                    }
+
                     .text-wrapper {
                         display: grid;
                         grid-template-rows: 1.2fr 2fr;

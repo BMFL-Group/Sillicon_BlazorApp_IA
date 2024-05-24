@@ -92,7 +92,7 @@
     }
     else
     {
-        List<string> coursesToSkip = SavedCourses?.Select(x => x.Courseid).ToList() ?? new();
+        List<string> coursesToSkip = SavedCourses?.Select(x => x.CourseId).ToList() ?? new();
 
         @foreach (var course in courses)
         {
@@ -153,9 +153,17 @@
                         <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
-                        @foreach (var savedCourse in SavedCourses.Where(x => x.Courseid == course.Id))
+                        @foreach (var savedCourse in SavedCourses.Where(x => x.CourseId == course.Id))
                         {
-                            <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@User.Id" /> 
+                            <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@User.Id" />
+                            @if (savedCourse.HasJoined)
+                            {
+                                <div class="course-enrolled">
+                                    <span>
+                                        Enrolled
+                                    </span>
+                                </div>                            
+                            }
                         }
                     <div class="text-wrapper">
                         <div class="text-title">

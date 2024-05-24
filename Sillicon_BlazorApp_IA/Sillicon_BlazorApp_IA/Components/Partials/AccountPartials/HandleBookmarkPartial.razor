@@ -51,7 +51,7 @@
         {
             SavedCoursesModel bookmarkedCourse = new()
                 {
-                    Courseid = courseId,
+                    CourseId = courseId,
                     UserId = UserId,
                     IsBookmarked = !isCourseBookmarked,
                     HasJoined = hasJoinedCourse
@@ -60,10 +60,10 @@
             var json = JsonConvert.SerializeObject(bookmarkedCourse);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            if (isCourseBookmarked == false)
+            if (bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == false)
             {
 
-                var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}/api/SavedCourses", content);
+                var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses", content);
                 if (response.IsSuccessStatusCode)
                 {
                     //add logic for modal to show tha course was added or similar.
@@ -72,7 +72,7 @@
                     SetItemInLocalStorage("isBookmarked", "false");
                 }
             }
-            else if (isCourseBookmarked == true && hasJoinedCourse == true)
+            else if (bookmarkedCourse.IsBookmarked == false && bookmarkedCourse.HasJoined == true || bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == true)
             {
                 if (Course != null)
                 {
@@ -80,7 +80,7 @@
                     json = JsonConvert.SerializeObject(bookmarkedCourse);
                     content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}/api/SavedCourses/{SavedCourse.Id}", content);
+                    var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}", content);
                     if (response.IsSuccessStatusCode)
                     {
                         //add logic for modal to show tha course was added or similar.
@@ -99,7 +99,7 @@
                     json = JsonConvert.SerializeObject(bookmarkedCourse);
                     content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}/api/SavedCourses/{SavedCourse.Id}");
+                    var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}");
                     if (response.IsSuccessStatusCode)
                     {
                         //add logic for modal to show tha course was added or similar.

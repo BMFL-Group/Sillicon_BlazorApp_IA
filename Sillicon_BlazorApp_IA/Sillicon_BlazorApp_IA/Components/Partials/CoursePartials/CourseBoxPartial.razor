@@ -7,6 +7,14 @@
     </div>
 
     <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@UserId" />
+    @if (savedCourse.HasJoined == true)
+    {
+        <div class="course-enrolled">
+            <span>
+                Enrolled
+            </span>
+        </div>
+    }
 
     <div class="text-wrapper">
 

@@ -14,7 +14,7 @@
             {
                 foreach (var savedCourse in savedCourses)
                 {
-                    if (savedCourse.Courseid == course.Id)
+                    if (savedCourse.CourseId == course.Id)
                     {
                         <CourseBoxPartial Course="@course" savedCourse="@savedCourse" UserId="@UserId" />
                     }

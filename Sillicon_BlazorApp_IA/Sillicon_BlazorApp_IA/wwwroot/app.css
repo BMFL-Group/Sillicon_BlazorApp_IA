@@ -2280,6 +2280,19 @@ footer .container .display-none {
   transform: translate(-50%, -50%);
   color: var(--color-black);
 }
+.courses .container .grid-container .grid-item .course-enrolled {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-success);
+  padding: 0.5rem 3rem;
+  margin: 1rem -3rem;
+  transform: rotateZ(315deg);
+}
+.courses .container .grid-container .grid-item .course-enrolled span {
+  padding: 0.2rem;
+  color: white;
+}
 .courses .container .grid-container .grid-item .text-wrapper {
   display: grid;
   grid-template-rows: 1.2fr 2fr;
@@ -3574,6 +3587,19 @@ footer .container .display-none {
 }
 .saved-courses .container .courses .grid-container .grid-item .bookmark-circle .marked {
   color: var(--color-warning);
+}
+.saved-courses .container .courses .grid-container .grid-item .course-enrolled {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-success);
+  padding: 0.5rem 3rem;
+  margin: 1rem -3rem;
+  transform: rotateZ(315deg);
+}
+.saved-courses .container .courses .grid-container .grid-item .course-enrolled span {
+  padding: 0.2rem;
+  color: white;
 }
 .saved-courses .container .courses .grid-container .grid-item .text-wrapper {
   display: grid;
