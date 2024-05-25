@@ -73,19 +73,19 @@
                     text-decoration: none;
                     z-index: 2;
                     //@include card;
-                    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+                    transition: all 0.15s ease-out;
 
 
                     &:hover {
                         //@include cardHover;
                         transform: scale(101%, 101%);
-                        transition: transform 0.2s ease-in, box-shadow 0.2s ease-in;
+                        transition: all 0.3s ease-in;
                     }
 
                     &:active {
                         //@include cardActive;
                         transform: scale(99%, 99%);
-                        transition: transform 0.2s ease-in, box-shadow 0.2s ease-in;
+                        transition: all 0.3s ease-in;
                     }
 
                     .img-wrapper {
@@ -127,6 +127,22 @@
 
                         .marked {
                             color: var(--color-warning);
+                        }
+                    }
+
+                    .course-enrolled {
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        background-color: var(--color-success);
+                        padding: 0.5rem 3rem;
+                        margin: 1rem -3rem;
+                        transform: rotateZ(315deg);
+                        //border-radius: 0.2rem;
+
+                        span {
+                            padding: 0.2rem;
+                            color: white;
                         }
                     }
 

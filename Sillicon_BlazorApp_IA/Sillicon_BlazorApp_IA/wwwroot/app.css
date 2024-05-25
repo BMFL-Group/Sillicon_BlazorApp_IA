@@ -2237,7 +2237,7 @@ footer .container .display-none {
   overflow: hidden;
   text-decoration: none;
   z-index: 2;
-  transition: all 0.3s ease-out;
+  transition: all 0.15s ease-out;
 }
 .courses .container .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
@@ -2279,6 +2279,19 @@ footer .container .display-none {
   left: 50%;
   transform: translate(-50%, -50%);
   color: var(--color-black);
+}
+.courses .container .grid-container .grid-item .course-enrolled {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-success);
+  padding: 0.5rem 3rem;
+  margin: 1rem -3rem;
+  transform: rotateZ(315deg);
+}
+.courses .container .grid-container .grid-item .course-enrolled span {
+  padding: 0.2rem;
+  color: white;
 }
 .courses .container .grid-container .grid-item .text-wrapper {
   display: grid;
@@ -3528,15 +3541,15 @@ footer .container .display-none {
   overflow: hidden;
   text-decoration: none;
   z-index: 2;
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition: all 0.15s ease-out;
 }
 .saved-courses .container .courses .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
-  transition: transform 0.2s ease-in, box-shadow 0.2s ease-in;
+  transition: all 0.3s ease-in;
 }
 .saved-courses .container .courses .grid-container .grid-item:active {
   transform: scale(99%, 99%);
-  transition: transform 0.2s ease-in, box-shadow 0.2s ease-in;
+  transition: all 0.3s ease-in;
 }
 .saved-courses .container .courses .grid-container .grid-item .img-wrapper .course-image {
   width: 100%;
@@ -3574,6 +3587,19 @@ footer .container .display-none {
 }
 .saved-courses .container .courses .grid-container .grid-item .bookmark-circle .marked {
   color: var(--color-warning);
+}
+.saved-courses .container .courses .grid-container .grid-item .course-enrolled {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--color-success);
+  padding: 0.5rem 3rem;
+  margin: 1rem -3rem;
+  transform: rotateZ(315deg);
+}
+.saved-courses .container .courses .grid-container .grid-item .course-enrolled span {
+  padding: 0.2rem;
+  color: white;
 }
 .saved-courses .container .courses .grid-container .grid-item .text-wrapper {
   display: grid;

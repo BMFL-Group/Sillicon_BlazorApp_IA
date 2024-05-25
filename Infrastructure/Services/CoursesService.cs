@@ -186,7 +186,7 @@ public class CoursesService
             {
                 var json = await saveCoursesResponse.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<IEnumerable<SavedCoursesModel>>(json);
-                if (result != null && result.Count() > 0)
+                if (result != null && result.Any())
                 {
                     return result;
                 }

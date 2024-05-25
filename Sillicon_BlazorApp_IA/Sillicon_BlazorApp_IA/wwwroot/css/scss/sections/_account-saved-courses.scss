@@ -15,7 +15,8 @@
         gap: 8rem;
         padding: 2rem 0;
     }
-   background-color: red !important; 
+
+    background-color: red !important;
 
     .courses {
         grid-area: details;
@@ -116,8 +117,25 @@
                         transform: translate(-50%, -50%);
                         color: var(--color-black);
                     }
-                                        .marked {
+
+                    .marked {
                         color: var(--color-warning);
+                    }
+                }
+
+                .course-enrolled {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    background-color: var(--color-success);
+                    padding: 0.5rem 3rem;
+                    margin: 1rem -3rem;
+                    transform: rotateZ(315deg);
+                    //border-radius: 0.2rem;
+
+                    span {
+                        padding: 0.2rem;
+                        color: white;
                     }
                 }
 
@@ -181,7 +199,8 @@
                 }
             }
         }
-                .grid-container {
+
+        .grid-container {
             display: grid;
             grid-template-columns: auto;
             margin: 2rem 0 4rem;
