@@ -1,5 +1,4 @@
 ﻿@rendermode InteractiveServer
-
 @attribute [StreamRendering]
 
 <div class="top-row">
@@ -87,14 +86,13 @@
 
 <div class="grid-container items">
 
-
     @if (courses.Count() < 1 || User == null)
     {
         <p>Loading courses...</p>
     }
     else
     {
-        List<string> coursesToSkip = SavedCourses?.Select(x => x.Courseid).ToList() ?? new List<string>();
+        List<string> coursesToSkip = SavedCourses?.Select(x => x.CourseId).ToList() ?? new();
 
         @foreach (var course in courses)
         {
@@ -102,12 +100,12 @@
 
             if (!isSaved)
             {
-                <NavLink class="grid-item card" href="@GoToCourseDetails("coursedetails", course.Id)">
+                <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
                     <div class="img-wrapper">
                         <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
-                    <HandleBookmarkPartial Course="@course" UserId="@User.Id" />
+                        <HandleBookmarkPartial Course="@course" UserId="@User.Id" />
                     <div class="text-wrapper">
                         <div class="text-title">
                             <h5 class="course-title">@course.Title</h5>
@@ -145,19 +143,28 @@
                             </div>
                         </div>
                     </div>
-                </NavLink>
+                </div>
             }
             else
             {
-                <NavLink class="grid-item card" href="@GoToCourseDetails("coursedetails", course.Id)">
-                    <div class="img-wrapper">
+
+                <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
+                     <div class="img-wrapper">
                         <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
-                    @foreach (var savedCourse in SavedCourses.Where(x => x.Courseid == course.Id))
-                    {
-                        <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@User.Id" />
-                    }
+                        @foreach (var savedCourse in SavedCourses.Where(x => x.CourseId == course.Id))
+                        {
+                            <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@User.Id" />
+                            @if (savedCourse.HasJoined)
+                            {
+                                <div class="course-enrolled">
+                                    <span>
+                                        Enrolled
+                                    </span>
+                                </div>                            
+                            }
+                        }
                     <div class="text-wrapper">
                         <div class="text-title">
                             <h5 class="course-title">@course.Title</h5>
@@ -195,7 +202,7 @@
                             </div>
                         </div>
                     </div>
-                </NavLink>
+                </div>
             }
         }
 
@@ -272,8 +279,61 @@
 </div>
 
 
-
 @code {
+
+    public string? isBookmarkedValue { get; set; }
+    bool isLoaded = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadLocalStorageData();
+            }
+            catch
+            {
+                SetItemInLocalStorage("isBookmarked", "false");                
+                await LoadLocalStorageData();
+            }
+            finally
+            {
+                isLoaded = true;
+                StateHasChanged(); // Notify Blazor to re-render the component                
+            }
+        }
+    }
+
+    public async Task LoadLocalStorageData()
+    {
+        isBookmarkedValue = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "isBookmarked");
+    }
+
+
+    public async Task SetItemInLocalStorage(string key, string value)
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
+    public async Task<string> GetItemFromLocalStorage(string key)
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<string>("localStorage.getItem", key);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+        return null!;
+    }
+
+
+
+
+
     //--------------------Fetching Courses here------------------------------------
 
     IEnumerable<SavedCoursesModel>? SavedCourses { get; set; }
@@ -281,6 +341,7 @@
     Pagination pagination { get; set; } = new();
     string categoryQuery = "all";
     int pageNumber { get; set; } = 1;
+    string navigateToPage { get; set; } = "coursedetails";
 
     [Parameter]
     public ApplicationUser? User { get; set; } = null;
@@ -308,10 +369,15 @@
         }
     }
 
-    private string GoToCourseDetails(string page, string id)
+    private async Task GoToCourseDetails(string page, string id)
     {
-        var baseUrl = navigationManager.BaseUri;
-        return $"{baseUrl}{page}/{id}";
+        bool isBookmarked = await GetItemFromLocalStorage("isBookmarked") == "false";
+
+        if (isBookmarked)
+        {
+            var baseUrl = navigationManager.BaseUri;
+            navigationManager.NavigateTo($"{baseUrl}{page}/{id}");            
+        }
     }
 
     // This is currently a hardcoded List.
@@ -458,7 +524,6 @@
     // sets cancellation token for searchQuery onKeyupEvent.
     private CancellationTokenSource cts = new CancellationTokenSource();
 
-
     // Sets aria-expanded to true or false
     private Dictionary<string, object> GetMenuAttributes(string dropdownName)
     {
@@ -515,15 +580,6 @@
         var courseResult = await _coursesService.GetAllCoursesAsync(category, newSearchQuery, pageNumber, pageSize);
         selectedCategory = category;
         await populateCourses(courseResult);
-    }
-
-    private string GenerateUrl(object parameters)
-    {
-        var baseUrl = navigationManager.BaseUri;
-        var queryString = string.Join("&",
-            parameters.GetType().GetProperties().Select(p => $"{p.Name}={p.GetValue(parameters)}"));
-
-        return $"{baseUrl}?{queryString}";
     }
 }
 

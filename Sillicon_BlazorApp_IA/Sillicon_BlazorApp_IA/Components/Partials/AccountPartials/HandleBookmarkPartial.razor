@@ -14,19 +14,18 @@
         hasSavedCourseValue = false;
         hasJoinedCourseValue = false;
     }
+        <div class="bookmark-circle" @onclick="(e) => HandleBookmark(Course.Id, hasSavedCourseValue, hasJoinedCourseValue)">
 
-    <a class="bookmark-circle" @onclick="(e) => HandleBookmark(Course.Id, hasSavedCourseValue, hasJoinedCourseValue)">
+            @if (hasSavedCourseValue)
+            {
+                <i class="fa-solid fa-bookmark bookmark-filled"></i>
+            }
+            else
+            {
+                <i class="fa-regular fa-bookmark bookmark-empty"></i>
+            }
 
-        @if (hasSavedCourseValue)
-        {
-            <i class="fa-solid fa-bookmark bookmark-filled"></i>
-        }
-        else
-        {
-            <i class="fa-regular fa-bookmark bookmark-empty"></i>
-        }
-
-    </a>
+        </div>
 }
 
 
@@ -39,13 +38,20 @@
     public string? UserId { get; set; }
 
 
+    void SetItemInLocalStorage(string key, string value)
+    {
+        JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
     public async Task HandleBookmark(string courseId, bool isCourseBookmarked, bool hasJoinedCourse)
     {
+        SetItemInLocalStorage("isBookmarked", "true");
+
         if (UserId != null)
         {
             SavedCoursesModel bookmarkedCourse = new()
                 {
-                    Courseid = courseId,
+                    CourseId = courseId,
                     UserId = UserId,
                     IsBookmarked = !isCourseBookmarked,
                     HasJoined = hasJoinedCourse
@@ -54,16 +60,19 @@
             var json = JsonConvert.SerializeObject(bookmarkedCourse);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            if (isCourseBookmarked == false)
+            if (bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == false)
             {
 
-                var response = await client.PostAsync("https://localhost:7251/api/SavedCourses", content);
+                var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses", content);
                 if (response.IsSuccessStatusCode)
                 {
                     //add logic for modal to show tha course was added or similar.
+                    //StateHasChanged();
+                    navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                    SetItemInLocalStorage("isBookmarked", "false");
                 }
             }
-            else if (isCourseBookmarked == true && hasJoinedCourse == true)
+            else if (bookmarkedCourse.IsBookmarked == false && bookmarkedCourse.HasJoined == true || bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == true)
             {
                 if (Course != null)
                 {
@@ -71,12 +80,14 @@
                     json = JsonConvert.SerializeObject(bookmarkedCourse);
                     content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PutAsync($"https://localhost:7251/api/SavedCourses/{SavedCourse.Id}", content);
+                    var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}", content);
                     if (response.IsSuccessStatusCode)
                     {
                         //add logic for modal to show tha course was added or similar.
-                        StateHasChanged();
+                        // StateHasChanged();
                         navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                        SetItemInLocalStorage("isBookmarked", "false");
+
                     }
                 }
             }
@@ -88,12 +99,14 @@
                     json = JsonConvert.SerializeObject(bookmarkedCourse);
                     content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.DeleteAsync($"https://localhost:7251/api/SavedCourses/{SavedCourse.Id}");
+                    var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}");
                     if (response.IsSuccessStatusCode)
                     {
                         //add logic for modal to show tha course was added or similar.
-                        StateHasChanged();
+                        // StateHasChanged();
                         navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                        SetItemInLocalStorage("isBookmarked", "false");
+
                     }
                 }
             }
