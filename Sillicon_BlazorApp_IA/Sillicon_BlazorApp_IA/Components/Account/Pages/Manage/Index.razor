@@ -5,12 +5,12 @@
 
 <div class="account-details">
     <div class="container">
-        <ProfileMenuPartial />
-        <BasicInfoFormPartial BasicFormModel="BasicFormModel" User="User"/>
+        <MenuPartial User="UserClient"/>
+        <BasicInfoFormPartial BasicFormModel="BasicFormModel" User="User" />
         <div class="address">
             <h5>Address Info</h5>
             <div class="adress">
-                <AddressInfoFormPartial AddressForm="AddressForm" User="User"/>
+                <AddressInfoFormPartial AddressForm="AddressForm" User="User" />
             </div>
         </div>
     </div>
@@ -22,6 +22,7 @@
     private HttpContext HttpContext { get; set; } = default!;
 
     private ApplicationUser User { get; set; } = null!;
+    private ClientUserModel UserClient { get; set; } = new();
 
     [SupplyParameterFromForm(FormName = "basicmodelform")]
     private BasicInfoFormModel BasicFormModel { get; set; } = new();
@@ -38,6 +39,11 @@
             {
                 User = user;
                 AutoMapper.MapNewFormValues(BasicFormModel, user);
+
+                UserClient.Id = user.Id;
+                UserClient.FirstName = user.FirstName;
+                UserClient.Email = user.Email!;
+                // UserClient.ProfileImg = userInfo.ProfileImageUrl;
             }
         }
     }
