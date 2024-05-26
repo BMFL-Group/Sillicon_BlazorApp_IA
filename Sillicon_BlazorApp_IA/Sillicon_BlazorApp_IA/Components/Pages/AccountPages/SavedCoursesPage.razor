@@ -6,7 +6,7 @@
 <section class="saved-courses">
     <div class="container">
 
-        <ProfileMenuPartial />
+        <ProfileMenuPartial/>
 
         <AccountSavedCoursesPartial /> 
     </div>
@@ -14,8 +14,18 @@
 </section>
 
 @code {
-    [CascadingParameter]
-    private HttpContext? _context { get; set; } = default;
+    // [CascadingParameter]
+    // private HttpContext? HttpContext { get; set; } = default;
+
+    // private ApplicationUser? User { get; set; }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (HttpContext != null)
+    //     {
+    //         User = await _userManager.GetUserAsync(HttpContext.User);
+    //     }
+    // }
 }
 
 

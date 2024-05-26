@@ -3,24 +3,31 @@
 @rendermode InteractiveServer
 
 <PageTitle>Register confirmation</PageTitle>
+<section id="confirmation">
+    <div class="container">
+        <div class="content">
+            <h1>Register confirmation</h1>
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="error-msg">@statusMessage</div>
 
-<h1>Register confirmation</h1>
-
-@if (!string.IsNullOrEmpty(statusMessage))
-{
-    <div class="error-msg">@statusMessage</div>
-
-}
-<p>Didn't recive an email? <button @onclick="ResendCode">resend email</button></p>
-<EditForm FormName="confirmform" Model="ConfirmForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
-    <DataAnnotationsValidator />
-    <div class="input-group">
-        <label for="Code">Enter your code</label>
-        <InputText @bind-Value="ConfirmForm.Code" id="Code" placeholder="Code..." />
-        <ValidationMessage For="() => ConfirmForm.Code" />
+            }
+            <p>Didn't recive an email? <button class="btn-gray" @onclick="ResendCode">resend email</button></p>
+            <EditForm FormName="confirmform" Model="ConfirmForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
+                <DataAnnotationsValidator />
+                <div class="input-group">
+                    <label for="Code">Enter your code</label>
+                    <InputText @bind-Value="ConfirmForm.Code" id="Code" placeholder="Code..." />
+                    <ValidationMessage For="() => ConfirmForm.Code" />
+                </div>
+                <button type="submit" class="btn-theme">Verify</button>
+            </EditForm>
+        </div>      
     </div>
-    <button type="submit" class="btn-theme">Verify</button>
-</EditForm>
+</section>
+
+
+
 
 @code {
 

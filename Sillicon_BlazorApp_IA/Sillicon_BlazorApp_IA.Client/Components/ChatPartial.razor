@@ -1,4 +1,4 @@
-﻿@page "/messages"
+﻿@* @page "/messages"
 @rendermode InteractiveAuto
 
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
@@ -10,7 +10,7 @@
 
 <section id="messages">
     <div class="container">
-        @*         <ProfileMenuPartial /> *@
+                <ProfileMenuPartial />
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -50,18 +50,18 @@
 
 
 @code {
-    // [CascadingParameter]
-    // private HttpContext? Context { get; set; } = default!;
+    [CascadingParameter]
+    private HttpContext? Context { get; set; } = default!;
 
-    // private ApplicationUser? User { get; set; }
+    private ApplicationUser? User { get; set; }
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     if (Context != null)
-    //     {
-    //         User = await _userManager.GetUserAsync(Context.User);
-    //     }
-    // }
+    protected override async Task OnInitializedAsync()
+    {
+        if (Context != null)
+        {
+            User = await _userManager.GetUserAsync(Context.User);
+        }
+    }
 
     private HubConnection? connection;
     private bool isConnected => connection?.State == HubConnectionState.Connected;
@@ -104,15 +104,16 @@
 
         connection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).Build();
 
-        connection.On<string, string, DateTime>("ReceiveMessage", (fromUser, message, dateTime) =>
+        connection.On<string, string, DateTime>("ReceiveMessage", async (fromUser, message, dateTime) =>
         {
             var newMessage = new ChatMessage { UserName = fromUser, Message = message, Created = dateTime };
             messages.Add(newMessage);
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         });
 
         connection.On<string>("UserTyping", (typingUserName) =>
         {
+            Console.WriteLine("någon skriver");
             typingUser = typingUserName;
             InvokeAsync(StateHasChanged);
 
@@ -130,3 +131,4 @@
         await connection.StartAsync();
     }
 }
+ *@

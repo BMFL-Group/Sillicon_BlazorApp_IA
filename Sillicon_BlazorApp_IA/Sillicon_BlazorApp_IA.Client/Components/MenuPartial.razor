@@ -1,5 +1,4 @@
-﻿
-@rendermode InteractiveAuto
+﻿@using Infrastructure.Models.Account
 
 <aside class="profile-menu">
     <div class="name-email-img">
@@ -9,21 +8,12 @@
             <input id="fileUploarder" type="file" name="file" hidden />
             <label class="btn-circle" for="fileUploarder"><i class="fa-regular fa-refresh"></i></label>
         </form>
-     @*    <h5>
-            @if (User != null)
-            {
-                @User.FirstName;
-            }
-        </h5>
-        <p>
-            @if (User != null)
-            {
-                @User.Email;
-            }
-        </p> *@
+        <h5>Fidde@* @user!.FirstName @user.LastName *@</h5>
+        <p>EnEmail@hotmail.com@* @user.Email *@</p>
     </div>
 
     <nav>
+
         <NavLink href="/Account/Manage">
             <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "Account/Manage" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-gear"></i>Account details</div>
         </NavLink>
@@ -39,25 +29,14 @@
         <NavLink href="/savedcourses">
             <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "savedcourses" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-bookmark"></i>Saved courses</div>
         </NavLink>
-
-        <SignoutPartial />
+        
+        <Signout />
     </nav>
 
 </aside>
 
 @inject AuthenticationStateProvider _authenticationStateProvider
-@code
-{
-    // [CascadingParameter]
-    // public HttpContext? HttpContext { get; set; }
+@code {
 
-    // private ApplicationUser? User { get; set; }
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     if (HttpContext != null)
-    //     {
-    //         User = await _userManager.GetUserAsync(HttpContext.User);
-    //     }
-    // }
 }
+

@@ -35,6 +35,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        User = await _userManager.GetUserAsync(Context!.User);
+        if (Context != null)
+        {
+            User = await _userManager.GetUserAsync(Context.User);
+        }
     }
 }
