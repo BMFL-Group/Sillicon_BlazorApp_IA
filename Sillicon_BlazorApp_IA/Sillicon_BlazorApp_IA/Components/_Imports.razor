@@ -23,6 +23,8 @@
 @using System.Diagnostics
 @using Microsoft.AspNetCore.Authentication
 @using Azure.Messaging.ServiceBus
+@using Infrastructure.Models.Courses
+
 
 @inject UserManager<ApplicationUser> _userManager
 @inject IdentityRedirectManager _redirectManager
@@ -31,6 +33,8 @@
 @inject IEmailSender<ApplicationUser> _emailSender
 @inject ILogger<Register> _logger
 @inject IHttpContextAccessor _httpAccessor
+@inject ApplicationDbContext _dataContext
+@inject IJSRuntime JSRuntime
 @* ------------------------------------------------------------ *@
 
 @using Sillicon_BlazorApp_IA.Components.Partials

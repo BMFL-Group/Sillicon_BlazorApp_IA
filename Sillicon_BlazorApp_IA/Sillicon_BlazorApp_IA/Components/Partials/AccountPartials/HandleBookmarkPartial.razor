@@ -1,0 +1,118 @@
+﻿@rendermode InteractiveServer
+
+@if (Course != null)
+{
+    bool hasSavedCourseValue;
+    bool hasJoinedCourseValue;
+    if (SavedCourse != null)
+    {
+        hasSavedCourseValue = SavedCourse.IsBookmarked;
+        hasJoinedCourseValue = SavedCourse.HasJoined;
+    }
+    else
+    {
+        hasSavedCourseValue = false;
+        hasJoinedCourseValue = false;
+    }
+        <div class="bookmark-circle" @onclick="(e) => HandleBookmark(Course.Id, hasSavedCourseValue, hasJoinedCourseValue)">
+
+            @if (hasSavedCourseValue)
+            {
+                <i class="fa-solid fa-bookmark bookmark-filled"></i>
+            }
+            else
+            {
+                <i class="fa-regular fa-bookmark bookmark-empty"></i>
+            }
+
+        </div>
+}
+
+
+@code {
+    [Parameter]
+    public Course? Course { get; set; }
+    [Parameter]
+    public SavedCoursesModel? SavedCourse { get; set; }
+    [Parameter]
+    public string? UserId { get; set; }
+
+
+    void SetItemInLocalStorage(string key, string value)
+    {
+        JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
+    public async Task HandleBookmark(string courseId, bool isCourseBookmarked, bool hasJoinedCourse)
+    {
+        SetItemInLocalStorage("isBookmarked", "true");
+
+        if (UserId != null)
+        {
+            SavedCoursesModel bookmarkedCourse = new()
+                {
+                    CourseId = courseId,
+                    UserId = UserId,
+                    IsBookmarked = !isCourseBookmarked,
+                    HasJoined = hasJoinedCourse
+                };
+
+            var json = JsonConvert.SerializeObject(bookmarkedCourse);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            if (bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == false)
+            {
+
+                var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    //add logic for modal to show tha course was added or similar.
+                    //StateHasChanged();
+                    navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                    SetItemInLocalStorage("isBookmarked", "false");
+                }
+            }
+            else if (bookmarkedCourse.IsBookmarked == false && bookmarkedCourse.HasJoined == true || bookmarkedCourse.IsBookmarked == true && bookmarkedCourse.HasJoined == true)
+            {
+                if (Course != null)
+                {
+                    bookmarkedCourse.Id = SavedCourse!.Id;
+                    json = JsonConvert.SerializeObject(bookmarkedCourse);
+                    content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}", content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //add logic for modal to show tha course was added or similar.
+                        // StateHasChanged();
+                        navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                        SetItemInLocalStorage("isBookmarked", "false");
+
+                    }
+                }
+            }
+            else
+            {
+                if (Course != null)
+                {
+                    bookmarkedCourse.Id = SavedCourse!.Id;
+                    json = JsonConvert.SerializeObject(bookmarkedCourse);
+                    content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{SavedCourse.Id}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //add logic for modal to show tha course was added or similar.
+                        // StateHasChanged();
+                        navigationManager.NavigateTo(navigationManager.BaseUri + "savedcourses", true);
+                        SetItemInLocalStorage("isBookmarked", "false");
+
+                    }
+                }
+            }
+
+        }
+    }
+
+
+}

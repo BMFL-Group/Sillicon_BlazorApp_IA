@@ -1,4 +1,5 @@
 ﻿@page "/notifications"
+@using System.Text.Unicode
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 <PageTitle>notifications</PageTitle>
@@ -36,17 +37,16 @@
     {
         if (User != null && User.Email != null)
         {
-            var subscibeModel = new SubscribeModel { Email = User.Email };
-            var IsSubscribing = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D", subscibeModel);
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D");
+            var json = JsonConvert.SerializeObject(new SubscribeModel { Email = User.Email });
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
 
-            if (IsSubscribing.IsSuccessStatusCode)
-            {
+            if (response.IsSuccessStatusCode)
                 return true;
-            }
             else
-            {
                 return false;
-            }
         }
         return false;
     }
