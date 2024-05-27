@@ -1,21 +1,26 @@
-﻿@* @page "/messages" *@
-@rendermode InteractiveAuto
-
-@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+﻿@rendermode InteractiveAuto
 @using Microsoft.AspNetCore.SignalR.Client
-
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 <PageTitle>messages</PageTitle>
 
 <section id="messages">
     <div class="container">
-@*         <MenuPartial /> *@
         <div class="row">
+
+            <h2>Welcome!</h2>
+            <h5>Sillicon supportchat</h5>
+
             <div class="col">
                 <div class="card">
-                    <div class="card-header">En chatt</div>
-                    <div class="card-body">
+                    <div class="card-header">Ask us anything</div>
+                    <div class="card-body message-container">
+                        <div class="mt-3" style="height: 20px;">
+                            @if (!string.IsNullOrEmpty(typingUser))
+                            {
+                                <div>@typingUser is typing <span>...</span></div>
+                            }
+                        </div>
                         <ul class="list-group">
                             @foreach (var message in messages)
                             {
@@ -24,24 +29,16 @@
                                     <div>@message.Message</div>
                                 </li>
                             }
-                        </ul>
-
-                        <div class="mt-3" style="height: 20px;">
-                            @if (!string.IsNullOrEmpty(typingUser))
-                            {
-                                <div>@typingUser is typing <span>...</span></div>
-                            }
-                        </div>
+                        </ul>                      
                     </div>
                     <div class="card-footer">
                         <div class="mt-2">
                             <textarea class="form-control" placeholder="Message" @bind="currentMessage" @oninput="NotifyTyping"></textarea>
                         </div>
                         <div class="col-2 my-3">
-                            <button class="btn btn-success w-100" @onclick="Send">Send Message</button>
+                            <button class="btn-gray" @onclick="Send">Send Message</button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -49,8 +46,6 @@
 </section>
 
 @code {
-
-    private ClientUserModel User { get; set; } = new();
 
     private HubConnection? connection;
     private bool isConnected => connection?.State == HubConnectionState.Connected;

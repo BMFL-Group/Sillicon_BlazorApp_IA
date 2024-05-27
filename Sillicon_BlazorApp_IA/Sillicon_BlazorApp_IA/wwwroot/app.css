@@ -3932,27 +3932,68 @@ footer .container .display-none {
 #messages .container .row {
   width: 100%;
 }
+#messages .container .row h5 {
+  margin-top: 30px;
+  color: var(--color-theme);
+  margin-bottom: 20px;
+}
 #messages .container .row .col {
   width: 100%;
 }
 #messages .container .row .col .card {
   width: 100%;
+  background: linear-gradient(to right, #6366F1, #d1d5fa);
 }
-#messages .container .bubble-right {
+#messages .container .row .col .card .card-header {
+  font-weight: bold;
+}
+#messages .container .row .col .card .message-container {
+  height: 300px;
+  overflow-y: auto;
+  scroll-behavior: revert-layer;
+  display: flex;
+  flex-direction: column-reverse;
+}
+#messages .container .row .col .card .card-body {
+  background-color: #ffffff;
+}
+#messages .container .row .col .card .card-body .list-group li span {
+  margin-left: 20px;
+}
+#messages .container .row .col .card .card-body .bubble-right {
   text-align: right;
-  background-color: #d1ffd6;
+  background: linear-gradient(to right, #e0c3fc, #8ec5fc);
   margin-left: auto;
   border-radius: 15px;
   padding: 10px;
   max-width: 75%;
 }
-#messages .container .bubble-left {
+#messages .container .row .col .card .card-body .bubble-left {
   text-align: left;
-  background-color: white;
+  background: linear-gradient(to right, #f0f0f0, #ffffff);
   margin-right: auto;
   border-radius: 15px;
   padding: 10px;
   max-width: 75%;
+}
+#messages .container .row .col .card .card-footer .col-2 {
+  width: 100%;
+}
+
+#message-page .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+@media (min-width: 992px) {
+  #message-page .container {
+    flex-wrap: nowrap;
+    gap: 130px;
+  }
+}
+#message-page .container .chat {
+  width: 100%;
+  margin-top: 30px;
 }
 
 .contact-us {

@@ -1,1 +1,35 @@
-﻿
+﻿@page "/messages"
+
+<section id="message-page">
+    <div class="container">
+        <MenuPartial User="UserClient" />
+        <div class="chat">
+            <ChatPartial />
+        </div>
+
+    </div>
+</section>
+
+
+@code {
+
+    [CascadingParameter]
+    private HttpContext? Context { get; set; } = default!;
+    private ClientUserModel UserClient { get; set; } = new();
+    private ApplicationUser? User { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(Context != null)
+        {
+            User = await _userManager.GetUserAsync(Context.User);
+            if(User != null)
+            {
+                UserClient.Id = User.Id;
+                UserClient.FirstName = User.FirstName;
+                UserClient.Email = User.Email!;
+                // UserClient.ProfileImg = User.ProfileImageUrl;
+            }
+        }
+    }
+}
