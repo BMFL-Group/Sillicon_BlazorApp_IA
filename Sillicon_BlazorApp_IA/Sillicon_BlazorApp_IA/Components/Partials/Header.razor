@@ -5,7 +5,9 @@
 
         <NavLink id="logo" href="/"><img src="/img/logo-light.svg" alt="Silicon logo"></NavLink>        
         
+        @* <HeaderNav IsDarkMode="IsDarkMode" /> *@
         <HeaderNav />
+
 
         @* <MobileMenuButton /> *@
         <button class="btn btn-mobile" id="btn-mobile" aria-expanded="false" @onclick="ToggleMenu">
@@ -21,10 +23,6 @@
 </header>
 
 @code {
-    [CascadingParameter(Name = "ModePolicy")]
-    public string Theme { get; set; } = null!;
-
-    //------------------------------------------------------------------
     private bool isOpen { get; set; } = false;
 
     private void ToggleMenu()
@@ -37,6 +35,5 @@
         var attributes = new Dictionary<String, Object>();
         attributes["aria-expanded"] = isOpen.ToString().ToLower();
         return attributes;
-    }
-    //------------------------------------------------------------------
+    } 
 }

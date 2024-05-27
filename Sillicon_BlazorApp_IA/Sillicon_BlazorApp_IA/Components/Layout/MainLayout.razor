@@ -1,7 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap")">
+<div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap") @(_preferences.IsDarkMode ? "dark" : "light")">
 
+    @* <Header IsDarkMode="IsDarkMode" /> *@
     <Header />
 
     @* this conditional statement renders breadcrumbs only if not on first page ("") *@
@@ -9,9 +10,6 @@
     {
         <Breadcrumbs />
     }
-    <main>
-        @Body
-    </main>
         
     <Footer />
 
@@ -25,6 +23,28 @@
 
 
 @code {
-    [CascadingParameter(Name = "ModePolicy")]
-    public string ModePolicy { get; set; } = null!;
+    public Preferences _preferences { get; set; } = new();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            siteSettings.OnChange += SiteSettingsOnChange;
+            _preferences = await siteSettings.GetPreferences();
+            
+            StateHasChanged();
+        }
+    }
+
+    private void SiteSettingsOnChange(Preferences newPreferences)
+    {
+        _preferences = newPreferences;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        siteSettings.OnChange -= SiteSettingsOnChange;
+    }
 }

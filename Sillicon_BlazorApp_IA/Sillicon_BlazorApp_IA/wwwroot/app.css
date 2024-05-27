@@ -1040,6 +1040,9 @@ header #mobile-menu .account-buttons .user-logged-in .user-profile-pic {
 header #mobile-menu .btn-switch {
   display: block;
 }
+header #mobile-menu .btn-switch .slider {
+  color: var(--color-000);
+}
 header #mobile-menu #menu {
   display: block !important;
   margin: 1rem;

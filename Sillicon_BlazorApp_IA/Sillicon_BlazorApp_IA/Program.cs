@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -18,6 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 //    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 //    x.Cookie.SameSite = SameSiteMode.None;
 //});
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddTransient<SiteSettings>();
 
 builder.Services.AddCors(x =>
 {
@@ -40,11 +43,13 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
+
+
+
 builder.Services.AddScoped<CoursesService>();
-builder.Services.AddScoped<SiteSettings>();
 
 builder.Services.AddScoped<AccountService>();
 
@@ -73,7 +78,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -104,7 +109,6 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
-app.MapControllers();
-
+//app.MapControllers();
 
 app.Run();

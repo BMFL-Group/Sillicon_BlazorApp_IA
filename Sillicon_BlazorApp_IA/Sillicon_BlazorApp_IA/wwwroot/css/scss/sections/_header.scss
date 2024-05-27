@@ -133,6 +133,10 @@ header {
 
         .btn-switch {
             display: block;
+
+            .slider {
+                color: var(--color-000);
+            }
         }
 
         #menu {

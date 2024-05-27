@@ -1,5 +1,8 @@
 window.localStorageInterop = {
+
     getItem: function (key) {
-        return localStorage.getItem(key);
+        let theme = localStorage.getItem(key);
+        return theme
+        
     }
 };

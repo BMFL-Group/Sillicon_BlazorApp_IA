@@ -1,5 +1,4 @@
-﻿@using Sillicon_BlazorApp_IA.Controllers
-@inject SiteSettings siteSettings
+﻿@rendermode InteractiveServer
 
 <div id="menu">
     <nav>
@@ -19,13 +18,13 @@
 <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
-        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onclick="ToggleDarkMode">
+        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onchange="ToggleDarkMode">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
 </div>
 
-<p>@Theme</p>
+<p>@IsDarkMode</p>
 
 <div class="account-buttons">
 
@@ -42,35 +41,46 @@
 </div>
 
 @code {
-    [CascadingParameter(Name = "ModePolicy")]
-    public string Theme { get; set; } = null!;
-
-    private bool IsDarkMode { get; set; } = false;
+    [Parameter]
+    public bool IsDarkMode { get; set; }
 
     private async Task ToggleDarkMode()
     {
-        IsDarkMode = !IsDarkMode;
-        var themeString = IsDarkMode ? "dark" : "light";
-        await ChangeTheme(themeString);
+        IsDarkMode = await siteSettings?.ToggleDarkMode();
     }
 
-    private async Task ChangeTheme(string themeString)
-    {
-        try
-        {
-            var baseUrl = navigationManager.BaseUri;
-            var apiUrl = baseUrl.TrimEnd('/') + "/api/changetheme";
-            var response = await client.GetAsync($"{apiUrl}/{themeString}");
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                // Theme = result!;
-                StateHasChanged();
-            }            
-        }
-        catch (Exception ex)
-        {
-            //Handle exception here
-        }
-    }
+  
+    #region OLD CODE NOT USED
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     await LoadLocalStorageData();
+    // }
+
+    // private async Task LoadLocalStorageData()
+    // {
+    //     var CheckTheme = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "theme");
+    //     if (CheckTheme == "dark")
+    //     {
+    //         IsDarkMode = true;
+    //     }
+    //     else
+    //     {
+    //         IsDarkMode = false;
+    //     }       
+    // }
+
+    // private async Task SetItemInLocalStorage(string key, string value)
+    // {
+    //     await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    // }
+
+    // private async Task ToggleDarkMode()
+    // {
+    //     IsDarkMode = !IsDarkMode;
+    //     var themeString = IsDarkMode ? "dark" : "light";
+    //     await SetItemInLocalStorage("theme", themeString);
+        
+    // }
+
+    #endregion
 }

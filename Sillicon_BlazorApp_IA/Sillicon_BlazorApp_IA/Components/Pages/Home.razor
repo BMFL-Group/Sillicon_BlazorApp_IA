@@ -1,8 +1,8 @@
 ﻿@page "/"
+
 @attribute [StreamRendering]
 
 <PageTitle>Silicon | The number one task management assistant</PageTitle>
-
 <Showcase />
 <Features />
 <DarkModeSlider />
@@ -12,6 +12,5 @@
 <Subscribe />
 
 @code {
-    [CascadingParameter(Name = "ModePolicy")]
-    public string ModePolicy { get; set; } = null!;
+
 }
