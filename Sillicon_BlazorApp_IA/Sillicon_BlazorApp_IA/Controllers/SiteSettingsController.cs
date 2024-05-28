@@ -20,7 +20,7 @@ public class SiteSettingsController : Controller
             {
                 MaxAge = TimeSpan.FromMinutes(2),
                 Expires = DateTimeOffset.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 HttpOnly = true,
                 Secure = true,
                 Path = "/"

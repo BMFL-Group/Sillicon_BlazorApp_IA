@@ -45,9 +45,47 @@
     private bool IsDarkMode { get; set; } = false;
     private string Theme { get; set; } = "light";
 
+    // private async Task ToggleDarkMode()
+    // {
+    //     IsDarkMode = await siteSettings?.ToggleDarkMode();
+    // }
+
+
+    // [CascadingParameter(Name = "ModePolicy")]
+    // public string Theme { get; set; } = null!;
+
+    // private bool IsDarkMode { get; set; } = false;
+    // private string Theme { get; set; } = "light";
+
+    // private void ToggleDarkMode()
     private async Task ToggleDarkMode()
     {
-        IsDarkMode = await siteSettings?.ToggleDarkMode();
+        IsDarkMode = !IsDarkMode;
+        Theme = IsDarkMode ? "dark" : "light";
+        ChangeTheme(Theme);
+        var themeString = IsDarkMode ? "dark" : "light";
+        await ChangeTheme(themeString);
+    }
+
+    // private void ChangeTheme(string Theme)
+    private async Task ChangeTheme(string themeString)
+    {
+        try
+        {
+            var baseUrl = navigationManager.BaseUri;
+            var apiUrl = baseUrl.TrimEnd('/') + "/api/changetheme";
+            var cookieResponse = await client.GetAsync($"{apiUrl}/{themeString}");
+            if (cookieResponse.IsSuccessStatusCode)
+            {   
+                var result = await cookieResponse.Content.ReadAsStringAsync();
+                // Theme = result!;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            //Handle exception here
+        }
     }
 
   

@@ -7,7 +7,7 @@ public record Preferences
 {
     public bool IsDarkMode { get; init; }
 }
-public class SiteSettings(IJSRuntime iJSRuntime, ILocalStorageService localStorageService)
+public class SiteSettingsLocalStorage(IJSRuntime iJSRuntime, ILocalStorageService localStorageService)
 {
     private readonly IJSRuntime _IJSRuntime = iJSRuntime;
     private readonly ILocalStorageService _localStorageService = localStorageService;

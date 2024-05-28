@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-<div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap") @(_preferences.IsDarkMode ? "dark" : "light")">
+<div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap")">
+    @* @(_preferences.IsDarkMode ? "dark" : "light") *@
 
     @* <Header IsDarkMode="IsDarkMode" /> *@
     <Header />
