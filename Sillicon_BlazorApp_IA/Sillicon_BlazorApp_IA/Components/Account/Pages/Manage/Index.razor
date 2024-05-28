@@ -1,77 +1,46 @@
 ﻿@page "/Account/Manage"
+@using Sillicon_BlazorApp_IA.Services
 
-@using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Identity
-@using Sillicon_BlazorApp_IA.Data
+<PageTitle>details</PageTitle>
 
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
-@inject IdentityUserAccessor UserAccessor
-@inject IdentityRedirectManager RedirectManager
-
-<PageTitle>Profile</PageTitle>
-
-<h3>Profile</h3>
-<StatusMessage />
-
-<div class="row">
-    <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
+<div class="account-details">
+    <div class="container">
+        <MenuPartial User="UserClient"/>
+        <BasicInfoFormPartial BasicFormModel="BasicFormModel" User="User" />
+        <div class="address">
+            <h5>Address Info</h5>
+            <div class="adress">
+                <AddressInfoFormPartial AddressForm="AddressForm" User="User" />
             </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                <label for="phone-number" class="form-label">Phone number</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </EditForm>
+        </div>
     </div>
 </div>
 
 @code {
-    private ApplicationUser user = default!;
-    private string? username;
-    private string? phoneNumber;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
+    private ApplicationUser User { get; set; } = null!;
+    private ClientUserModel UserClient { get; set; } = new();
+
+    [SupplyParameterFromForm(FormName = "basicmodelform")]
+    private BasicInfoFormModel BasicFormModel { get; set; } = new();
+
+    [SupplyParameterFromForm(FormName = "addressform")]
+    private AddressFormModel AddressForm { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        username = await UserManager.GetUserNameAsync(user);
-        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-
-        Input.PhoneNumber ??= phoneNumber;
-    }
-
-    private async Task OnValidSubmitAsync()
-    {
-        if (Input.PhoneNumber != phoneNumber)
+        if (HttpContext != null)
         {
-            var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-            if (!setPhoneResult.Succeeded)
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+                User = user;
+                AutoMapper.MapNewFormValues(BasicFormModel, user);
+                AutoMapper.MapClientUser(UserClient, User);
             }
         }
-
-        await SignInManager.RefreshSignInAsync(user);
-        RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
-    }
-
-    private sealed class InputModel
-    {
-        [Phone]
-        [Display(Name = "Phone number")]
-        public string? PhoneNumber { get; set; }
     }
 }

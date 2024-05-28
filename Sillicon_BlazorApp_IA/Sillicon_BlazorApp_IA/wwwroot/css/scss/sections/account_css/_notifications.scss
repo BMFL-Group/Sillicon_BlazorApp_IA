@@ -2,6 +2,7 @@
 
     .container {
 
+
         @include lg {
             display: flex;
             gap: 150px;
@@ -16,13 +17,32 @@
         }
 
         .form-title {
+            position: relative;
 
             form {
                 margin-top: 2rem;
 
+                .error-message {
+                    position: absolute;
+                    top: 15px;
+
+                    @include lg {
+                        top: 43px;
+                    }
+                }
+
+                .success-message {
+                    position: absolute;
+                    top: 45px;
+
+                    @include lg {
+                        top: 75px;
+                    }
+                }
+
                 .input-group {
                     @include lg {
-                        width:65%;
+                        width: 65%;
                     }
                 }
 

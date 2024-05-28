@@ -1,35 +1,35 @@
-﻿
+﻿@rendermode InteractiveServer
+
 <div class="adress">
     <div class="address-form-group">
 
-        <EditForm method="post" novalidate Model="Model">
+        <EditForm Model="AddressForm" FormName="addressform" OnValidSubmit="UpdateAddress" novalidate>
+            <DataAnnotationsValidator />
 
             <div id="form-addressline_1" class="input-group">
                 <label for="Addressline_1">Address line 1</label>
-                <span for="Addressline_1"></span>
-                <InputText @bind-Value="Model.Addressline_1" id="AddressLine_1" placeholder="Enter your address line" />
+                <ValidationMessage For="() => AddressForm.Addressline_1" />
+                <InputText @bind-Value="AddressForm.Addressline_1" id="AddressLine_1" placeholder="Enter your address line" />
             </div>
 
             <div id="form-addressline_2" class="input-group">
                 <label for="Addressline_2">Address line 2 <span>(optional)</span></label>
-                <span for="Addressline_2"></span>
-                <InputText @bind-Value="Model.Addressline_2" id="AddressLine_´2" placeholder="Enter your second address line" />
+                <ValidationMessage For="() => AddressForm.Addressline_2" />
+                <InputText @bind-Value="AddressForm.Addressline_2" id="AddressLine_´2" placeholder="Enter your second address line" />
             </div>
 
             <div class="postal-city">
-
                 <div id="form-postalcode" class="input-group">
                     <label for="PostalCode">Postal code</label>
-                    <span for="PostalCode"></span>
-                    <InputText @bind-Value="Model.PostalCode" id="PostalCode" placeholder="Enter your postal code"/>
+                    <ValidationMessage For="() => AddressForm.PostalCode" />
+                    <InputText @bind-Value="AddressForm.PostalCode" id="PostalCode" placeholder="Enter your postal code" />
                 </div>
 
                 <div id="form-city" class="input-group">
                     <label for="City">City</label>
-                    <span for="City"></span>
-                    <InputText @bind-Value="Model.City" id="City" placeholder="Enter your city" />
+                    <ValidationMessage For="() => AddressForm.City" />
+                    <InputText @bind-Value="AddressForm.City" id="City" placeholder="Enter your city" />
                 </div>
-
             </div>
 
             <div class="buttons">
@@ -37,11 +37,91 @@
                 <button type="submit" class="btn-theme">Save changes</button>
             </div>
 
+            @if (!string.IsNullOrEmpty(SuccessMessage))
+            {
+                <div class="success-message">@SuccessMessage</div>
+            }
+            else if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="error-message">@ErrorMessage</div>
+            }
         </EditForm>
     </div>
 </div>
 
-
 @code {
-    private AddressFormModel Model = new AddressFormModel();
+
+    [Parameter]
+    public AddressFormModel AddressForm { get; set; } = null!;
+
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
+
+    private string SuccessMessage { get; set; } = "";
+
+    private string ErrorMessage { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            var address = await _dataContext.Addresses.FindAsync(User.AddressId);
+            if (address != null)
+                AutoMapper.MapNewFormValues(AddressForm, address);
+        }
+    }
+
+    private async Task UpdateAddress()
+    {
+        SuccessMessage = "";
+        ErrorMessage = "";
+
+        var user = await _userManager.FindByIdAsync(User.Id);
+        if (user != null)
+        {
+            var address = _dataContext.Addresses.FirstOrDefault(x => x.AddressLine_1 == AddressForm.Addressline_1 && x.City == AddressForm.City && x.PostalCode == AddressForm.PostalCode && x.AddressLine_2 == AddressForm.Addressline_2);
+            if (address is null)
+            {
+                var newAddress = AutoMapper.MapNewAddress(AddressForm, user);
+                try
+                {
+                    _dataContext.Addresses.Add(newAddress);
+                    await _dataContext.SaveChangesAsync();
+
+                    user!.AddressId = newAddress.Id;
+                    AutoMapper.MapNewUserAddress(AddressForm, user);
+                    await _userManager.UpdateAsync(user);
+                }
+                catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); return; }
+                SuccessMessage = "Address added successfully.";
+            }
+            else if (address != null)
+            {
+                user!.AddressId = address.Id;
+                AutoMapper.MapNewUserAddress(AddressForm, user);
+
+                if (!address.Users.Any(x => x.Id == user.Id))
+                    address.Users.Add(user);
+                else
+                {
+                    var existingUser = address.Users.FirstOrDefault(x => x.Id == user.Id);
+                    existingUser = user;
+                    address.Users.Add(existingUser);
+                }
+                try
+                {
+                    _dataContext.Addresses.Update(address);
+                    await _dataContext.SaveChangesAsync();
+                    await _userManager.UpdateAsync(user);
+                }
+                catch (Exception e) { Debug.WriteLine($"Error: {e.Message}"); return; }
+                SuccessMessage = "Address updated successfully.";
+            }
+            else
+                ErrorMessage = "Something went wrong, try again later";
+        }
+    }
 }
+
+
+

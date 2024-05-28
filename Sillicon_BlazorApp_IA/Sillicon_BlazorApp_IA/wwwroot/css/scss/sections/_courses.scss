@@ -77,11 +77,22 @@
                                 background-color: var(--color-gray-300);
                             }
                         }
+
+                        &[aria-expanded="true"] {
+                            display: block;
+                        }
                     }
                 }
 
                 #pageSizeSelect {
                     min-width: 7rem;
+
+                    .select-options {
+
+                        &[aria-expanded="true"] {
+                            display: block;
+                        }
+                    }
 
                     .option {
                         text-align: right;
@@ -157,7 +168,7 @@
                 overflow: hidden;
                 text-decoration: none;
                 z-index: 2;
-                transition: all 0.3s ease-out;
+                transition: all 0.15s ease-out;
 
 
                 &:hover {
@@ -190,7 +201,7 @@
                     position: absolute;
                     top: 1rem;
                     right: 1rem;
-                    z-index: 100;
+                    z-index: 1000;
                     background-color: var(--color-white);
                     border: 1px solid var(--color-gray-400);
                     border-radius: 100%;
@@ -205,6 +216,23 @@
                         color: var(--color-black);
                     }
                 }
+
+                .course-enrolled {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    background-color: var(--color-success);
+                    padding: 0.5rem 3rem;
+                    margin: 1rem -3rem;
+                    transform: rotateZ(315deg);
+                    //border-radius: 0.2rem;
+
+                    span {
+                        padding: 0.2rem;
+                        color: white;
+                    }
+                }
+
 
                 .text-wrapper {
                     display: grid;
@@ -296,14 +324,14 @@
             }
 
             .btn-gray {
-                background-color: var(--color-gray-400);                
+                background-color: var(--color-gray-400);
             }
 
             .btn-theme {
                 width: 2.2rem;
                 height: 2.2rem;
 
-                @include md{
+                @include md {
                     width: 2.6rem;
                     height: 2.6rem;
                 }

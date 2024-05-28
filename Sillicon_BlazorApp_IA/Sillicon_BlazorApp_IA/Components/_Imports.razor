@@ -11,10 +11,35 @@
 @using Sillicon_BlazorApp_IA.Client
 @using Sillicon_BlazorApp_IA.Components
 
+@*----------- nya grejer för account --------------------------- *@
+@using Sillicon_BlazorApp_IA.Components.Account
+@using Sillicon_BlazorApp_IA.Components.Account.Pages
+@using Sillicon_BlazorApp_IA.Data
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Diagnostics
+@using Microsoft.AspNetCore.Authentication
+@using Azure.Messaging.ServiceBus
+@using Infrastructure.Models.Courses
+@using Sillicon_BlazorApp_IA.Client.Components
+
+
+@inject UserManager<ApplicationUser> _userManager
+@inject IdentityRedirectManager _redirectManager
+@inject IUserStore<ApplicationUser> _userStore
+@inject SignInManager<ApplicationUser> _signInManager
+@inject IEmailSender<ApplicationUser> _emailSender
+@inject ILogger<Register> _logger
+@inject IHttpContextAccessor _httpAccessor
+@inject ApplicationDbContext _dataContext
+@inject IJSRuntime JSRuntime
+@* ------------------------------------------------------------ *@
 
 @using Sillicon_BlazorApp_IA.Components.Partials
 @using Sillicon_BlazorApp_IA.Components.Partials.HeaderPartials
-@using Sillicon_BlazorApp_IA.Client.Components.CoursesPartials
 @using Sillicon_BlazorApp_IA.Client.Components.HeaderPartials
 @using Sillicon_BlazorApp_IA.Components.Partials.BreadcrumbPartials
 @using Sillicon_BlazorApp_IA.Components.Partials.ContactPartials
@@ -22,13 +47,15 @@
 @using Sillicon_BlazorApp_IA.Components.Partials.AuthPartials
 @using Newtonsoft.Json
 @using Infrastructure.Models.Home
+@using Infrastructure.Services
 @using Sillicon_BlazorApp_IA.Components.Partials.HomePartials
-
+@using Sillicon_BlazorApp_IA.Components.Partials.CoursePartials
 @inject NavigationManager navigationManager
 @inject HttpClient client
-
-
+@inject CoursesService _coursesService
+@inject IConfiguration _configuration
 @using Infrastructure
 @using Infrastructure.Models
 @using Infrastructure.Models.Forms
 @using Infrastructure.Models.Account
+@using Sillicon_BlazorApp_IA.Services

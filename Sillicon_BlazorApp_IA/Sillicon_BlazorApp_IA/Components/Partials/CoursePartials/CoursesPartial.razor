@@ -1,0 +1,585 @@
+﻿@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<div class="top-row">
+
+    <h1>Courses</h1>
+
+    <div class="top-right">
+
+        <div class="select" id="pageSizeSelect" @onclick="(e) => ToggleDropDowns(pageSizeSelect, pageSize)">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                      d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+            </svg>
+
+            <div class="selected" id="selectedPageSize" data-value="@pagination.PageSize">
+                @if (pagination.TotalItems < pagination.PageSize)
+                {
+                    @pagination.TotalItems
+                }
+                else
+                {
+                    @pagination.PageSize
+                }
+            </div>
+
+            <div class="select-options" id="pageSizeOptions" @attributes="GetMenuAttributes(pageSize)">
+                @for (int i = 1; i <= pagination.TotalItems; i++)
+                {
+                    if (i == pagination.TotalItems)
+                    {
+                        <div class="option" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, 1, pagination.TotalItems)">Show All</div>
+                    }
+                    else
+                    {
+                        int thisNumber = @i;
+                        <div class="option" data-value="@i" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, pageNumber, thisNumber)">@i</div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="select" id="selectCategory" @onclick="(e) => ToggleDropDowns(categorySelect, category)">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="drop-down-icon" pointer-events="inherit" viewBox="0 0 448 512">
+                <path fill="currentColor"
+                      d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+            </svg>
+
+            @if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "all")
+            {
+                <div class="selected" id="selectedCategory">
+
+                    @selectedCategory
+
+                </div>
+            }
+            else
+            {
+                <div class="selected" id="selectedCategory">All Categories</div>
+
+            }
+            <div class="select-options" id="categorySelectOptions" @attributes="GetMenuAttributes(category)">
+
+                @if (categories != null && categories.Count() > 0)
+                {
+                    foreach (var category in categories)
+                    {
+                        @* var categoryValue = @category.CategoryValue; *@
+                        <div class="option" data-value="@category.CategoryValue" @onclick="(e) => FilterCourses(category.CategoryValue, searchQuery, pageNumber ,selectedPageSize)">@category.CategoryName</div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="search-wrapper">
+            <input class="search-query" name="searchQuery" id="searchQuery" placeholder="Search courses" @bind="searchQuery" @oninput="OnInput" />
+            <i class="fa-light fa-search"></i>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="grid-container items">
+
+    @if (courses.Count() < 1 || User == null)
+    {
+        <p>Loading courses...</p>
+    }
+    else
+    {
+        List<string> coursesToSkip = SavedCourses?.Select(x => x.CourseId).ToList() ?? new();
+
+        @foreach (var course in courses)
+        {
+            bool isSaved = coursesToSkip.Contains(course.Id);
+
+            if (!isSaved)
+            {
+                <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
+                    <div class="img-wrapper">
+                        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+                        <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
+                    </div>
+                        <HandleBookmarkPartial Course="@course" UserId="@User.Id" />
+                    <div class="text-wrapper">
+                        <div class="text-title">
+                            <h5 class="course-title">@course.Title</h5>
+                        </div>
+                        <div class="text-rest">
+                            <span class="by">By</span>
+                            @if (course.Authors != null && course.Authors.Count() > 0)
+                            {
+                                int i = 0;
+                                foreach (var author in course.Authors)
+                                {
+                                    <span class="author">@author.Name</span>
+                                    i++;
+                                    if (course.Authors.Count() != i)
+                                    {
+                                        <span> & </span>
+                                    }
+                                }
+                            }
+                            <div class="price-wrapper">
+                                <div class="@(course.DiscountPrice >= 1 ? "discount-price" : "hidden")">
+                                    @course.Currency@course.DiscountPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                                </div>
+                                <div class="@(course.DiscountPrice >= 1 ? "price discount-applied" : "price")">
+                                    @course.Currency@course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="description-wrapper">
+                                @{
+                                    double likesInK = Math.Max(0, Math.Round(course.NumberOfLikes / 1000.0, 1));
+                                }
+                                <span class="description"><i class="fa-light fa-clock"></i> @course.LengthInHours hours</span>
+                                <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.RatingInPercentage% (@likesInK K)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+
+                <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
+                     <div class="img-wrapper">
+                        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+                        <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
+                    </div>
+                        @foreach (var savedCourse in SavedCourses.Where(x => x.CourseId == course.Id))
+                        {
+                            <HandleBookmarkPartial SavedCourse="@savedCourse" Course="@course" UserId="@User.Id" />
+                            @if (savedCourse.HasJoined)
+                            {
+                                <div class="course-enrolled">
+                                    <span>
+                                        Enrolled
+                                    </span>
+                                </div>                            
+                            }
+                        }
+                    <div class="text-wrapper">
+                        <div class="text-title">
+                            <h5 class="course-title">@course.Title</h5>
+                        </div>
+                        <div class="text-rest">
+                            <span class="by">By</span>
+                            @if (course.Authors != null && course.Authors.Count() > 0)
+                            {
+                                int i = 0;
+                                foreach (var author in course.Authors)
+                                {
+                                    <span class="author">@author.Name</span>
+                                    i++;
+                                    if (course.Authors.Count() != i)
+                                    {
+                                        <span> & </span>
+                                    }
+                                }
+                            }
+                            <div class="price-wrapper">
+                                <div class="@(course.DiscountPrice >= 1 ? "discount-price" : "hidden")">
+                                    @course.Currency@course.DiscountPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                                </div>
+                                <div class="@(course.DiscountPrice >= 1 ? "price discount-applied" : "price")">
+                                    @course.Currency@course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="description-wrapper">
+                                @{
+                                    double likesInK = Math.Max(0, Math.Round(course.NumberOfLikes / 1000.0, 1));
+                                }
+                                <span class="description"><i class="fa-light fa-clock"></i> @course.LengthInHours hours</span>
+                                <span class="description"><i class="fa-light fa-thumbs-up"></i> @course.RatingInPercentage% (@likesInK K)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+    }
+
+</div>
+
+@if (pagination != null && pagination.TotalPages >= 1)
+{
+    <div class="pagination">
+
+        @{
+            var totalPages = pagination.TotalPages;
+            var currentPage = pagination.CurrentPage;
+            var previousPage = pagination.CurrentPage - 1;
+            var nextPage = pagination.CurrentPage + 1;
+            var totalPaginationButtons = 0;
+
+            //------------Sets first and previous pages------------
+            if (previousPage < 1)
+            {
+                previousPage = totalPages;
+            }
+            // first page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, 1, selectedPageSize)"><i class="fa-solid fa-angles-left"></i></button>
+            // previous page
+            <button class="btn-gray previous-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, previousPage, selectedPageSize)"><i class="fa-solid fa-angle-left"></i></button>
+            //-----------------------------------------------------
+
+            @for (int i = 1; i <= totalPages && totalPaginationButtons < totalPages; i++)
+            {
+                if (pagination.TotalPages != 0)
+                {
+                    if (i == pagination.CurrentPage) // Sets value of the current page button.
+                    {
+                        <span class="btn-theme current-page">@i</span>
+                        totalPaginationButtons++;
+                    }
+                    else // Sets value of other pages if there are NO more than 5 total pages.
+                    {
+                        int thisPageNumber = i;
+                        <button class="btn-gray" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, thisPageNumber, selectedPageSize)">@i</button>
+                        totalPaginationButtons++;
+                    }
+                }
+            }
+
+            //------------Sets next and last pages----------------
+            if (nextPage > totalPages)
+            {
+                nextPage = 1;
+            }
+            // next page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, nextPage, selectedPageSize)"><i class="fa-solid fa-angle-right"></i></button>
+            // last page
+            <button class="btn-gray first-page" @onclick="(e) => FilterCourses(selectedCategory, searchQuery, totalPages, selectedPageSize)"><i class="fa-solid fa-angles-right"></i></button>
+            //-----------------------------------------------------
+
+        }
+
+    </div>
+}
+
+
+<div class="get-started">
+    <div class="text-wrapper">
+        <p>Ready to get started?</p>
+        <h2>Take Your<span class="theme-text"> Skill </span>to the Next Level</h2>
+        <button class="btn-theme">Work with us</button>
+    </div>
+    <div class="image-wrapper">
+        <img src="/img/office-worker.png" alt="">
+    </div>
+</div>
+
+
+@code {
+
+    public string? isBookmarkedValue { get; set; }
+    bool isLoaded = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadLocalStorageData();
+            }
+            catch
+            {
+                SetItemInLocalStorage("isBookmarked", "false");                
+                await LoadLocalStorageData();
+            }
+            finally
+            {
+                isLoaded = true;
+                StateHasChanged(); // Notify Blazor to re-render the component                
+            }
+        }
+    }
+
+    public async Task LoadLocalStorageData()
+    {
+        isBookmarkedValue = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "isBookmarked");
+    }
+
+
+    public async Task SetItemInLocalStorage(string key, string value)
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
+    public async Task<string> GetItemFromLocalStorage(string key)
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<string>("localStorage.getItem", key);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+        return null!;
+    }
+
+
+
+
+
+    //--------------------Fetching Courses here------------------------------------
+
+    IEnumerable<SavedCoursesModel>? SavedCourses { get; set; }
+    IEnumerable<Course> courses = [];
+    Pagination pagination { get; set; } = new();
+    string categoryQuery = "all";
+    int pageNumber { get; set; } = 1;
+    string navigateToPage { get; set; } = "coursedetails";
+
+    [Parameter]
+    public ApplicationUser? User { get; set; } = null;
+
+    // Gets courses from CoursesService
+    protected override async Task OnInitializedAsync()
+    {
+        var courseResult = await _coursesService.GetAllCoursesAsync();
+        await populateCourses(courseResult);
+    }
+
+    private async Task populateCourses(CourseResult courseResult)
+    {
+        courses = courseResult.Courses;
+        pagination = courseResult.Pagination;
+        selectedCategory = courseResult.Category.CategoryName;
+        selectedPageSize = courseResult.Pagination.PageSize;
+        if (User != null)
+        {
+            var savedCourses = await _coursesService.GetSavedCoursesAsync(User.Id);
+            if (savedCourses != null && savedCourses.Count() > 0)
+            {
+                SavedCourses = savedCourses;
+            }
+        }
+    }
+
+    private async Task GoToCourseDetails(string page, string id)
+    {
+        bool isBookmarked = await GetItemFromLocalStorage("isBookmarked") == "false";
+
+        if (isBookmarked)
+        {
+            var baseUrl = navigationManager.BaseUri;
+            navigationManager.NavigateTo($"{baseUrl}{page}/{id}");            
+        }
+    }
+
+    // This is currently a hardcoded List.
+    // Categories should be stored in a different database.
+
+    #region HardCoded Categories
+
+    IEnumerable<CategoryModel> categories = new List<CategoryModel>
+        {
+            new CategoryModel()
+            {
+                CategoryValue = "all",
+                CategoryName = "All Categories"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "HTML",
+                CategoryName = "HTML"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "FrontEnd",
+                CategoryName = "FrontEnd"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "CSS",
+                CategoryName = "CSS"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "JavaScript",
+                CategoryName = "JavaScript"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Web Developer",
+                CategoryName = "Web Developer"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Blender",
+                CategoryName = "Blender"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "CharacterCreation",
+                CategoryName = "Character Creation"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "VideoGames",
+                CategoryName = "Video Games"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Design",
+                CategoryName = "Design"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Drawing",
+                CategoryName = "Drawing"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "WebDesign",
+                CategoryName = "Web Design"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Art",
+                CategoryName = "Art"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "DataScience",
+                CategoryName = "Data Science"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "MachineLearning",
+                CategoryName = "Machine Learning"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Python",
+                CategoryName = "Python"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "AI",
+                CategoryName = "AI"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "BackEnd",
+                CategoryName = "Back End"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "App Development",
+                CategoryName = "App Development"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "iOS",
+                CategoryName = "iOS"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Maui",
+                CategoryName = "Maui"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "C#",
+                CategoryName = "C#"
+            },
+            new CategoryModel()
+            {
+                CategoryValue = "Swift",
+                CategoryName = "Swift"
+            }
+        };
+
+    #endregion
+
+    //------------------Courses filter here-----------------------------------------
+
+    // category items
+    private string category = "category";
+    private bool categorySelect { get; set; } = false;
+    private string selectedCategory { get; set; } = "All categories";
+
+    // pageSizeItems
+    private string pageSize = "pageSize";
+    private bool pageSizeSelect { get; set; } = false;
+    private int selectedPageSize { get; set; } = 0;
+
+    // searchQueryItems
+    private string searchQuery { get; set; } = string.Empty;
+
+    // sets cancellation token for searchQuery onKeyupEvent.
+    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    // Sets aria-expanded to true or false
+    private Dictionary<string, object> GetMenuAttributes(string dropdownName)
+    {
+        var attributes = new Dictionary<string, object>();
+
+        switch (dropdownName)
+        {
+            case "pageSize":
+                attributes["aria-expanded"] = pageSizeSelect.ToString().ToLower();
+                break;
+            case "category":
+                attributes["aria-expanded"] = categorySelect.ToString().ToLower();
+                break;
+        }
+
+        return attributes;
+    }
+
+    // Shows dropdownmenu on click.
+    private void ToggleDropDowns(bool isOpen, string dropdownName)
+    {
+        switch (dropdownName)
+        {
+            case "pageSize":
+                pageSizeSelect = !isOpen;
+                break;
+            case "category":
+                categorySelect = !isOpen;
+                break;
+        }
+    }
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value!.ToString()!;
+
+        cts.Cancel();
+        cts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(300, cts.Token); // Adjust the delay as needed
+            await FilterCourses(selectedCategory, searchQuery, pageNumber, selectedPageSize);
+        }
+        catch (TaskCanceledException)
+        {
+
+        }
+    }
+
+    // Takes in different parameter and sets them based on
+    private async Task FilterCourses(string category, string newSearchQuery, int pageNumber, int pageSize)
+    {
+        var courseResult = await _coursesService.GetAllCoursesAsync(category, newSearchQuery, pageNumber, pageSize);
+        selectedCategory = category;
+        await populateCourses(courseResult);
+    }
+}
+

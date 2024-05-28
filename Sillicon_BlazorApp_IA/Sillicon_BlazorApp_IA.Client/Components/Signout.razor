@@ -1,0 +1,17 @@
+﻿
+<form action="Account/Logout" method="post">
+    <AntiforgeryToken />
+    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+    <button class="menu-btn" type="submit">
+        <i class="fa-solid fa-right-from-bracket fa-flip-horizontal"></i>Sign Out
+    </button>
+</form>
+
+@code {
+    string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri) ?? "/";
+    }
+}

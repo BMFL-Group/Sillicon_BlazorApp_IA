@@ -1,36 +1,40 @@
 ﻿@page "/Account/RegisterConfirmation"
-
-@using System.Text
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.WebUtilities
-@using Sillicon_BlazorApp_IA.Data
-
-@inject UserManager<ApplicationUser> UserManager
-@inject IEmailSender<ApplicationUser> EmailSender
-@inject NavigationManager NavigationManager
-@inject IdentityRedirectManager RedirectManager
+@using Azure.Messaging.ServiceBus
+@rendermode InteractiveServer
 
 <PageTitle>Register confirmation</PageTitle>
+<section id="confirmation">
+    <div class="container">
+        <div class="content">
+            <h1>Register confirmation</h1>
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="error-msg">@statusMessage</div>
 
-<h1>Register confirmation</h1>
+            }
+            <p>Didn't recive an email? <button class="btn-gray" @onclick="ResendCode">resend email</button></p>
+            <EditForm FormName="confirmform" Model="ConfirmForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
+                <DataAnnotationsValidator />
+                <div class="input-group">
+                    <label for="Code">Enter your code</label>
+                    <InputText @bind-Value="ConfirmForm.Code" id="Code" placeholder="Code..." />
+                    <ValidationMessage For="() => ConfirmForm.Code" />
+                </div>
+                <button type="submit" class="btn-theme">Verify</button>
+            </EditForm>
+        </div>      
+    </div>
+</section>
 
-<StatusMessage Message="@statusMessage" />
 
-@if (emailConfirmationLink is not null)
-{
-    <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
-    </p>
-}
-else
-{
-    <p>Please check your email to confirm your account.</p>
-}
+
 
 @code {
-    private string? emailConfirmationLink;
+
     private string? statusMessage;
+
+    [SupplyParameterFromForm]
+    ConfirmFormAccountModel ConfirmForm { get; set; } = new();
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -45,24 +49,55 @@ else
     {
         if (Email is null)
         {
-            RedirectManager.RedirectTo("");
+            _redirectManager.RedirectTo("/Account/Login");
         }
-
-        var user = await UserManager.FindByEmailAsync(Email);
+        var user = await _userManager.FindByEmailAsync(Email);
         if (user is null)
         {
-            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            statusMessage = "Error finding user for unspecified email";
+            _redirectManager.RedirectTo("/Account/Login");
         }
-        else if (EmailSender is IdentityNoOpEmailSender)
+    }
+
+    protected async Task OnValidSubmit()
+    {
+        if (ConfirmForm.Code != null)
         {
-            // Once you add a real email sender, you should remove this code that lets you confirm the account
-            var userId = await UserManager.GetUserIdAsync(user);
-            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            emailConfirmationLink = NavigationManager.GetUriWithQueryParameters(
-                NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-                new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+            var codePackage = new VerifyCodeAndEmailModel
+                {
+                    Email = Email!,
+                    Code = ConfirmForm.Code
+                };
+            try
+            {
+                var result = await client.PostAsJsonAsync("https://verificationprovider-silicon-bmfl.azurewebsites.net/api/validate?code=GbOXUAI3llMgMuohXjxi-9FSb39XkUwlNmruMCxLZMH5AzFuIlLcNQ==", codePackage);
+                if (result.IsSuccessStatusCode)
+                {
+                    var user = await _userManager.FindByEmailAsync(Email!);
+                    if (user != null)
+                    {
+                        user.EmailConfirmed = true;
+                        await _userManager.UpdateAsync(user);
+                        navigationManager.NavigateTo("/");
+                    }
+                }
+                else
+                {
+                    statusMessage = "Invalid code";
+                    return;
+                }
+            }
+            catch (Exception e) { Debug.WriteLine($"Error sending code to verificationProvider: {e}"); }
         }
+    }
+
+    private async Task ResendCode()
+    {
+        await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+        ServiceBusSender sender = client.CreateSender("verification_request");
+        var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = Email! });
+        ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+        await sender.SendMessageAsync(message);
+
+        statusMessage = "Code resend";
     }
 }

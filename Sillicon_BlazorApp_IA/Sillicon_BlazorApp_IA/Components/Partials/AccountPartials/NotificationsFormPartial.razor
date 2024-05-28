@@ -1,0 +1,177 @@
+﻿@using Infrastructure.Models.Forms
+@rendermode InteractiveServer
+
+
+<EditForm Model="Form" FormName="form" OnValidSubmit="SubscribeSubmit" novalidate>
+    <DataAnnotationsValidator />
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="success-message">@StatusMessage</div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message">@ErrorMessage</div>
+    }
+
+    <div class="input-group">
+        <label for="Email">Preferred email for notifications</label>
+        <InputText @bind-Value="Form!.Email" id="Email" placeholder="example@gamil.com" />
+        <ValidationMessage For="() => Form.Email" />
+    </div>
+    <div class="switch-group">
+        <div class="btn-switch">
+            <label for="Subscribe" class="switch">
+                <InputCheckbox @bind-Value="Form.Subscribe" id="Subscribe" checked="CheckSubscription()" />
+                <span class="slider round"></span>
+                <ValidationMessage For="() => Form.Subscribe" />
+            </label>
+            <span>Subscribe to newsletter</span>
+        </div>
+        <p>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
+    </div>
+
+    <div class="switch-group">
+        <div class="btn-switch">
+            <label for="DarkMode" class="switch">
+                <InputCheckbox @bind-Value="Form.DarkMode" id="DarkMode" checked="IsDarkMode" />
+                <span class="slider round"></span>
+                <ValidationMessage For="() => Form.DarkMode" />
+            </label>
+            <span>Use darkmode theme in application</span>
+        </div>
+        <p>Tortor massa porttitor enim tristique neque fermentum sed.</p>
+    </div>
+
+    <div class="form-buttons">
+        <button type="submit" class="btn-theme">Save changes</button>
+        <button type="reset" class="btn-gray">Cancel</button>
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public SubscribeForm? Form { get; set; }
+
+    [Parameter]
+    public ApplicationUser? User { get; set; }
+
+    private string? StatusMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? htmlMessage;
+
+    private async Task SubscribeSubmit(EditContext context)
+    {
+        StatusMessage = "";
+        ErrorMessage = "";
+
+        if (User != null && Form != null && Form.Email != null)
+        {
+            var subscibeModel = new SubscribeModel { Email = Form.Email };
+
+            if (Form.Subscribe == true)
+            {
+                try
+                {
+                    var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Subscribe?code=jYf27X54n1bcCN5_hkPi-bEE5pcSX2kp_Uiplh0QDiUsAzFuZanPRg%3D%3D", subscibeModel);
+
+                    if (result.IsSuccessStatusCode)
+                    {
+                        htmlMessage = $@"We just wanted to extend a warm and heartfelt thank you for subscribing to our newsletter.<br> We truly appreciate
+                                                    your support and look forward to sharing our latest news, updates, and exclusive offers with you.<br><br>
+                                                    If you have any questions or feedback, please don't hesitate to reach out. We're here to assist you in any way<br>
+                                                    we can.<br><br>
+                                                    Thank you once again for your trust and engagement!<br><br>
+                                                    Best regards";
+
+                        var newEmail = new SubscribeConfirmModel
+                            {
+                                To = $"{User.Email}",
+                                Subject = "subscription",
+                                HtmlBody = SubscriptionHTML("Subscription",User.FirstName, htmlMessage),
+                                PlainText = $"Thank you for subscribing {User.FirstName}!"
+                            };
+
+                        var servicebusResult = SendMessageToServiceBusQueue(newEmail, "Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=", "email_request");
+                        if (await servicebusResult == true)
+                            StatusMessage = "You are now a subscriber!";
+                    }
+                }
+                catch (Exception e) { Debug.WriteLine($"Error at SubscribeSubmit: {e.Message}"); }
+            }
+            else
+            {
+                var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Unsubscribe?code=nf9P6RZL4OXjbD3jR7W5dfIUVFwH4UlJK0Fb3RglfPAbAzFuOdFs1A%3D%3D", subscibeModel);
+                if (result.IsSuccessStatusCode)
+                {
+                    htmlMessage = $@"We are writing to confirm that your subscription to our newsletter has been successfully canceled.<br> We truly appreciate
+                                                    We’re sorry to see you go, but we respect your decision.<br><br>
+                                                    If you have any questions or if there's anything we can do to improve our service, please don't hesitate to reach out. Your feedback is valuable to us.<br><br>
+                                                    Thank you for being a part of our community.<br><br>
+                                                    Best regards";
+
+                    var cancelEmail = new SubscribeConfirmModel
+                        {
+                            To = $"{User.Email}",
+                            Subject = "Confirmation of Unsubscription",
+                            HtmlBody = SubscriptionHTML("Confirmation of Unsubscription",User.FirstName, htmlMessage),
+                            PlainText = "Confirmation of Unsubscription"
+                        };
+
+
+                    var servicebusResult = SendMessageToServiceBusQueue(cancelEmail, "Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=", "email_request");
+                    if (await servicebusResult == true)
+                        ErrorMessage = "You have ended your subscription.";
+                }
+            }
+        }
+    }
+
+    private async Task<bool> SendMessageToServiceBusQueue(SubscribeConfirmModel email, string key, string queue)
+    {
+        try
+        {
+            await using var client = new ServiceBusClient(key);
+            ServiceBusSender sender = client.CreateSender(queue);
+            var json = JsonConvert.SerializeObject(email);
+            ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+            await sender.SendMessageAsync(message);
+
+            return true;
+        }
+        catch (Exception e) { Debug.WriteLine($"Error serverbusque ::: {e.Message}"); }
+        return false;
+    }
+
+    private string SubscriptionHTML(string title, string name, string text)
+    {
+        string htmlText = $@"<html lang='en'>
+                              <head>
+                                <meta charset='UTF-8' />
+                                <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+                                <title>{title}</title>
+                              </head>
+                              <body>
+                                <div style='border-radius:15px; padding:20px; background-color:#fdbbbb; margin-bottom:20px; box-shadow: 2px 2px 10px 2px #807b7b; max-width:750px;'>
+                                <div style='font-size: 30px; font-weight: 600; color:#000000;'>Confirmation of Unsubscription<hr></div>
+                                <div style='font-size: 15px; font-weight: 400; color:#000000;'>
+                                   Hi {name},<br>
+                               {text},<br>
+                                   Sillicon-crew!
+                                   </div>
+                                </div>
+                               </body>
+                              </html>";
+
+        return htmlText;
+    }
+
+    // private async Task DarkModeSubmit()
+    //
+    // }
+
+    
+
+
+}
+

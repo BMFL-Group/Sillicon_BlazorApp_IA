@@ -1,52 +1,100 @@
-﻿
-<EditForm method="post" Model="Form">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+﻿@if (!string.IsNullOrEmpty(StatusMsg))
+{
+    <div class="error">@StatusMsg</div>
+}
 
+<EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
+    <DataAnnotationsValidator />
     <div class="name">
         <div id="form-firstName" class="input-group">
             <label for="FirstName">First Name</label>
-            @*           <span for="Form.FirstName"></span>     *@
-            <InputText @bind-Value="Form.FirstName" id="FirstName" placeholder="Enter your first name" />
+            <InputText @bind-Value="SignUpForm.FirstName" id="FirstName" placeholder="Enter your first name" />
+            <ValidationMessage For="() => SignUpForm.FirstName" />
         </div>
-
         <div id="form-lastName" class="input-group">
             <label for="LastName">Last Name</label>
-            @*          <span for="Form.LastName"></span> *@
-            <InputText id="LastName" @bind-Value="Form.LastName" placeholder="Enter your last name" />
+            <InputText id="LastName" @bind-Value="SignUpForm.LastName" placeholder="Enter your last name" />
+            <ValidationMessage For="() => SignUpForm.LastName" />
         </div>
     </div>
-
     <div id="form-email" class="input-group">
         <label for="Email">Email address</label>
-        @*    <span for="Form.Email"></span> *@
-        <InputText id="Email" @bind-Value="Form.Email" placeholder="Enter your email address" />
+        <InputText type="email" id="Email" @bind-Value="SignUpForm.Email" placeholder="Enter your email address" />
+        <ValidationMessage For="() => SignUpForm.Email" />
     </div>
-
     <div id="form-password" class="input-group">
         <label for="Form.Password">Password</label>
-        @*         <span for="Form.Password"></span> *@
-        <InputText @bind-Value="Form.Password" id="Password" placeholder="Enter your password" />
+        <InputText type="password" @bind-Value="SignUpForm.Password" id="Password" placeholder="Enter your password" />
+        <ValidationMessage For="() => SignUpForm.Password" />
     </div>
-
     <div id="form-confirm" class="input-group">
         <label for="ConfirmPassword">Confirm Password</label>
-        @*    <span for="Form.ConfirmPassword"></span> *@
-        <InputText @bind-Value="Form.ConfirmPassword" id="ConfirmPassword" placeholder="Confirm password" />
+        <InputText type="password" @bind-Value="SignUpForm.ConfirmPassword" id="ConfirmPassword" placeholder="Confirm password" />
+        <ValidationMessage For="() => SignUpForm.ConfirmPassword" />
     </div>
-
     <div id="form-terms" class="checkbox-group">
         <div class="checkbox">
-            <InputCheckbox id="Terms" @bind-Value="Form.Terms" />
+            <InputCheckbox id="Terms" @bind-Value="SignUpForm.Terms" />
+            <ValidationMessage For="() => SignUpForm.Terms" />
             <label for="Terms">I agree to the <NavLink href="/"> Terms</NavLink> & <NavLink href="/"> Conditions</NavLink></label>
         </div>
-        <span for="Form.Terms"></span>
     </div>
-
     <button type="submit" class="btn-theme">Sign Up</button>
-
 </EditForm>
 
 @code {
-    private SignUpFormModel Form = new SignUpFormModel();
+    [SupplyParameterFromQuery]
+    public string? StatusMsg { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    private SignUpFormModel SignUpForm { get; set; } = new();
+
+    public async Task OnValidSubmit(EditContext editContext)
+    {
+        var user = new ApplicationUser
+            {
+                FirstName = SignUpForm.FirstName,
+                LastName = SignUpForm.LastName,
+                Email = SignUpForm.Email,
+                UserName = SignUpForm.Email,
+            };
+        try
+        {
+            var alreadyInDataBase = await _userManager.FindByEmailAsync(user.Email);
+            if (alreadyInDataBase != null)
+            {
+                StatusMsg = "User already exists.";
+                return;
+            }
+
+            var result = await _userManager.CreateAsync(user, SignUpForm.Password);
+            if (!result.Succeeded)
+            {
+                StatusMsg = "Unable to register account. Please try again later...";
+                return;
+            }
+            else
+            {
+                await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+                ServiceBusSender sender = client.CreateSender("verification_request");
+                var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = SignUpForm.Email });
+                ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+                await sender.SendMessageAsync(message);
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    navigationManager.NavigateTo($"Account/RegisterConfirmation/?email={SignUpForm.Email}");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"Error sending email to generate code to email: {e}");
+            StatusMsg = "An error occurred while creating the account.";
+            return;
+        }
+    }
 }

@@ -17,11 +17,11 @@
 /// course-details
 @import './sections/_course-details.scss';
 
-///  sign-in
+/// auth
 @import './sections/auth_css/_signIn.scss';
-
-///  sign-up
 @import './sections/auth_css/_signUp.scss';
+@import './sections/auth_css/_confirmation.scss';
+
 
 /// account
 @import './sections/account_css/_details.scss';
@@ -29,11 +29,10 @@
 @import './sections/account_css/_security.scss';
 @import './sections/account_css/_notifications.scss';
 @import './sections/account_css/_massages.scss';
+@import './sections/account_css/_message_page.scss';
 
 /// contact
 @import './sections/contact/_contact.scss';
-
-
 
 /// 404-error
 @import './sections/_404-error.scss';

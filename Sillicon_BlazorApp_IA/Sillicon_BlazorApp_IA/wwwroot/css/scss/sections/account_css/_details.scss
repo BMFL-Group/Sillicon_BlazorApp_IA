@@ -14,7 +14,7 @@
         }
 
         .basic-details {
-            margin-top:30px;
+            margin-top: 30px;
             grid-area: basic;
 
             @include lg {
@@ -22,6 +22,10 @@
             }
 
             .details-form-group {
+
+                .valid.modified:not([type=checkbox]) {
+                    outline: none;
+                }
 
                 .names {
                     display: flex;
@@ -64,6 +68,10 @@
             }
 
             .address-form-group {
+
+                .valid.modified:not([type=checkbox]) {
+                    outline: none;
+                }
 
                 .postal-city {
                     display: flex;

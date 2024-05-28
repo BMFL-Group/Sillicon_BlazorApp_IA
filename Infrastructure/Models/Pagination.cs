@@ -16,5 +16,4 @@ public class Pagination
     {
         TotalPages = (int)Math.Ceiling((double)TotalItems / PageSize);
     }
-
 }

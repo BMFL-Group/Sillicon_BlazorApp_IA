@@ -3,13 +3,29 @@
 
 <section class="course-details">
     
-    <CourseDetailsClient id="@Id"/>
+    <CourseDetailsPartial id="@Id" User="User" />
 
 </section>
 
 @code {
+    [CascadingParameter]
+    private HttpContext? _context { get; set; } = default;
 
     [Parameter]
     public string Id { get; set; } = null!;
-   
+
+    public ApplicationUser? User { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_context != null)
+        {
+            var user = await _userManager.GetUserAsync(_context.User);
+            if (user != null)
+            {
+                User = user;
+            }
+        }
+        
+    }
 }

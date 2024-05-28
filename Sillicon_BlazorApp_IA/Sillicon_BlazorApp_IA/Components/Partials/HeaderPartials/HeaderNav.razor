@@ -1,31 +1,71 @@
-﻿
+﻿@using Sillicon_BlazorApp_IA.Controllers
+@inject SiteSettings siteSettings
+
 <div id="menu">
     <nav>
-        <NavLink class="menu-link" href="/#overview" >Overview</NavLink>
-        <NavLink class="menu-link" href="/#features" >Features</NavLink>
-        @* <NavLink class="menu-link" href="/contact">Contact</NavLink> *@
-        <NavLink class="menu-link" href="/courses">Courses</NavLink>
+        <NavLink class="menu-link" href="/#overview">Overview</NavLink>
+        <NavLink class="menu-link" href="/#features">Features</NavLink>
+        <NavLink class="menu-link" href="/contact">Contact</NavLink>
+
+        <AuthorizeView>
+            <Authorized>
+                <NavLink class="menu-link" href="/courses">Courses</NavLink>
+            </Authorized>
+        </AuthorizeView>
+
     </nav>
 </div>
 
 <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
-        <input type="checkbox" id="switchMode" checked="isDark" role="checkbox">
+        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onclick="ToggleDarkMode">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
 </div>
 
+<p>@Theme</p>
+
 <div class="account-buttons">
 
-@*     <a class="user-logged-in" asp-controller="Account" asp-action="Details"><img class="user-profile-pic" src="~/uploads/user.ProfileImageUrl" alt="Profile picture of user.FirstName user.LastName"></a>
-    *@    
-    <NavLink class="btn-gray" href="/signin"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
-    <NavLink class="btn-theme" href="/signup"><i class="fa-solid fa-user"></i>Sign up</NavLink>
+    <AuthorizeView>
+        <Authorized>
+            <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/images/doomguy.jpg" alt="Profile picture of user.FirstName user.LastName"></a>
+        </Authorized>
+        <NotAuthorized>
+            <NavLink class="btn-gray" href="/Account/Login?returnUrl=%2FAccount%2FManage"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
+            <NavLink class="btn-theme" href="/Account/Register"><i class="fa-solid fa-user"></i>Sign up</NavLink>
+        </NotAuthorized>
+    </AuthorizeView>
 
 </div>
 
 @code {
 
+    private bool IsDarkMode { get; set; } = false;
+    private string Theme { get; set; } = "light";
+
+    private void ToggleDarkMode()
+    {
+        IsDarkMode = !IsDarkMode;
+        Theme = IsDarkMode ? "dark" : "light";
+       ChangeTheme(Theme);
+    }
+
+    private void ChangeTheme(string Theme)
+    {
+        try
+        {
+            var response = siteSettings.ChangeTheme(Theme);
+            if (response != null)
+            {
+                navigationManager.Refresh();
+            }            
+        }
+        catch (Exception ex)
+        {
+            //Handle exception here
+        }
+    }
 }

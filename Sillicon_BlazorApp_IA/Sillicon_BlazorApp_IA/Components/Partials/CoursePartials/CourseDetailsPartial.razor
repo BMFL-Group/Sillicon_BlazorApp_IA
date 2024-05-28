@@ -1,0 +1,356 @@
+﻿@rendermode InteractiveServer
+
+
+@if (Course == null)
+{
+    <PageTitle>Silicon | loading course...</PageTitle>
+    <p class="container">Loading...</p>
+}
+else
+{
+    <PageTitle>Silicon | @Course.Title</PageTitle>
+
+    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@Course.ImageUri)"></div>
+
+    <div class="top-container container">
+        <div class="grid-container">
+            <div class="button-wrapper">
+                @if (Course.BestSeller)
+                {
+                    <span class="best-seller">Best Seller</span>
+                }
+                <span class="digital">Digital</span>
+            </div>
+
+            <Breadcrumbs />
+
+            <div class="title-wrapper">
+                <h1>@Course.Title</h1>
+                <p>@Course.Ingress</p>
+            </div>
+
+            <div class="ratings-wrapper">
+                <span class="stars">
+                    @{
+                        int maxStars = Convert.ToInt32(Math.Round((Course.RatingInPercentage) / 20.0, MidpointRounding.AwayFromZero)); // takes rating in percentage and splits by 20 (1/5) as max stars are 5.
+                        maxStars = Math.Max(1, Math.Min(5, maxStars)); // Ensure maxStars is between 0 and 5
+                    }
+                    @foreach (var star in Enumerable.Range(1, maxStars)) // render out solid stars between 1 and 5.
+                    {
+                        <i class="fa-solid fa-star"></i>
+                    }
+
+                    @for (int i = (maxStars + 1); i <= 5; i++) // Renders reamaining how stars depending on the amount of solid stars.
+                    {
+                        <i class="fa-light fa-star"></i>
+                    }
+
+                </span>
+
+                @{
+                    double likesInK = Math.Max(0, (Math.Round(Course.NumberOfLikes / 1000.0, 1)));
+                    double reviewsInK = Math.Max(0, (Math.Round(Course.NumberOfReviews / 1000.0, 1)));
+                }
+
+                <span class="course-details">@Course.RatingInPercentage% (@reviewsInK K reviews)</span>
+                <i class="fa-thin fa-pipe"></i>
+                <i class="fa-regular fa-thumbs-up"></i>
+                <span>@likesInK K likes</span>
+                <i class="fa-thin fa-pipe"></i>
+                <i class="fa-light fa-clock"></i>
+                <span class="course-ingress">@Course.LengthInHours hours</span>
+            </div>
+
+            <div class="author-wrapper">
+                <img class="course-instructor-picture" src="/img/albert-flores-small-round.png" alt="">
+                <div class="author-text">
+                    <p class="by">Created By</p>
+                    <p class="author">
+                        @if (Course.Authors != null)
+                        {
+                            int i = 0;
+                            foreach (var author in Course.Authors)
+                            {
+                                <span class="author">@author.Name</span>
+                                i++;
+                                if (Course.Authors.Count() != i)
+                                {
+                                    <span> & </span>
+                                }
+                            }
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="course-description container">
+        <div class="grid-container">
+            <div class="title-box">
+                <h2>Course Description</h2>
+                <p>
+                    @if (Course != null && Course.Content != null && Course.Content.Description != null)
+                    {
+                        @Course.Content.Description
+                    }
+                </p>
+            </div>
+
+            <div class="what-you-learn-box">
+                <h3>What you'll learn</h3>
+
+                @{
+                    if (Course != null && Course.Content != null && Course.Content.Courseincludes != null && Course.Content.Courseincludes.Count() > 0)
+                    {
+                        foreach (var bulletPoint in Course.Content.Courseincludes)
+                        {
+                            <p><i class="fa-regular fa-circle-check"></i>@bulletPoint</p>
+                        }
+                    }
+                }
+
+            </div>
+
+            <div class="course-includes-box">
+                <h3>This course includes:</h3>
+
+                <p><img src="/img/screen.svg" alt="">@Course.Content.Courseincludes[0]</p>
+                <p><img src="/img/file.svg" alt="">@Course.Content.Courseincludes[1]</p>
+                <p><img src="/img/download.svg" alt="">@Course.Content.Courseincludes[2]s</p>
+                <p><img src="/img/infinity.svg" alt="">@Course.Content.Courseincludes[3]</p>
+                <p><img src="/img/trophy.svg" alt="">@Course.Content.Courseincludes[4]</p>
+
+                @if (Course.DiscountPrice >= 1)
+                {
+                    <span class="discount-price">@Course.Currency@Course.DiscountPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    <span class="price strikethrough">@Course.Currency@Course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+                }
+                else
+                {
+                    <span class="price">@Course.Currency@Course.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</span>
+
+                }
+
+                <div class="join-course-wrapper">
+
+                    @* <button class="btn-theme" type="submit">join Course</button> *@
+
+                    @if (SavedCourses == null)
+                    {
+                        <button class="btn-theme" type="submit">join Course</button>
+                    }
+                    @if (SavedCourses != null)
+                    {
+                        var isSignedUp = false;
+
+                        foreach (var savedCourse in SavedCourses)
+                        {
+                            if (Course.Id == savedCourse.CourseId && savedCourse.HasJoined)
+                            {
+                                // As soon as a match is found the lop breaks and prints the HTML inside "if(isSignedUp)". If no matches are found it goes to the else statement.
+                                ThisSavedCourse = savedCourse;
+                                isSignedUp = true;
+                                break;
+                            }
+                            if (Course.Id == savedCourse.CourseId)
+                            {     
+                                ThisSavedCourse = savedCourse;
+                                break;
+                            }
+                            else
+                            {
+                                ThisSavedCourse = new()
+                                {
+                                    CourseId = Course.Id,
+                                    UserId = User.Id,
+                                    HasJoined = false,
+                                    IsBookmarked = false,
+                                };
+                            }
+                        }
+                        if (isSignedUp)
+                        {
+                             <div class="btn"><span>You are enrolled </span><i class="fa-solid fa-thumbs-up"></i></div>
+                             <button class="btn-delete-all" @onclick="(e) => HandleJoinOrLeaveCourse(false)">Leave Course</button>
+                        }
+                        else
+                        {
+                            <button class="btn-theme" @onclick="(e) => HandleJoinOrLeaveCourse(true)">Join Course</button>
+                        }
+
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="program-details container">
+        <h2>Program Details</h2>
+        <div class="grid-container">
+            <div class="progression-boxes">
+
+                @if (Course != null && Course.Content != null && Course.Content.ProgramDetails != null)
+                {
+                    int progressBoxes = 0;
+                    @foreach (var progressBox in Course.Content.ProgramDetails)
+                    {
+                        progressBoxes++;
+                        if (progressBoxes <= Math.Abs(Course.Content.ProgramDetails.Count() - 1))
+                        {
+                            <div class="progress-box">
+                                <div class="outer-circle">
+                                    <div class="inner-circle"><span class="number">@progressBox.Id</span></div>
+                                    <div class="connector-line"></div>
+                                </div>
+                                <div class="text-box">
+                                    <h3 class="progress-title">@progressBox.Title</h3>
+                                    <p class="progress-description">
+                                        @progressBox.Description[0]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                        else if (progressBoxes == Course.Content.ProgramDetails.Count())
+                        {
+                            <div class="progress-box">
+                                <div class="outer-circle">
+                                    <div class="inner-circle"><span class="number">@progressBox.Id</span></div>
+                                    <div class="connector-line last-line"></div>
+                                </div>
+                                <div class="text-box">
+                                    <h3 class="progress-title">@progressBox.Title</h3>
+                                    <p class="progress-description">
+                                        @progressBox.Description[0]
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+
+
+            </div>
+            <div class="empty-container"></div>
+        </div>
+    </div>
+
+    <div class="about-author-box container">
+        <div class="grid-wrapper">
+            <div class="image-wrapper"><img src="/img/albert-flores-lg.png" alt=""></div>
+            <div class="bio-wrapper">
+                <p class="sub-heading">Learn from the best</p>
+                <h3 class="about-heading">
+                    @if (Course != null && Course.Authors != null)
+                    {
+                        foreach (var author in Course.Authors)
+                        {
+                            <span>@author.Name</span>
+                        }
+                    }
+                </h3>
+                <p class="text">
+                    Dolor ipsum amet cursus quisque porta adipiscing. Lorem convallis malesuada sed maecenas. Ac
+                    dui at vitae mauris in nullam porta sem. Quis pellentesque elementum ac bibendum. Nunc aliquam in
+                    tortor facilisis. Vulputate eget risus, metus phasellus. Pellentesque faucibus amet, eleifend diam quam
+                    condimentum convallis ultricies placerat. Duis habitasse placerat amet, odio pellentesque rhoncus,
+                    feugiat at. Eget pellentesque tristique felis magna fringilla.
+                </p>
+                <div class="button-wrapper">
+                    <button class="btn-gray subscribers"><i class="fa-brands fa-youtube"></i> 240K subscribers</button>
+                    <button class="btn-gray followers"><i class="fa-brands fa-facebook"></i> 180K followers</button>
+                    <img class="pattern" src="/img/pattern.svg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; } = null!;
+
+    [Parameter]
+    public ApplicationUser? User { get; set; } = default;
+
+    IEnumerable<SavedCoursesModel> SavedCourses { get; set; } = [];
+
+    SavedCoursesModel ThisSavedCourse { get; set; } = null!;
+
+    Course Course = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            var savedCourses = await _coursesService.GetSavedCoursesAsync(User.Id);
+            if (savedCourses != null && savedCourses.Count() > 0)
+            {
+                SavedCourses = savedCourses;
+                Course = await GetOneCourse(Id);
+            }
+        }
+    }
+
+    public async Task<Course> GetOneCourse(string id)
+    {
+        try
+        {
+            var courseResponse = await _coursesService.GetOneCourseByIdAsync(id);
+            if (courseResponse != null)
+            {
+                return courseResponse;
+            }
+        }
+        catch (Exception ex)
+        { /*logic for logging here*/ }
+        return null!;
+    }
+
+    private async Task HandleJoinOrLeaveCourse(bool joinOrLeave)
+    {
+        var id = ThisSavedCourse.Id;
+        ThisSavedCourse.HasJoined = joinOrLeave;
+        //add a check to see if savedCourse Exists otherwise create nwew
+
+        if(id == null || id == 0)
+        {
+
+            var json = JsonConvert.SerializeObject(ThisSavedCourse);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses", content);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.Refresh();
+            }
+        }
+        if(!ThisSavedCourse.IsBookmarked && !ThisSavedCourse.HasJoined)
+        {
+            var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.Refresh();
+            }
+        }
+        else
+        {
+            var json = JsonConvert.SerializeObject(ThisSavedCourse);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{id}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.Refresh();
+            }            
+        }
+
+
+    }
+
+}

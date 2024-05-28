@@ -1,31 +1,69 @@
-﻿
-<EditForm Model="Form" method="post" novalidate>
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+﻿@if (!string.IsNullOrEmpty(StatusMsg))
+{
+    <div class="error">@StatusMsg</div>
+}
 
+<EditForm FormName="signinform" Model="SignInForm" OnValidSubmit="OnValidSubmit" asp-route-returnUrl="@ReturnUrl" method="post" novalidate>
+    <DataAnnotationsValidator />
     <div id="form-email" class="input-group">
         <label for="Email">Email address</label>
-        <span ="Email"></span>
-        <InputText @bind-Value="Form.Email" id="Email" placeholder="Enter your email address" />
+        <InputText type="email" @bind-Value="SignInForm.Email" id="Email" placeholder="Enter your email address" />
+        <ValidationMessage For="() => SignInForm.Email" />
     </div>
-
     <div id="form-password" class="input-group">
         <label for="Password">Password</label>
-        <span asp-validation-for="Password"></span>
-        <InputText @bind-Value="Form.Password" id="Password" placeholder="Enter your password" />
+        <InputText type="password" @bind-Value="SignInForm.Password" id="Password" placeholder="Enter your password" />
+        <ValidationMessage For="() => SignInForm.Password" />
     </div>
-
     <div id="form-remeber" class="checkbox-group">
         <div class="checkbox">
-            <InputCheckbox id="Remember" @bind-Value="Form.Remeber" />
-            <label for="Remember">Remeber me</label>
+            <InputCheckbox id="Remember" @bind-Value="SignInForm.Remember" />
+            <label for="Remember">Remember me</label>
         </div>
     </div>
-
     <button type="submit" class="btn-theme">Sign in</button>
-
 </EditForm>
 
+
 @code {
-    private SignInFormModel Form = new SignInFormModel();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? StatusMsg { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    private SignInFormModel SignInForm { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext != null && HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    public async Task OnValidSubmit(EditContext editContext)
+    {
+        try
+        {
+            var result = await _signInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.Remember, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                _redirectManager.RedirectTo("Account/Manage");
+            }
+            else
+                StatusMsg = "Login failed try again.";
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"Error: {e.Message}");
+            StatusMsg = "An error occurred.";
+            return;
+        }
+    }
 }

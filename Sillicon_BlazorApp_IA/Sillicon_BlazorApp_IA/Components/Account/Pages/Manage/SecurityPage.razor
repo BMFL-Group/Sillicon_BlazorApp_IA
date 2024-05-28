@@ -1,0 +1,46 @@
+﻿@page "/security"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<PageTitle>security</PageTitle>
+
+<div class="security">
+    <div class="container">
+        <MenuPartial User="UserClient" />
+        <div>
+            <div class="security-form">
+                <h2>Security</h2>
+                <ChangePasswordFormPartial User="User" />
+            </div>
+            <div class="delete-account">
+                <h5>Delete account</h5>
+                <p>
+                    When you delete your account, your public profile will be deactivated immediately. If you
+                    change
+                    your mind before the 14 days are up, sign in with your email and password, and we’ll send
+                    you a
+                    link to reactivate your account.
+                </p>
+                <DeleteAccountFormPartial User="User" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private HttpContext? Context { get; set; } = default!;
+
+    private ApplicationUser? User { get; set; }
+    private ClientUserModel UserClient { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Context != null)
+        {
+            User = await _userManager.GetUserAsync(Context.User);
+            if (User != null)
+                AutoMapper.MapClientUser(UserClient, User);
+        }
+    }
+}

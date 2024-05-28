@@ -3,33 +3,75 @@
     .container {
         display: flex;
         gap: 20px;
+        width: 100%;
 
-
-        .chat {
-            margin-top: 2rem;
-            display: flex;
-            justify-content:space-between;
-            align-items: center;
-            border: 2px solid var(--color-gray-300);
-            border-radius: 10px;
+        .row {
             width: 100%;
-            color: black;
-            font-weight: bold;
-            font-size: 30px;
-            position:relative;
 
-            .messages {
-                width: 20%;
-                height: 100%;
-                background-color: var(--color-gray-100);
-                border-bottom-left-radius: 10px;
-                border-top-left-radius: 10px;
-                border-right:none;
+            h5 {
+                margin-top: 30px;
+                color: var(--color-theme);
+                margin-bottom: 20px;
             }
 
-            p{
-                position:absolute;
-                left:400px;
+            .col {
+                width: 100%;
+
+                .card {
+                    width: 100%;
+                    background: linear-gradient(to right, #6366F1, #d1d5fa);
+
+                    .card-header {
+                        font-weight: bold;
+                    }
+
+                    .message-container {
+                        height: 300px;
+                        overflow-y: auto;
+                        scroll-behavior: revert-layer;
+                        display: flex;
+                        flex-direction: column-reverse;
+                    }
+
+                    .card-body {
+                        background-color: #ffffff;
+
+                        .list-group {
+
+                            li {
+
+                                span {
+                                    margin-left: 20px;
+                                }
+                            }
+                        }
+
+                        .bubble-right {
+                            text-align: right;
+                            background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+                            margin-left: auto;
+                            border-radius: 15px;
+                            padding: 10px;
+                            max-width: 75%;
+                        }
+
+                        .bubble-left {
+                            text-align: left;
+                            background: linear-gradient(to right, #f0f0f0, #ffffff);
+                            margin-right: auto;
+                            border-radius: 15px;
+                            padding: 10px;
+                            max-width: 75%;
+                        }
+                    }
+
+                    .card-footer {
+
+                        .col-2 {
+                            width: 100%;
+                        }
+                    }
+                }
             }
         }
     }
