@@ -10,7 +10,10 @@
     {
         <Breadcrumbs />
     }
-        
+    <main>
+        @Body
+    </main>
+
     <Footer />
 
 </div>
@@ -21,30 +24,3 @@
     <a class="dismiss">🗙</a>
 </div>
 
-
-@code {
-    public Preferences _preferences { get; set; } = new();
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            siteSettings.OnChange += SiteSettingsOnChange;
-            _preferences = await siteSettings.GetPreferences();
-            
-            StateHasChanged();
-        }
-    }
-
-    private void SiteSettingsOnChange(Preferences newPreferences)
-    {
-        _preferences = newPreferences;
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        siteSettings.OnChange -= SiteSettingsOnChange;
-    }
-}

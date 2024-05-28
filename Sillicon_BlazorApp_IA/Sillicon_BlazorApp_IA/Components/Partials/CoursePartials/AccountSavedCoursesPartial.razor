@@ -1,6 +1,5 @@
 ﻿
 <div class="courses">
-
     <div class="top-wrapper">
         <h1 class="title">Saved Items</h1>
  
@@ -16,50 +15,41 @@
                 {
                     if (savedCourse.CourseId == course.Id)
                     {
-                        <CourseBoxPartial Course="@course" savedCourse="@savedCourse" UserId="@UserId" />
+                        <CourseBoxPartial Course="@course" savedCourse="@savedCourse" UserId="@User.Id" />
                     }
                 }
             }
         }
-
     </div>
-
-
 </div>
 
 @code {
+
     [CascadingParameter]
     private HttpContext? _context { get; set; } = default;
 
     private IEnumerable<Course> Courses { get; set; } = null!;
-
-    private string UserId { get; set; } = null!;
-
     private IEnumerable<SavedCoursesModel> savedCourses { get; set; } = null!;
 
-
+    [Parameter]
+    public ApplicationUser User { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        if (_context != null)
+        if (User != null)
         {
-            var user = await _userManager.GetUserAsync(_context.User);
-            if (user != null)
+            var saveCoursesResponse = await _coursesService.GetSavedCoursesAsync(User.Id);
+            if (saveCoursesResponse != null && saveCoursesResponse.Count() > 0)
             {
-                UserId = user.Id;
+                savedCourses = saveCoursesResponse;
             }
-        }
-        var saveCoursesResponse = await _coursesService.GetSavedCoursesAsync(UserId);
-        if (saveCoursesResponse != null && saveCoursesResponse.Count() > 0)
-        {
-            savedCourses = saveCoursesResponse;
-        }
 
-        var coursesToFetchResponse = await _coursesService.GetAllCoursesAsync(string.Empty, string.Empty, 1, 9999);
-        if (coursesToFetchResponse != null)
-        {
-            Courses = coursesToFetchResponse.Courses;
-        }
+            var coursesToFetchResponse = await _coursesService.GetAllCoursesAsync(string.Empty, string.Empty, 1, 9999);
+            if (coursesToFetchResponse != null)
+            {
+                Courses = coursesToFetchResponse.Courses;
+            }
+        }    
     }
 
     private async Task HandleDeleteAll()

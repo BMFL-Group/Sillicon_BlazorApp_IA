@@ -1,15 +1,16 @@
 ﻿@page "/notifications"
 @using System.Text.Unicode
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@attribute [StreamRendering]
 
 <PageTitle>notifications</PageTitle>
 
 <section id="notifications">
     <div class="container">
-        <ProfileMenuPartial />
+        <MenuPartial User="UserClient"/>
         <div class="form-title">
             <h2>Notifications</h2>
-            <NotificationsFormPartial User="User" Form="Form"/> 
+            <NotificationsFormPartial User="User" Form="Form" />
         </div>
     </div>
 </section>
@@ -23,20 +24,27 @@
     private SubscribeForm Form { get; set; } = new();
 
     private ApplicationUser? User;
+    private ClientUserModel UserClient { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         User = await _userManager.GetUserAsync(Context!.User);
-        if(User != null && User.Email != null)
-            Form.Email = User.Email;
+        if (User != null)
+        {
+            AutoMapper.MapClientUser(UserClient,User);
 
-        Form!.Subscribe = await CheckSubscription();
+            if (User.Email != null)
+            {
+                Form.Email = User.Email;
+                Form!.Subscribe = await CheckSubscription();
+            }
+        }    
     }
 
     private async Task<bool> CheckSubscription()
     {
         if (User != null && User.Email != null)
-        {
+        {                        
             var request = new HttpRequestMessage(HttpMethod.Post, "https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D");
             var json = JsonConvert.SerializeObject(new SubscribeModel { Email = User.Email });
             var content = new StringContent(json, Encoding.UTF8, "application/json");

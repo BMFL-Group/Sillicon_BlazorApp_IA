@@ -1,0 +1,52 @@
+﻿@using Infrastructure.Models.Account
+
+<aside class="profile-menu">
+    <div class="name-email-img">
+        <img src="images/doomguy.jpg" />
+
+        <form enctype="multipart/form-data" method="post">
+            <input id="fileUploarder" type="file" name="file" hidden />
+            <label class="btn-circle" for="fileUploarder"><i class="fa-regular fa-refresh"></i></label>
+        </form>
+        <h5>@if(User != null)
+            {
+                @User.FirstName
+            }
+        </h5>
+        <p>
+            @if (User != null)
+            {
+                @User.Email
+            }
+        </p>
+    </div>
+
+    <nav>
+        <NavLink href="/Account/Manage">
+            <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "Account/Manage" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-gear"></i>Account details</div>
+        </NavLink>
+        <NavLink href="/security">
+            <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "security" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-lock"></i>Security</div>
+        </NavLink>
+        <NavLink href="/notifications">
+            <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "notifications" ? "menu-btn active" : "menu-btn" )"><i class="fa-light fa-bell"></i>Notifications</div>
+        </NavLink>
+        <NavLink href="/messages">
+            <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "messages" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-message"></i>Messages</div>
+        </NavLink>
+        <NavLink href="/savedcourses">
+            <div class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "savedcourses" ? "menu-btn active" : "menu-btn" )"><i class="fa-regular fa-bookmark"></i>Saved courses</div>
+        </NavLink>
+
+        <Signout />
+    </nav>
+
+</aside>
+
+@code {
+
+    [Parameter]
+    public ClientUserModel? User { get; set; }
+
+}
+

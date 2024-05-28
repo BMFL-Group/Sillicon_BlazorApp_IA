@@ -1,0 +1,41 @@
+﻿@page "/savedcourses"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@attribute [StreamRendering]
+
+<PageTitle>saved courses</PageTitle>
+
+<section class="saved-courses">
+    <div class="container">
+        <MenuPartial User="UserClient"/> 
+        @if(User != null)
+        {
+            <AccountSavedCoursesPartial User="User" />
+        }
+
+    </div>
+
+</section>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; } = default;
+
+    private ApplicationUser? User { get; set; }
+    private ClientUserModel UserClient { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext != null)
+        {
+            User = await _userManager.GetUserAsync(HttpContext.User);
+            if(User != null)
+                AutoMapper.MapClientUser(UserClient, User);
+        }
+    }
+}
+
+
+
+
+
+

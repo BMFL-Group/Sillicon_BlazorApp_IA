@@ -8,51 +8,30 @@ using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
 using Sillicon_BlazorApp_IA.Controllers;
 using Sillicon_BlazorApp_IA.Data;
+using Sillicon_BlazorApp_IA.Hubs;
 using Sillicon_BlazorApp_IA.Services;
-
-//NYA APPEN!!!!!!!!
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddAntiforgery(x =>
-//{
-//    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-//    x.Cookie.SameSite = SameSiteMode.None;
-//});
-builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddTransient<SiteSettings>();
-
-builder.Services.AddCors(x =>
-{
-    x.AddDefaultPolicy(x =>
-    {
-        x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
-});
-
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddControllers();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 
-
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddControllers();
-
 builder.Services.AddHttpClient();
 
 
 
 builder.Services.AddScoped<CoursesService>();
-
+builder.Services.AddScoped<SiteSettings>();
 builder.Services.AddScoped<AccountService>();
-
 
 builder.Services.AddAuthentication(options =>
     {
@@ -78,7 +57,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -96,7 +76,7 @@ else
 }
 
 app.UseHttpsRedirection();
-
+app.UseStatusCodePagesWithRedirects("/Error");
 app.UseStaticFiles();
 
 app.UseAntiforgery();
@@ -108,7 +88,5 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
-
-//app.MapControllers();
-
+app.MapHub<ChatHub>("/chathub");
 app.Run();

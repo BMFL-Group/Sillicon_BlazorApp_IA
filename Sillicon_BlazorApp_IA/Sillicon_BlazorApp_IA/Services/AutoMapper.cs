@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Models.Account;
 using Infrastructure.Models;
 using Sillicon_BlazorApp_IA.Data;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace Sillicon_BlazorApp_IA.Services
 {
@@ -96,6 +95,19 @@ namespace Sillicon_BlazorApp_IA.Services
                 return newAddress;
             }
             return null!;
+        }
+
+        /// <summary>
+        /// Adds the values from a ApplicationUser to the ClientUserModel.
+        /// </summary>
+        /// <param name="clientUser">ClientUserModel model</param>
+        /// <param name="user">ApplicationUser model</param>
+        public static void MapClientUser(ClientUserModel clientUser, ApplicationUser user)
+        {
+            clientUser.Id = user.Id;
+            clientUser.FirstName = user.FirstName;
+            clientUser.Email = user.Email!;
+            // clientUser.ProfileImg = user.ProfileImageUrl;
         }
     }
 }

@@ -30,7 +30,7 @@
 
     <AuthorizeView>
         <Authorized>
-            <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/uploads/user.ProfileImageUrl" alt="Profile picture of user.FirstName user.LastName"></a>
+            <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/images/doomguy.jpg" alt="Profile picture of user.FirstName user.LastName"></a>
         </Authorized>
         <NotAuthorized>
             <NavLink class="btn-gray" href="/Account/Login?returnUrl=%2FAccount%2FManage"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
@@ -41,8 +41,9 @@
 </div>
 
 @code {
-    [Parameter]
-    public bool IsDarkMode { get; set; }
+
+    private bool IsDarkMode { get; set; } = false;
+    private string Theme { get; set; } = "light";
 
     private async Task ToggleDarkMode()
     {

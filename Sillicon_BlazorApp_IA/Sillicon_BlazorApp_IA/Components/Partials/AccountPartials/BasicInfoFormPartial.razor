@@ -107,12 +107,26 @@
                 {
                     var update = await _userManager.UpdateAsync(userToUpdate);
                     if (update.Succeeded)
+                    {
                         SuccessMessage = "User updated successfully";
+
+                        var timer = new System.Timers.Timer(1000);
+                        timer.Start();
+                        timer.Elapsed += (s, e) =>
+                        {
+                            ReloadPage();
+                        };                  
+                    }              
                     else
                         ErrorMessage = "Update failed, try again later..";
                 }
                 catch (Exception e) { Debug.WriteLine($"UPDATE ERROR ::: {e.Message}"); };
             }
         }
+    }
+
+    private void ReloadPage()
+    {
+        navigationManager.NavigateTo("/Account/Manage", forceLoad: true);
     }
 }

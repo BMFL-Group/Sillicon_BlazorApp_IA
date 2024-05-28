@@ -17,6 +17,6 @@ namespace Sillicon_BlazorApp_IA.Data
 
         public bool IsExternalAccount { get; set; } = false;
 
-        public string? ProfileImageUrl { get; set; } = null!;
+        public string? ProfileImageUrl { get; set; } = "/img/user-profile-icon.svg";
     }
 }
