@@ -36,8 +36,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddControllers();
-
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -49,11 +47,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
 
-
-
 builder.Services.AddScoped<CoursesService>();
-
-
 
 builder.Services.AddScoped<SiteSettingsLocalStorage>();
 

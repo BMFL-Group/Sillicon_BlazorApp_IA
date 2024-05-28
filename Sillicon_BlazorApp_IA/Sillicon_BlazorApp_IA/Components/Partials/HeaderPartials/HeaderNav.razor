@@ -41,6 +41,8 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    HttpContext httpContext { get; set; } = default;
 
     private bool IsDarkMode { get; set; } = false;
     private string Theme { get; set; } = "light";
@@ -72,12 +74,16 @@
     {
         try
         {
-            var baseUrl = navigationManager.BaseUri;
-            var apiUrl = baseUrl.TrimEnd('/') + "/api/changetheme";
-            var cookieResponse = await client.GetAsync($"{apiUrl}/{themeString}");
+            // var baseUrl = navigationManager.BaseUri;
+            // var apiUrl = baseUrl + "api/changetheme";
+            // var cookieResponse = await client.GetAsync($"{apiUrl}/{themeString}");
+            var url = $"https://localhost:7126/api/SiteSettings/{themeString}";
+            var cookieResponse = await client.GetAsync(url);
+
             if (cookieResponse.IsSuccessStatusCode)
             {   
                 var result = await cookieResponse.Content.ReadAsStringAsync();
+                Theme = JsonConvert.DeserializeObject<string>(result);
                 // Theme = result!;
                 StateHasChanged();
             }
