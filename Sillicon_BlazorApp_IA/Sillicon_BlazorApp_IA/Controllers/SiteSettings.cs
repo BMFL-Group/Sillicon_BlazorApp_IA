@@ -20,7 +20,7 @@ public class SiteSettings : Controller
 
             if (_contextAccessor != null)
             {
-                _contextAccessor.HttpContext.Response.Cookies.Append("theme", theme, options);  
+                _contextAccessor.HttpContext.Response.Cookies.Append("theme", theme, options);
             }
             return Ok(theme);
         }
