@@ -40,12 +40,7 @@
         {
             User = await _userManager.GetUserAsync(Context.User);
             if (User != null)
-            {
-                UserClient.Id = User.Id;
-                UserClient.FirstName = User.FirstName;
-                UserClient.Email = User.Email!;
-                // UserClient.ProfileImg = userInfo.ProfileImageUrl;
-            }
+                AutoMapper.MapClientUser(UserClient, User);
         }
     }
 }

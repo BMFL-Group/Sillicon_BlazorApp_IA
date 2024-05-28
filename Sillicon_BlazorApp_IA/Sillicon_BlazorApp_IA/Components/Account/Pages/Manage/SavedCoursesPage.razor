@@ -1,5 +1,6 @@
 ﻿@page "/savedcourses"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@attribute [StreamRendering]
 
 @attribute [StreamRendering]
 
@@ -30,12 +31,7 @@
         {
             User = await _userManager.GetUserAsync(HttpContext.User);
             if(User != null)
-            {
-                UserClient.Id = User.Id;
-                UserClient.FirstName = User.FirstName;
-                UserClient.Email = User.Email!;
-                // UserClient.ProfileImg = userInfo.ProfileImageUrl;
-            }
+                AutoMapper.MapClientUser(UserClient, User);
         }
     }
 }

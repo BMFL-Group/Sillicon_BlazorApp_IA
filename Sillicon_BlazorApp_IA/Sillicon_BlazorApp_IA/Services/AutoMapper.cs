@@ -96,5 +96,18 @@ namespace Sillicon_BlazorApp_IA.Services
             }
             return null!;
         }
+
+        /// <summary>
+        /// Adds the values from a ApplicationUser to the ClientUserModel.
+        /// </summary>
+        /// <param name="clientUser">ClientUserModel model</param>
+        /// <param name="user">ApplicationUser model</param>
+        public static void MapClientUser(ClientUserModel clientUser, ApplicationUser user)
+        {
+            clientUser.Id = user.Id;
+            clientUser.FirstName = user.FirstName;
+            clientUser.Email = user.Email!;
+            // clientUser.ProfileImg = user.ProfileImageUrl;
+        }
     }
 }

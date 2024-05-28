@@ -39,11 +39,7 @@
             {
                 User = user;
                 AutoMapper.MapNewFormValues(BasicFormModel, user);
-
-                UserClient.Id = user.Id;
-                UserClient.FirstName = user.FirstName;
-                UserClient.Email = user.Email!;
-                // UserClient.ProfileImg = userInfo.ProfileImageUrl;
+                AutoMapper.MapClientUser(UserClient, User);
             }
         }
     }
