@@ -73,6 +73,7 @@
             var result = await _userManager.CreateAsync(user, SignUpForm.Password);
             if (!result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user,"User");
                 StatusMsg = "Unable to register account. Please try again later...";
                 return;
             }
