@@ -2,7 +2,7 @@
 
 <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
     <div class="img-wrapper">
-        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+        <img class="_course-image" src="@course.ImageUri" alt="@course.AltText">
         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
     </div>
 
