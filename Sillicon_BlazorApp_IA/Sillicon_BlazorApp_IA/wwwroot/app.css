@@ -3319,28 +3319,6 @@ footer .container .display-none {
 .create-account .container .content form .checkbox-group {
   margin-top: 10px;
   margin-bottom: 25px;
-  /*                   .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position:relative;
-
-      @include md {
-          flex-direction: row;
-      }
-  }
-
-  input {
-      height: 1.2rem;
-      width: 1.2rem;
-  }
-
-  .validation-message {
-      position: absolute;
-      top: 15px;
-      left: 30px;
-      font-size: 13px;
-  }*/
 }
 .create-account .container .content form button {
   width: 100%;
