@@ -204,7 +204,7 @@ h6, .h6 {
   bottom: 0;
 }
 
-:root {
+body {
   --color-gray-000: #FFFFFF;
   --color-gray-100: #F3F6FF;
   --color-gray-200: #EFF2FC;
@@ -233,7 +233,7 @@ h6, .h6 {
   --font-manrope: "Manrope", sans-serif;
 }
 
-:root.dark {
+body.dark {
   --color-gray-000: #0B0F19;
   --color-gray-100: #13161D;
   --color-gray-200: #1C1F26;

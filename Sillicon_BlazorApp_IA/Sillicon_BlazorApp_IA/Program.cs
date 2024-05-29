@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sillicon_BlazorApp_IA.Components;
@@ -12,6 +13,17 @@ using Sillicon_BlazorApp_IA.Hubs;
 using Sillicon_BlazorApp_IA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+static void Main(string[] args)
+{
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
+    builder.RootComponents.Add<App>("#app");
+
+    builder.Services.AddSingleton<ThemeService>();
+
+    builder.Build().RunAsync();
+}
 
 
 //builder.Services.AddAntiforgery(x =>
@@ -52,6 +64,7 @@ builder.Services.AddScoped<CoursesService>();
 builder.Services.AddScoped<SiteSettingsLocalStorage>();
 
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddSingleton<ThemeService>();
 
 builder.Services.AddAuthentication(options =>
     {

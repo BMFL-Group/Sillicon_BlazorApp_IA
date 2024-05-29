@@ -1,9 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap")">
-    @* @(_preferences.IsDarkMode ? "dark" : "light") *@
+@attribute [StreamRendering]
 
-    @* <Header IsDarkMode="IsDarkMode" /> *@
+<div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper" : "auth-wrap") @Theme">
     <Header />
 
     @* this conditional statement renders breadcrumbs only if not on first page ("") *@
@@ -12,7 +11,9 @@
         <Breadcrumbs />
     }
     <main>
-        @Body
+        @* <div class="Theme"> *@
+            @Body
+        @* </div> *@
     </main>
 
     <Footer />
@@ -26,6 +27,32 @@
 </div>
 
 @code {
+    private string? Theme { get; set; }
 
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         await JSRuntime.InvokeVoidAsync("setBodyClass", themeService.Theme);
+    //     }
+    // }
+
+    protected override void OnInitialized()
+    {
+        themeService.OnChange += HandleStateChange;
+    }
+
+    private async void HandleStateChange(string newState)
+    {
+        // Theme = newState;
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+
+    public void Dispose()
+    {
+        themeService.OnChange -= HandleStateChange;
+    }
 }
 

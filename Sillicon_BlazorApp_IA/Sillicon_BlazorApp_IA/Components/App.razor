@@ -12,16 +12,20 @@
     <link rel="icon" href="favicon.ico" />
     <script src="/js/localStorageInterop.js"></script>
     <script>
+        window.setBodyClass = function (theme) {
+            document.body.className = theme;
+        };
+    </script>
+@*     <script>
         window.prefersDarkMode = function () {
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
-    </script>
+    </script> *@
 
     <HeadOutlet />
 </head>
 
-<body >
-    
+<body class="@themeService.Theme">    
     <Routes  />
     <script src="_framework/blazor.web.js"></script>
 </body>
@@ -29,8 +33,5 @@
 </html>
 
 @code {
-    // [CascadingParameter]
-    // private HttpContext HttpContext { get; set; } = default!;
 
-    // string bla = "";
 }
