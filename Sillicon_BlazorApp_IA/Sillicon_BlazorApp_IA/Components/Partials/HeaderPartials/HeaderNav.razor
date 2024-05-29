@@ -18,13 +18,13 @@
 <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
-        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onchange="ToggleDarkMode">
+        <input type="checkbox" id="switchMode" checked="@(themeService.Theme == "dark"? true : false)" role="checkbox" @onchange="ToggleDarkMode">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
 </div>
 
-<p>@IsDarkMode</p>
+<p>@theme</p>
 
 <div class="account-buttons">
 
@@ -41,26 +41,33 @@
 </div>
 
 @code {
-    private bool IsDarkMode { get; set; } = false;
-
+    private string? theme { get; set; }
 
     #region OLD CODE NOT USED
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var themeString = await LoadLocalStorageData();
-            themeService.Theme = themeString;
+            theme = await LoadLocalStorageData();
+            themeService.Theme = theme;
+            await UpdateBodyClassAsync(theme);
         }
     }
 
     private async Task ToggleDarkMode()
     {
-        IsDarkMode = !IsDarkMode;
-        var themeString = IsDarkMode ? "dark" : "light";
-        themeService.Theme = themeString;
-        await UpdateBodyClassAsync(themeString);
-        await SetItemInLocalStorage("theme", themeString);    
+        switch (theme)
+        {
+            case "dark":
+                theme = "light";
+                break;
+            case "light":
+                theme = "dark";
+                break;
+        }
+        themeService.Theme = theme;
+        await UpdateBodyClassAsync(theme);
+        await SetItemInLocalStorage("theme", theme);
     }
     
     private async Task UpdateBodyClassAsync(string theme)
@@ -71,14 +78,6 @@
     private async Task<string> LoadLocalStorageData()
     {
         var CheckTheme = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "theme");
-        if (CheckTheme == "dark")
-        {
-            IsDarkMode = true;
-        }
-        else
-        {
-            IsDarkMode = false;
-        }
         return CheckTheme;
     }
 

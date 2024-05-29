@@ -7,7 +7,7 @@ public class ThemeService
     public void NotifyThemeChanged(string newState) => OnChange?.Invoke(newState);
 
 
-    private string _theme;
+    private string _theme = "light";
     public string Theme
     {
         get => _theme;

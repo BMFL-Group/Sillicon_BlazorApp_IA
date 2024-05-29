@@ -11,9 +11,7 @@
         <Breadcrumbs />
     }
     <main>
-        @* <div class="Theme"> *@
-            @Body
-        @* </div> *@
+        @Body
     </main>
 
     <Footer />
@@ -29,14 +27,6 @@
 @code {
     private string? Theme { get; set; }
 
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if (firstRender)
-    //     {
-    //         await JSRuntime.InvokeVoidAsync("setBodyClass", themeService.Theme);
-    //     }
-    // }
-
     protected override void OnInitialized()
     {
         themeService.OnChange += HandleStateChange;
@@ -44,9 +34,7 @@
 
     private async void HandleStateChange(string newState)
     {
-        // Theme = newState;
         await InvokeAsync(StateHasChanged);
-
     }
 
 
