@@ -115,11 +115,10 @@ else
             <div class="course-includes-box">
                 <h3>This course includes:</h3>
 
-                <p><img src="/img/screen.svg" alt="">@Course.Content.Courseincludes[0]</p>
-                <p><img src="/img/file.svg" alt="">@Course.Content.Courseincludes[1]</p>
-                <p><img src="/img/download.svg" alt="">@Course.Content.Courseincludes[2]s</p>
-                <p><img src="/img/infinity.svg" alt="">@Course.Content.Courseincludes[3]</p>
-                <p><img src="/img/trophy.svg" alt="">@Course.Content.Courseincludes[4]</p>
+                @for (int i = 0; i < Course.Content.WhatYouLearn.Length; i++)
+                {
+                    <p><img src="/img/@LearnIcons[i]" alt="">@Course.Content.WhatYouLearn[i]</p>
+                }
 
                 @if (Course.DiscountPrice >= 1)
                 {
@@ -283,6 +282,7 @@ else
 
     Course Course = null!;
 
+    string[] LearnIcons = ["screen.svg", "file.svg", "download.svg", "infinity.svg", "trophy.svg"];
 
     protected override async Task OnInitializedAsync()
     {
