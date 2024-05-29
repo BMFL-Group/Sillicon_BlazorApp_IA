@@ -72,11 +72,11 @@ else
                             foreach (var author in Course.Authors)
                             {
                                 <span class="author">@author.Name</span>
-                                i++;
-                                if (Course.Authors.Count() != i)
+                                if (i == 0 && !String.IsNullOrEmpty(Course.Authors[1].Name))
                                 {
                                     <span> & </span>
                                 }
+                                i++;                 
                             }
                         }
                     </p>
@@ -248,7 +248,13 @@ else
                     {
                         foreach (var author in Course.Authors)
                         {
-                            <span>@author.Name</span>
+                            int i = 0;
+                            <span class="author">@author.Name</span>
+                            if (i == 0 && !String.IsNullOrEmpty(Course.Authors[1].Name))
+                            {
+                                <span> & </span>
+                            }
+                            i++;
                         }
                     }
                 </h3>

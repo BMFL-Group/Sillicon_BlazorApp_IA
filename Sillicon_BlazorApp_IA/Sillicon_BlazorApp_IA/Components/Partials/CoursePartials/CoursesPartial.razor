@@ -118,11 +118,11 @@
                                 foreach (var author in course.Authors)
                                 {
                                     <span class="author">@author.Name</span>
-                                    i++;
-                                    if (course.Authors.Count() != i)
+                                    if (i == 0 && !String.IsNullOrEmpty(course.Authors[1].Name))
                                     {
                                         <span> & </span>
                                     }
+                                    i++;
                                 }
                             }
                             <div class="price-wrapper">
@@ -177,11 +177,11 @@
                                 foreach (var author in course.Authors)
                                 {
                                     <span class="author">@author.Name</span>
-                                    i++;
-                                    if (course.Authors.Count() != i)
+                                    if (i == 0 && !String.IsNullOrEmpty(course.Authors[1].Name))
                                     {
                                         <span> & </span>
                                     }
+                                    i++;
                                 }
                             }
                             <div class="price-wrapper">
