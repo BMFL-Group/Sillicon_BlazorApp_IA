@@ -24,7 +24,7 @@
     <span>Dark</span>
 </div>
 
-<p>@theme</p>
+@* <p>@themeService.Theme</p> *@
 
 <div class="account-buttons">
 
@@ -50,6 +50,7 @@
         {
             theme = await LoadLocalStorageData();
             themeService.Theme = theme;
+            StateHasChanged();
             await UpdateBodyClassAsync(theme);
         }
     }
