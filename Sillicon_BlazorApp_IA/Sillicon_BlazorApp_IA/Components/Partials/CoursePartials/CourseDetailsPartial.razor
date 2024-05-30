@@ -10,7 +10,7 @@ else
 {
     <PageTitle>Silicon | @Course.Title</PageTitle>
 
-    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(/img/courses/@Course.ImageUri)"></div>
+    <div class="bg-container-s-to-lg container-fluid" style="background-image: url(@Course.ImageUri)"></div>
 
     <div class="top-container container">
         <div class="grid-container">
@@ -72,11 +72,11 @@ else
                             foreach (var author in Course.Authors)
                             {
                                 <span class="author">@author.Name</span>
-                                i++;
-                                if (Course.Authors.Count() != i)
+                                if (i == 0 && !String.IsNullOrEmpty(Course.Authors[1].Name))
                                 {
                                     <span> & </span>
                                 }
+                                i++;                 
                             }
                         }
                     </p>
@@ -115,11 +115,10 @@ else
             <div class="course-includes-box">
                 <h3>This course includes:</h3>
 
-                <p><img src="/img/screen.svg" alt="">@Course.Content.Courseincludes[0]</p>
-                <p><img src="/img/file.svg" alt="">@Course.Content.Courseincludes[1]</p>
-                <p><img src="/img/download.svg" alt="">@Course.Content.Courseincludes[2]s</p>
-                <p><img src="/img/infinity.svg" alt="">@Course.Content.Courseincludes[3]</p>
-                <p><img src="/img/trophy.svg" alt="">@Course.Content.Courseincludes[4]</p>
+                @for (int i = 0; i < Course.Content.WhatYouLearn.Length; i++)
+                {
+                    <p><img src="/img/@LearnIcons[i]" alt="">@Course.Content.WhatYouLearn[i]</p>
+                }
 
                 @if (Course.DiscountPrice >= 1)
                 {
@@ -249,7 +248,13 @@ else
                     {
                         foreach (var author in Course.Authors)
                         {
-                            <span>@author.Name</span>
+                            int i = 0;
+                            <span class="author">@author.Name</span>
+                            if (i == 0 && !String.IsNullOrEmpty(Course.Authors[1].Name))
+                            {
+                                <span> & </span>
+                            }
+                            i++;
                         }
                     }
                 </h3>
@@ -283,6 +288,7 @@ else
 
     Course Course = null!;
 
+    string[] LearnIcons = ["screen.svg", "file.svg", "download.svg", "infinity.svg", "trophy.svg"];
 
     protected override async Task OnInitializedAsync()
     {

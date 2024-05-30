@@ -102,7 +102,7 @@
             {
                 <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
                     <div class="img-wrapper">
-                        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+                        <img class="course-image" src="@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
                         <HandleBookmarkPartial Course="@course" UserId="@User.Id" />
@@ -118,11 +118,11 @@
                                 foreach (var author in course.Authors)
                                 {
                                     <span class="author">@author.Name</span>
-                                    i++;
-                                    if (course.Authors.Count() != i)
+                                    if (i == 0 && !String.IsNullOrEmpty(course.Authors[1].Name))
                                     {
                                         <span> & </span>
                                     }
+                                    i++;
                                 }
                             }
                             <div class="price-wrapper">
@@ -150,7 +150,7 @@
 
                 <div class="grid-item card" @onclick="(e) => GoToCourseDetails(navigateToPage, course.Id)">
                      <div class="img-wrapper">
-                        <img class="course-image" src="/img/courses/@course.ImageUri" alt="@course.AltText">
+                        <img class="course-image" src="@course.ImageUri" alt="@course.AltText">
                         <p class="@(course.BestSeller ? "best-seller" : "hidden")">Best Seller</p>
                     </div>
                         @foreach (var savedCourse in SavedCourses.Where(x => x.CourseId == course.Id))
@@ -177,11 +177,11 @@
                                 foreach (var author in course.Authors)
                                 {
                                     <span class="author">@author.Name</span>
-                                    i++;
-                                    if (course.Authors.Count() != i)
+                                    if (i == 0 && !String.IsNullOrEmpty(course.Authors[1].Name))
                                     {
                                         <span> & </span>
                                     }
+                                    i++;
                                 }
                             }
                             <div class="price-wrapper">
