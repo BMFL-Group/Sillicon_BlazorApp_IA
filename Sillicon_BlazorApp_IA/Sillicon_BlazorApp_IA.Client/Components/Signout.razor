@@ -9,9 +9,4 @@
 
 @code {
     string? currentUrl;
-
-    protected override void OnInitialized()
-    {
-        currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri) ?? "/";
-    }
 }

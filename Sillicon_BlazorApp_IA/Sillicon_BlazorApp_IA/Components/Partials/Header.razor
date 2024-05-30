@@ -2,12 +2,8 @@
 
 <header>
     <div class="container">
-
         <NavLink id="logo" href="/"><img src="/img/logo-light.svg" alt="Silicon logo"></NavLink>        
-        
-        @* <HeaderNav IsDarkMode="IsDarkMode" /> *@
         <HeaderNav />
-
 
         @* <MobileMenuButton /> *@
         <button class="btn btn-mobile" id="btn-mobile" aria-expanded="false" @onclick="ToggleMenu">
@@ -17,9 +13,7 @@
         <div id="mobile-menu" @attributes="GetMenuAttributes()">
             <HeaderNav  />
         </div>
-
     </div>
-
 </header>
 
 @code {

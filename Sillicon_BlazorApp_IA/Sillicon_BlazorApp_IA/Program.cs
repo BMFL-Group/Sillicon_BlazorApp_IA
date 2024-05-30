@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
-using Sillicon_BlazorApp_IA.Controllers;
+
 using Sillicon_BlazorApp_IA.Data;
 using Sillicon_BlazorApp_IA.Hubs;
 using Sillicon_BlazorApp_IA.Services;

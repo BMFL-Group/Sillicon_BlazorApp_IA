@@ -52,12 +52,11 @@
         try
         {
             var result = await _signInManager.PasswordSignInAsync(SignInForm.Email, SignInForm.Password, SignInForm.Remember, lockoutOnFailure: false);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                _redirectManager.RedirectTo("Account/Manage");
-            }
-            else
                 StatusMsg = "Login failed try again.";
+                return;        
+            }             
         }
         catch (Exception e)
         {
@@ -65,5 +64,6 @@
             StatusMsg = "An error occurred.";
             return;
         }
+        _redirectManager.RedirectTo("Account/Manage");
     }
 }
