@@ -1,7 +1,6 @@
-﻿
-@using Infrastructure.Models.Forms
+﻿@using Infrastructure.Models.Forms
 @rendermode InteractiveServer
-
+@attribute [StreamRendering]
 <EditForm Model="Form" FormName="form" OnValidSubmit="SubscribeSubmit" novalidate>
     <DataAnnotationsValidator />
     @if (!string.IsNullOrEmpty(StatusMessage))
@@ -29,24 +28,24 @@
         </div>
         <p>Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
     </div>
-
     <div class="switch-group">
         <div class="btn-switch">
-            <label for="DarkMode" class="switch">
-                <InputCheckbox @bind-Value="Form.DarkMode" id="DarkMode" checked="IsDarkMode" />
+            <label class="switch">
+                <input type="checkbox" id="switchMode" @onclick="ChangeValue" @bind="Theme" role="checkbox">
                 <span class="slider round"></span>
-                <ValidationMessage For="() => Form.DarkMode" />
             </label>
             <span>Use darkmode theme in application</span>
         </div>
         <p>Tortor massa porttitor enim tristique neque fermentum sed.</p>
-    </div>
 
+    </div>
     <div class="form-buttons">
         <button type="submit" class="btn-theme">Save changes</button>
         <button type="reset" class="btn-gray">Cancel</button>
     </div>
 </EditForm>
+
+@inject IHttpContextAccessor hca
 
 @code {
 
@@ -59,6 +58,43 @@
     private string? StatusMessage { get; set; }
     private string? ErrorMessage { get; set; }
     private string? htmlMessage;
+    [Parameter]
+    public bool Theme { get; set; }
+    private string? ReturnUrl;
+
+    private void CreateCookie()
+    {
+        ReturnUrl = navigationManager.Uri;
+        navigationManager.NavigateTo($"/darkmode?ReturnUrl={ReturnUrl}");
+    }
+
+    private void DeleteCookie()
+    {
+        ReturnUrl = navigationManager.Uri;
+        navigationManager.NavigateTo($"/deletedarkmode?ReturnUrl={ReturnUrl}");
+    }
+
+    private void ChangeValue()
+    {
+        Theme = !Theme;
+        SetValue(Theme);
+    }
+
+    private void SetValue(bool value)
+    {
+        if (value)
+            CreateCookie();
+        else
+            DeleteCookie();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (hca != null)
+        {
+            ReturnUrl = navigationManager.Uri;
+        }
+    }
 
     private async Task SubscribeSubmit(EditContext context)
     {
@@ -88,7 +124,7 @@
                             {
                                 To = $"{User.Email}",
                                 Subject = "subscription",
-                                HtmlBody = SubscriptionHTML("Subscription",User.FirstName, htmlMessage),
+                                HtmlBody = SubscriptionHTML("Subscription", User.FirstName, htmlMessage),
                                 PlainText = $"Thank you for subscribing {User.FirstName}!"
                             };
 
@@ -114,7 +150,7 @@
                         {
                             To = $"{User.Email}",
                             Subject = "Confirmation of Unsubscription",
-                            HtmlBody = SubscriptionHTML("Confirmation of Unsubscription",User.FirstName, htmlMessage),
+                            HtmlBody = SubscriptionHTML("Confirmation of Unsubscription", User.FirstName, htmlMessage),
                             PlainText = "Confirmation of Unsubscription"
                         };
 
@@ -156,7 +192,7 @@
                                 <div style='font-size: 30px; font-weight: 600; color:#000000;'>Confirmation of Unsubscription<hr></div>
                                 <div style='font-size: 15px; font-weight: 400; color:#000000;'>
                                    Hi {name},<br>
-                               {text},<br>
+                           {text},<br>
                                    Sillicon-crew!
                                    </div>
                                 </div>
