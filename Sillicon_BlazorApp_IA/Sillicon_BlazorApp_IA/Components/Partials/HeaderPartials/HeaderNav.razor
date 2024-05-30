@@ -5,13 +5,11 @@
         <NavLink class="menu-link" href="/#overview">Overview</NavLink>
         <NavLink class="menu-link" href="/#features">Features</NavLink>
         <NavLink class="menu-link" href="/contact">Contact</NavLink>
-
         <AuthorizeView>
             <Authorized>
                 <NavLink class="menu-link" href="/courses">Courses</NavLink>
             </Authorized>
         </AuthorizeView>
-
     </nav>
 </div>
 
@@ -25,7 +23,6 @@
 </div>
 
 <div class="account-buttons">
-
     <AuthorizeView>
         <Authorized>
             <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/images/doomguy.jpg" alt="Profile picture of user.FirstName user.LastName"></a>
@@ -35,14 +32,13 @@
             <NavLink class="btn-theme" href="/Account/Register"><i class="fa-solid fa-user"></i>Sign up</NavLink>
         </NotAuthorized>
     </AuthorizeView>
-
 </div>
 
 @inject IHttpContextAccessor hca
 
 @code {
     [CascadingParameter]
-    HttpContext httpContext { get; set; } = default;
+    HttpContext httpContext { get; set; } = default!;
 
     private bool Theme;
     private string? ReturnUrl;

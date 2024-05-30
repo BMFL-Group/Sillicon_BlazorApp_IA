@@ -1,6 +1,6 @@
-﻿@using Infrastructure.Models.Forms
+﻿
+@using Infrastructure.Models.Forms
 @rendermode InteractiveServer
-
 
 <EditForm Model="Form" FormName="form" OnValidSubmit="SubscribeSubmit" novalidate>
     <DataAnnotationsValidator />
@@ -165,13 +165,5 @@
 
         return htmlText;
     }
-
-    // private async Task DarkModeSubmit()
-    //
-    // }
-
-    
-
-
 }
 

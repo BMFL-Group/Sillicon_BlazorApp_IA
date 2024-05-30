@@ -1,11 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <div id="wrapper" class="@(navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses" ? "wrapper" : navigationManager.ToBaseRelativePath(navigationManager.Uri) == "coursesdetails" ? "wrapper " : "auth-wrap")">
-    @* @(_preferences.IsDarkMode ? "dark" : "light") *@
-
-    @* <Header IsDarkMode="IsDarkMode" /> *@
     <Header  />
-
     @* this conditional statement renders breadcrumbs only if not on first page ("") *@
     @if (navigationManager.ToBaseRelativePath(navigationManager.Uri) == "courses")
     {
@@ -14,9 +10,7 @@
     <main>
         @Body
     </main>
-
     <Footer />
-
 </div>
 
 <div id="blazor-error-ui">
