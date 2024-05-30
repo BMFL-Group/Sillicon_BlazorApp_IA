@@ -13,14 +13,14 @@
     </nav>
 </div>
 
-<div class="btn-switch">
+@* <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
         <input type="checkbox" id="switchMode" @onclick="ChangeValue" @bind="Theme" role="checkbox">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
-</div>
+</div> *@
 
 <div class="account-buttons">
     <AuthorizeView>
@@ -37,54 +37,54 @@
 @inject IHttpContextAccessor hca
 
 @code {
-    [CascadingParameter]
-    HttpContext httpContext { get; set; } = default!;
+    // [CascadingParameter]
+    // HttpContext httpContext { get; set; } = default!;
 
-    private bool Theme;
-    private string? ReturnUrl;
+    // private bool Theme;
+    // private string? ReturnUrl;
 
-    private void CreateCookie()
-    {
-        ReturnUrl = navigationManager.Uri;
-        navigationManager.NavigateTo($"/darkmode?ReturnUrl={ReturnUrl}");
-    }
+    // private void CreateCookie()
+    // {
+    //     ReturnUrl = navigationManager.Uri;
+    //     navigationManager.NavigateTo($"/darkmode?ReturnUrl={ReturnUrl}");
+    // }
 
-    private void DeleteCookie()
-    {
-        ReturnUrl = navigationManager.Uri;
-        navigationManager.NavigateTo($"/deletedarkmode?ReturnUrl={ReturnUrl}");
-    }
+    // private void DeleteCookie()
+    // {
+    //     ReturnUrl = navigationManager.Uri;
+    //     navigationManager.NavigateTo($"/deletedarkmode?ReturnUrl={ReturnUrl}");
+    // }
 
-    private void ChangeValue()
-    {
-        Theme = !Theme;
-        SetValue(Theme);
-    }
+    // private void ChangeValue()
+    // {
+    //     Theme = !Theme;
+    //     SetValue(Theme);
+    // }
 
-    private void SetValue(bool value)
-    {
-        if (value)
-            CreateCookie();
-        else
-            DeleteCookie();
-    }
+    // private void SetValue(bool value)
+    // {
+    //     if (value)
+    //         CreateCookie();
+    //     else
+    //         DeleteCookie();
+    // }
 
-    private bool CheckValue()
-    {
-        var HasCookie = hca.HttpContext!.Request.Cookies.ContainsKey("darkmode");
+    // private bool CheckValue()
+    // {
+    //     var HasCookie = hca.HttpContext!.Request.Cookies.ContainsKey("darkmode");
 
-        if (HasCookie)
-            return true;
-        else
-            return false;
-    }
+    //     if (HasCookie)
+    //         return true;
+    //     else
+    //         return false;
+    // }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (hca != null)
-        {
-            ReturnUrl = navigationManager.Uri;
-            Theme = CheckValue();
-        }
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (hca != null)
+    //     {
+    //         ReturnUrl = navigationManager.Uri;
+    //         Theme = CheckValue();
+    //     }
+    // }
 }

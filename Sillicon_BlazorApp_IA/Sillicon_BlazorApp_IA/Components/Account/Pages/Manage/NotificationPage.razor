@@ -1,7 +1,6 @@
 ﻿@page "/notifications"
 @using System.Text.Unicode
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
-@attribute [StreamRendering]
 
 <PageTitle>notifications</PageTitle>
 
@@ -10,10 +9,12 @@
         <MenuPartial User="UserClient"/>
         <div class="form-title">
             <h2>Notifications</h2>
-            <NotificationsFormPartial User="User" Form="Form" />
+            <NotificationsFormPartial User="User" Form="Form" Theme="Theme" />
         </div>
     </div>
 </section>
+
+@inject IHttpContextAccessor hca
 
 @code {
 
@@ -25,9 +26,13 @@
 
     private ApplicationUser? User;
     private ClientUserModel UserClient { get; set; } = new();
+    public bool Theme { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        if(hca != null)
+            Theme = CheckDarkmodeCookie();
+
         User = await _userManager.GetUserAsync(Context!.User);
         if (User != null)
         {
@@ -39,6 +44,16 @@
                 Form!.Subscribe = await CheckSubscription();
             }
         }    
+    }
+
+    private bool CheckDarkmodeCookie()
+    {
+        var HasCookie = hca.HttpContext!.Request.Cookies.ContainsKey("darkmode");
+
+        if (HasCookie)
+            return true;
+        else
+            return false;
     }
 
     private async Task<bool> CheckSubscription()
