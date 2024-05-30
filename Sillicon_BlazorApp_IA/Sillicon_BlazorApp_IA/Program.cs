@@ -47,6 +47,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
 
+
 builder.Services.AddHttpClient();
 
 
@@ -108,7 +109,7 @@ else
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithRedirects("/Error");
 app.UseStaticFiles();
-
+app.MapControllers();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()

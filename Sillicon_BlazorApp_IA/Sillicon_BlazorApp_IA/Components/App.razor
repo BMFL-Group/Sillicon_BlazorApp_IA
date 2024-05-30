@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@isDark">
 
 <head>
     <meta charset="utf-8" />
@@ -11,22 +11,32 @@
     <link rel="stylesheet" href="Sillicon_BlazorApp_IA.styles.css" />
     <link rel="icon" href="favicon.ico" />
     <script src="/js/localStorageInterop.js"></script>
-    <script>
-        window.prefersDarkMode = function () {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-    </script>
+
 
     <HeadOutlet />
 </head>
 
 <body >
-    
+    @* <component type="typeof(App)" render-mode="ServerPreRenderd" param-Dark="@hc!.Request.Cookies["darkmode"]" /> *@
     <Routes  />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
 
+@inject IHttpContextAccessor ICA
+
 @code {
+    [CascadingParameter]
+    private HttpContext? hc { get; set; }
+
+    private string? isDark;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (hc != null)
+        {
+            isDark = hc.Request.Cookies["darkmode"] ?? "light";
+        }
+    }
 }

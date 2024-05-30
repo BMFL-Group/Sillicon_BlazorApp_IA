@@ -18,13 +18,11 @@
 <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
-        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onchange="ToggleDarkMode">
+        <input type="checkbox" id="switchMode" @onclick="ChangeValue" @bind="Theme" role="checkbox">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
 </div>
-
-<p>@IsDarkMode</p>
 
 <div class="account-buttons">
 
@@ -40,86 +38,55 @@
 
 </div>
 
+@inject IHttpContextAccessor hca
+
 @code {
 
-    private bool IsDarkMode { get; set; } = false;
-    private string Theme { get; set; } = "light";
+    private bool Theme;
+    private string? ReturnUrl;
 
-    // private async Task ToggleDarkMode()
-    // {
-    //     IsDarkMode = await siteSettings?.ToggleDarkMode();
-    // }
-
-
-    // [CascadingParameter(Name = "ModePolicy")]
-    // public string Theme { get; set; } = null!;
-
-    // private bool IsDarkMode { get; set; } = false;
-    // private string Theme { get; set; } = "light";
-
-    // private void ToggleDarkMode()
-    private async Task ToggleDarkMode()
+    private void CreateCookie()
     {
-        IsDarkMode = !IsDarkMode;
-        Theme = IsDarkMode ? "dark" : "light";
-        ChangeTheme(Theme);
-        var themeString = IsDarkMode ? "dark" : "light";
-        await ChangeTheme(themeString);
+        ReturnUrl = navigationManager.Uri;
+        navigationManager.NavigateTo($"/darkmode?ReturnUrl={ReturnUrl}");
     }
 
-    // private void ChangeTheme(string Theme)
-    private async Task ChangeTheme(string themeString)
+    private void DeleteCookie()
     {
-        try
-        {
-            var baseUrl = navigationManager.BaseUri;
-            var apiUrl = baseUrl.TrimEnd('/') + "/api/changetheme";
-            var cookieResponse = await client.GetAsync($"{apiUrl}/{themeString}");
-            if (cookieResponse.IsSuccessStatusCode)
-            {   
-                var result = await cookieResponse.Content.ReadAsStringAsync();
-                // Theme = result!;
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-            //Handle exception here
-        }
+        ReturnUrl = navigationManager.Uri;
+        navigationManager.NavigateTo($"/deletedarkmode?ReturnUrl={ReturnUrl}");
     }
 
-  
-    #region OLD CODE NOT USED
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     await LoadLocalStorageData();
-    // }
+    private void ChangeValue()
+    {
+        Theme = !Theme;
+        SetValue(Theme);
+    }
 
-    // private async Task LoadLocalStorageData()
-    // {
-    //     var CheckTheme = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "theme");
-    //     if (CheckTheme == "dark")
-    //     {
-    //         IsDarkMode = true;
-    //     }
-    //     else
-    //     {
-    //         IsDarkMode = false;
-    //     }       
-    // }
+    private void SetValue(bool value)
+    {
+        if (value)
+            CreateCookie();
+        else
+            DeleteCookie();
+    }
 
-    // private async Task SetItemInLocalStorage(string key, string value)
-    // {
-    //     await JSRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
-    // }
+    private bool CheckValue()
+    {
+        var HasCookie = hca.HttpContext!.Request.Cookies.ContainsKey("darkmode");
 
-    // private async Task ToggleDarkMode()
-    // {
-    //     IsDarkMode = !IsDarkMode;
-    //     var themeString = IsDarkMode ? "dark" : "light";
-    //     await SetItemInLocalStorage("theme", themeString);
-        
-    // }
+        if (HasCookie)
+            return true;
+        else
+            return false;
+    }
 
-    #endregion
+    protected override async Task OnInitializedAsync()
+    {
+        if (hca != null)
+        {
+            ReturnUrl = navigationManager.Uri;
+            Theme = CheckValue();
+        }
+    }
 }
