@@ -1,47 +1,79 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Components.WebAssembly.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Sillicon_BlazorApp_IA.Controllers;
 
-
+[ApiController]
+[Route("api/[controller]")]
 public class SiteSettingsController : Controller
 {
-    [HttpGet("/api/changetheme/{theme}")]
-    //[HttpPost]
+    //private readonly ISignalRServerBuilder _signalRBuilder;
+
+    //public SiteSettingsController(ISignalRServerBuilder signalRBuilder)
+    //{
+    //    _signalRBuilder = signalRBuilder;
+    //}
+
+    //private readonly HttpContext _httpContext;
+
+    //public SiteSettingsController(HttpContext httpContext)
+    //{
+    //    _httpContext = httpContext;
+    //}
+
+    public const string StatusCookieName = "Theme";
+
+    private static readonly CookieBuilder ThemeCookieBuilder = new()
+    {
+        MaxAge = TimeSpan.FromDays(30),
+        SameSite = SameSiteMode.None,
+        IsEssential = true,
+        HttpOnly = true,
+        SecurePolicy = CookieSecurePolicy.Always,
+        Path = "/"
+    };
+
+    [HttpGet("{theme}")]
     public async Task<IActionResult> ChangeTheme(string theme)
     {
         try
         {
-            var options = new CookieOptions
+            Response.Cookies.Append(StatusCookieName, theme, ThemeCookieBuilder.Build(HttpContext));
+            if (Response.Headers.SetCookie.Any())
             {
-                MaxAge = TimeSpan.FromMinutes(2),
-                Expires = DateTimeOffset.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.None,
-                HttpOnly = true,
-                Secure = true,
-                Path = "/"
-            };
-
-
-            Response.Cookies.Append("theme", theme, options);
-
-            var setCookieValue = new StringValues();
-
-            var certificate = HttpContext.Connection.GetClientCertificateAsync;
-            var hasSetCookieHeader = HttpContext.Response.Headers.ContainsKey("Set-Cookie");
-            if (hasSetCookieHeader)
-            {
-                setCookieValue = HttpContext.Response.Headers["Set-Cookie"];
-                // Now you can work with the value of the Set-Cookie header
+                return new OkObjectResult(theme);
             }
+            return new BadRequestObjectResult(theme);
 
-            return Ok(theme);
+
+            //var options = new CookieOptions
+            //{
+            //    Expires = DateTimeOffset.UtcNow.AddDays(30),
+            //    SameSite = SameSiteMode.Lax,
+            //    HttpOnly = true,
+            //    Secure = true,
+            //    Path = "/"
+            //};
+
+
+            //Response.Cookies.Append("theme", theme, options);
+
+            //var setCookieValue = new StringValues();
+
+            //var certificate = HttpContext.Connection.GetClientCertificateAsync;
+            //var hasSetCookieHeader = HttpContext.Response.Headers.ContainsKey("Set-Cookie");
+            //if (hasSetCookieHeader)
+            //{
+            //    setCookieValue = HttpContext.Response.Headers["Set-Cookie"];
+            //    // Now you can work with the value of the Set-Cookie header
+            //}
+
+            //return Ok(theme);
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
         return StatusCode(500);
     }
+    
 }

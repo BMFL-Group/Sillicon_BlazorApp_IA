@@ -41,6 +41,8 @@
 @inject IHttpContextAccessor hca
 
 @code {
+    [CascadingParameter]
+    HttpContext httpContext { get; set; } = default;
 
     private bool Theme;
     private string? ReturnUrl;
