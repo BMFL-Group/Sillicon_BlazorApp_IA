@@ -1,6 +1,5 @@
 ﻿@page "/Account/RegisterConfirmation"
 @rendermode InteractiveServer
-@attribute [Authorize]
 
 <PageTitle>Register confirmation</PageTitle>
 <section id="confirmation">
@@ -25,9 +24,6 @@
         </div>      
     </div>
 </section>
-
-
-
 
 @code {
 
@@ -69,7 +65,7 @@
                 };
             try
             {
-                var result = await client.PostAsJsonAsync("https://verificationprovider-silicon-bmfl.azurewebsites.net/api/validate?code=GbOXUAI3llMgMuohXjxi-9FSb39XkUwlNmruMCxLZMH5AzFuIlLcNQ==", codePackage);
+                var result = await client.PostAsJsonAsync($"{_configuration["ConnectionStrings:VerificationProvider"]}", codePackage);
                 if (result.IsSuccessStatusCode)
                 {
                     var user = await _userManager.FindByEmailAsync(Email!);
@@ -92,7 +88,7 @@
 
     private async Task ResendCode()
     {
-        await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+        await using var client = new ServiceBusClient($"{_configuration["ConnectionStrings:VerificationQueue"]}");
         ServiceBusSender sender = client.CreateSender("verification_request");
         var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = Email! });
         ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };

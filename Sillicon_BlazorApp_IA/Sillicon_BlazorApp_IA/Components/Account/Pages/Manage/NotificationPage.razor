@@ -59,7 +59,7 @@
     {
         if (User != null && User.Email != null)
         {                        
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://newsletterprovider-bmfl.azurewebsites.net/api/getsubscriber?code=tPCFhF1FQuVYEQYn83tYTYUyYadZjTh6C2dhPSRKUFhLAzFuqRMTVw%3D%3D");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{_configuration["ConnectionStrings:GetSubscriber"]}");
             var json = JsonConvert.SerializeObject(new SubscribeModel { Email = User.Email });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             request.Content = content;
