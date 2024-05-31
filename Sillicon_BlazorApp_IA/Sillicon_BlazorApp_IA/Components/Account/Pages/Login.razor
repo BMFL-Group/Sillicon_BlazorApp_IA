@@ -12,9 +12,8 @@
             <hr />
             <div class="networks">
                 <label>Or sign in with your social network</label>
-                <div class="buttons">
-                    <NavLink class="btn-gray" asp-action="Google" asp-controller="Auth"><i class="fa-brands fa-google"></i>Google</NavLink>
-                    <NavLink class="btn-gray" asp-action="Facebook" asp-controller="Auth"><i class="fa-brands fa-facebook-f"></i>Facebook</NavLink>
+                <div >
+                    <ExternalLoginPicker />
                 </div>
             </div>
         </div>
@@ -22,6 +21,5 @@
 </section>
 
 @code{
-
-
+   
 }

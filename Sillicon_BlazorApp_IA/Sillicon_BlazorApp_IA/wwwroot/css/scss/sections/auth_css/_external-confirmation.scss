@@ -1,0 +1,22 @@
+﻿#external-login {
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .form {
+            margin-top: 2rem;
+            width: 90%;
+
+            @include lg {
+                width: 50%;
+            }
+
+            @include xl {
+                width: 40%;
+            }
+        }
+    }
+}

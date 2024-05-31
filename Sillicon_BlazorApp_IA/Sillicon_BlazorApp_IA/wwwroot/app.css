@@ -3346,6 +3346,27 @@ footer .container .display-none {
   margin-left: 10px;
 }
 
+#external-login .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#external-login .container .form {
+  margin-top: 2rem;
+  width: 90%;
+}
+@media (min-width: 992px) {
+  #external-login .container .form {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  #external-login .container .form {
+    width: 40%;
+  }
+}
+
 .account-details {
   margin-bottom: 4rem;
 }

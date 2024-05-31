@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,11 @@ using Sillicon_BlazorApp_IA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddAntiforgery(x =>
-//{
-//    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-//    x.Cookie.SameSite = SameSiteMode.None;
-//});
+builder.Services.AddAntiforgery(x =>
+{
+    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    x.Cookie.SameSite = SameSiteMode.None;
+});
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddTransient<SiteSettingsLocalStorage>();
 builder.Services.AddCors(x =>
@@ -72,6 +73,14 @@ builder.Services.AddAuthentication().AddFacebook(options =>
 {
     options.AppId = builder.Configuration["FacebookAppId"]!;
     options.AppSecret = builder.Configuration["FacebookAppSecret"]!;
+    options.Fields.Add("first_name");
+    options.Fields.Add("last_name");
+});
+
+builder.Services.AddAuthentication().AddGoogle(x =>
+{
+    x.ClientId = builder.Configuration["GoogleAppId"]!;
+    x.ClientSecret = builder.Configuration["GoogleAppSecret"]!;
 });
 
 builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();

@@ -1,4 +1,5 @@
 ﻿@page "/messages"
+@attribute [Authorize]
 
 <section id="message-page">
     <div class="container">
@@ -6,10 +7,8 @@
         <div class="chat">
             <ChatPartial />
         </div>
-
     </div>
 </section>
-
 
 @code {
 

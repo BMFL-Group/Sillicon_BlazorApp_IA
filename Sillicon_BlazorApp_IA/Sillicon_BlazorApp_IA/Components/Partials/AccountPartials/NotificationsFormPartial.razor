@@ -1,6 +1,6 @@
 ﻿@using Infrastructure.Models.Forms
 @rendermode InteractiveServer
-@attribute [StreamRendering]
+
 <EditForm Model="Form" FormName="form" OnValidSubmit="SubscribeSubmit" novalidate>
     <DataAnnotationsValidator />
     @if (!string.IsNullOrEmpty(StatusMessage))
