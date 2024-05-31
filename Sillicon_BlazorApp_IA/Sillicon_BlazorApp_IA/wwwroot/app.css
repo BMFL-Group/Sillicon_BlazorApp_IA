@@ -2241,6 +2241,7 @@ footer .container .display-none {
   text-decoration: none;
   z-index: 2;
   transition: all 0.15s ease-out;
+  cursor: pointer;
 }
 .courses .container .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
@@ -3555,6 +3556,7 @@ footer .container .display-none {
   text-decoration: none;
   z-index: 2;
   transition: all 0.15s ease-out;
+  cursor: pointer;
 }
 .saved-courses .container .courses .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
@@ -3564,10 +3566,12 @@ footer .container .display-none {
   transform: scale(99%, 99%);
   transition: all 0.3s ease-in;
 }
+.saved-courses .container .courses .grid-container .grid-item .img-wrapper {
+  max-height: 200px;
+}
 .saved-courses .container .courses .grid-container .grid-item .img-wrapper .course-image {
   width: 100%;
   height: auto;
-  max-height: 200px;
   aspect-ratio: 3.5/2;
   object-fit: cover;
 }
