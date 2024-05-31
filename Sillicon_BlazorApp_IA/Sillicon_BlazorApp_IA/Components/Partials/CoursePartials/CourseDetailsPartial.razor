@@ -171,11 +171,11 @@ else
                         if (isSignedUp)
                         {
                              <div class="btn"><span>You are enrolled </span><i class="fa-solid fa-thumbs-up"></i></div>
-                             <button class="btn-delete-all" @onclick="(e) => HandleJoinOrLeaveCourse(false)">Leave Course</button>
+                             <button class="btn-delete-all" @onclick="(e) => HandleJoinOrLeaveCourse(false, Course)">Leave Course</button>
                         }
                         else
                         {
-                            <button class="btn-theme" @onclick="(e) => HandleJoinOrLeaveCourse(true)">Join Course</button>
+                            <button class="btn-theme" @onclick="(e) => HandleJoinOrLeaveCourse(true, Course)">Join Course</button>
                         }
 
                     }
@@ -318,7 +318,7 @@ else
         return null!;
     }
 
-    private async Task HandleJoinOrLeaveCourse(bool joinOrLeave)
+    private async Task HandleJoinOrLeaveCourse(bool joinOrLeave, Course course)
     {
         var id = ThisSavedCourse.Id;
         ThisSavedCourse.HasJoined = joinOrLeave;
@@ -333,7 +333,7 @@ else
             var response = await client.PostAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses", content);
             if (response.IsSuccessStatusCode)
             {
-                var result = HandleCourseEmail(joinOrLeave);
+                var result = HandleCourseEmail(joinOrLeave, course);
                 navigationManager.Refresh();
             }
         }
@@ -342,7 +342,7 @@ else
             var response = await client.DeleteAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{id}");
             if (response.IsSuccessStatusCode)
             {
-                var result = HandleCourseEmail(joinOrLeave);
+                var result = HandleCourseEmail(joinOrLeave, course);
                 navigationManager.Refresh();
             }
         }
@@ -354,7 +354,7 @@ else
             var response = await client.PutAsync($"{_configuration.GetConnectionString("CoursesApi")}api/SavedCourses/{id}", content);
             if (response.IsSuccessStatusCode)
             {
-                var result = HandleCourseEmail(joinOrLeave);
+                var result = HandleCourseEmail(joinOrLeave, course);
                 navigationManager.Refresh();
             }            
         }
@@ -362,7 +362,7 @@ else
 
     }
 
-    public async Task HandleCourseEmail(bool hasJoined)
+    public async Task HandleCourseEmail(bool hasJoined, Course course)
     {
         if(User != null)
         {
@@ -376,7 +376,7 @@ else
                 var newEmail = new SubscribeConfirmModel
                     {
                         To = $"{User.Email}",
-                        Subject = "subscription",
+                        Subject = $"Enrollment in {course.Title}",
                         HtmlBody = SubscriptionHTML("Subscription", User.FirstName, htmlMessage),
                         PlainText = $"Thank you for subscribing {User.FirstName}!"
                     };
@@ -394,7 +394,7 @@ else
                 var cancelEmail = new SubscribeConfirmModel
                     {
                         To = $"{User.Email}",
-                        Subject = "Confirmation of Unsubscription",
+                        Subject = $"Confirmation of unenrollment {course.Title}",
                         HtmlBody = SubscriptionHTML("Confirmation of Unsubscription", User.FirstName, htmlMessage),
                         PlainText = "Confirmation of Unsubscription"
                     };
