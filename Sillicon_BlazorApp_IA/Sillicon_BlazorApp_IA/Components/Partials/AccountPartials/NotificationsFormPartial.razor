@@ -58,6 +58,7 @@
     private string? StatusMessage { get; set; }
     private string? ErrorMessage { get; set; }
     private string? htmlMessage;
+
     [Parameter]
     public bool Theme { get; set; }
     private string? ReturnUrl;
@@ -91,9 +92,7 @@
     protected override async Task OnInitializedAsync()
     {
         if (hca != null)
-        {
             ReturnUrl = navigationManager.Uri;
-        }
     }
 
     private async Task SubscribeSubmit(EditContext context)
@@ -109,7 +108,7 @@
             {
                 try
                 {
-                    var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Subscribe?code=jYf27X54n1bcCN5_hkPi-bEE5pcSX2kp_Uiplh0QDiUsAzFuZanPRg%3D%3D", subscibeModel);
+                    var result = await client.PostAsJsonAsync($"{_configuration["ConnectionStrings:Subscribe"]}", subscibeModel);
 
                     if (result.IsSuccessStatusCode)
                     {
@@ -128,7 +127,7 @@
                                 PlainText = $"Thank you for subscribing {User.FirstName}!"
                             };
 
-                        var servicebusResult = SendMessageToServiceBusQueue(newEmail, "Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=", "email_request");
+                        var servicebusResult = SendMessageToServiceBusQueue(newEmail, $"{_configuration["ConnectionStrings:EmailRequestQueue"]}", "email_request");
                         if (await servicebusResult == true)
                             StatusMessage = "You are now a subscriber!";
                     }
@@ -137,7 +136,7 @@
             }
             else
             {
-                var result = await client.PostAsJsonAsync("https://newsletterprovider-bmfl.azurewebsites.net/api/Unsubscribe?code=nf9P6RZL4OXjbD3jR7W5dfIUVFwH4UlJK0Fb3RglfPAbAzFuOdFs1A%3D%3D", subscibeModel);
+                var result = await client.PostAsJsonAsync($"{_configuration["ConnectionStrings:UnSubscribe"]}", subscibeModel);
                 if (result.IsSuccessStatusCode)
                 {
                     htmlMessage = $@"We are writing to confirm that your subscription to our newsletter has been successfully canceled.<br> We truly appreciate
@@ -155,7 +154,7 @@
                         };
 
 
-                    var servicebusResult = SendMessageToServiceBusQueue(cancelEmail, "Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=", "email_request");
+                    var servicebusResult = SendMessageToServiceBusQueue(cancelEmail, $"{_configuration["ConnectionStrings:EmailRequestQueue"]}", "email_request");
                     if (await servicebusResult == true)
                         ErrorMessage = "You have ended your subscription.";
                 }
@@ -188,8 +187,8 @@
                                 <title>{title}</title>
                               </head>
                               <body>
-                                <div style='border-radius:15px; padding:20px; background-color:#fdbbbb; margin-bottom:20px; box-shadow: 2px 2px 10px 2px #807b7b; max-width:750px;'>
-                                <div style='font-size: 30px; font-weight: 600; color:#000000;'>Confirmation of Unsubscription<hr></div>
+                                <div style='border-radius:15px; padding:20px; background-color:#9495FF; margin-bottom:20px; box-shadow: 2px 2px 10px 2px #807b7b; max-width:750px;'>
+                                <div style='font-size: 30px; font-weight: 600; color:#000000;'>{title}<hr></div>
                                 <div style='font-size: 15px; font-weight: 400; color:#000000;'>
                                    Hi {name},<br>
                            {text},<br>

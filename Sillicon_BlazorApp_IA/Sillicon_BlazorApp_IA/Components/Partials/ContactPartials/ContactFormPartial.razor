@@ -1,15 +1,6 @@
 ﻿
 <EditForm novalidate Model="Model" class="contact-form">
 
-    @*     @if (TempData?["Message"]?.ToString() == "faild")
-    {
-    <div class="error-message">Enter a valid message, minimum length of 10 characters.</div>
-    }
-    else if (TempData?["Message"]?.ToString() == "sent")
-    {
-    <div class="susccess-message"> Thank you for getting in touch, we will respond as soon as we can.</div>
-    } *@
-
     <div id="fullname" class="input-group">
         <label asp-for="Form.FullName">Full name</label>
         <span asp-validation-for="Form.FullName"></span>
