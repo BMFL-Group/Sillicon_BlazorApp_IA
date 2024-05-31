@@ -46,7 +46,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<CoursesService>();
 builder.Services.AddScoped<SiteSettingsLocalStorage>();
 
-
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
