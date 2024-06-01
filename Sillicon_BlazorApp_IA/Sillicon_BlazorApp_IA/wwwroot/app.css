@@ -204,7 +204,7 @@ h6, .h6 {
   bottom: 0;
 }
 
-:root {
+.light {
   --color-gray-000: #FFFFFF;
   --color-gray-100: #F3F6FF;
   --color-gray-200: #EFF2FC;
@@ -233,7 +233,7 @@ h6, .h6 {
   --font-manrope: "Manrope", sans-serif;
 }
 
-:root.dark {
+.dark {
   --color-gray-000: #0B0F19;
   --color-gray-100: #13161D;
   --color-gray-200: #1C1F26;
@@ -1039,6 +1039,9 @@ header #mobile-menu .account-buttons .user-logged-in .user-profile-pic {
 }
 header #mobile-menu .btn-switch {
   display: block;
+}
+header #mobile-menu .btn-switch .slider {
+  color: var(--color-000);
 }
 header #mobile-menu #menu {
   display: block !important;
@@ -2238,6 +2241,7 @@ footer .container .display-none {
   text-decoration: none;
   z-index: 2;
   transition: all 0.15s ease-out;
+  cursor: pointer;
 }
 .courses .container .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
@@ -3316,28 +3320,6 @@ footer .container .display-none {
 .create-account .container .content form .checkbox-group {
   margin-top: 10px;
   margin-bottom: 25px;
-  /*                   .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position:relative;
-
-      @include md {
-          flex-direction: row;
-      }
-  }
-
-  input {
-      height: 1.2rem;
-      width: 1.2rem;
-  }
-
-  .validation-message {
-      position: absolute;
-      top: 15px;
-      left: 30px;
-      font-size: 13px;
-  }*/
 }
 .create-account .container .content form button {
   width: 100%;
@@ -3363,6 +3345,27 @@ footer .container .display-none {
   font-size: 12px;
   display: inline;
   margin-left: 10px;
+}
+
+#external-login .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#external-login .container .form {
+  margin-top: 2rem;
+  width: 90%;
+}
+@media (min-width: 992px) {
+  #external-login .container .form {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  #external-login .container .form {
+    width: 40%;
+  }
 }
 
 .account-details {
@@ -3553,6 +3556,7 @@ footer .container .display-none {
   text-decoration: none;
   z-index: 2;
   transition: all 0.15s ease-out;
+  cursor: pointer;
 }
 .saved-courses .container .courses .grid-container .grid-item:hover {
   transform: scale(101%, 101%);
@@ -3562,10 +3566,12 @@ footer .container .display-none {
   transform: scale(99%, 99%);
   transition: all 0.3s ease-in;
 }
+.saved-courses .container .courses .grid-container .grid-item .img-wrapper {
+  max-height: 200px;
+}
 .saved-courses .container .courses .grid-container .grid-item .img-wrapper .course-image {
   width: 100%;
   height: auto;
-  max-height: 200px;
   aspect-ratio: 3.5/2;
   object-fit: cover;
 }

@@ -1,32 +1,50 @@
+using Blazored.LocalStorage;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
-using Sillicon_BlazorApp_IA.Controllers;
 using Sillicon_BlazorApp_IA.Data;
 using Sillicon_BlazorApp_IA.Hubs;
 using Sillicon_BlazorApp_IA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAntiforgery(x =>
+{
+    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    x.Cookie.SameSite = SameSiteMode.None;
+});
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddTransient<SiteSettingsLocalStorage>();
+builder.Services.AddCors(x =>
+{
+    x.AddDefaultPolicy(x =>
+    {
+        x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+// Add services to the container.
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddControllers();
-
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
-
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<CoursesService>();
-builder.Services.AddScoped<SiteSettings>();
-builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<SiteSettingsLocalStorage>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -42,16 +60,32 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequiredLength = 8;
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = true;//ändra trill true sen
-
+    options.SignIn.RequireConfirmedAccount = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddRoleStore<RoleStore<IdentityRole, ApplicationDbContext>>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    options.AppId = builder.Configuration["FacebookAppId"]!;
+    options.AppSecret = builder.Configuration["FacebookAppSecret"]!;
+    options.Fields.Add("first_name");
+    options.Fields.Add("last_name");
+});
+
+builder.Services.AddAuthentication().AddGoogle(x =>
+{
+    x.ClientId = builder.Configuration["GoogleAppId"]!;
+    x.ClientSecret = builder.Configuration["GoogleAppSecret"]!;
+});
+
+builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddSignalR();
 
@@ -73,6 +107,7 @@ else
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithRedirects("/Error");
 app.UseStaticFiles();
+app.MapControllers();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -82,5 +117,6 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
 app.Run();

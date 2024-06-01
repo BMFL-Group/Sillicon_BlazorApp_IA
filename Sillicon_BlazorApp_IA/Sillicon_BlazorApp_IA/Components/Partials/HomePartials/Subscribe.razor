@@ -42,7 +42,6 @@
 
             <div class="middle-wrapper">
                 <div class="input-group">
-                    @* <span asp-validation-for="@Model.Subscribe.Email"></span> *@
                     <ValidationMessage For="@(() => SubscribeForm.Email)" />
                     <InputText type="email" @bind-Value="@SubscribeForm.Email" placeholder="Enter your Email" />
                     <i class="fa-light fa-envelope"></i>
@@ -69,13 +68,21 @@
     string error = "Could not create subscription, please try again.";
     string standard = "* Yes, I agree to the terms & privacy policy";
 
+    [CascadingParameter]
+    private HttpContext? Context { get; set; } = default!;
+
+    [Parameter]
+    public ApplicationUser? User { get; set; }
+
+    private string? htmlMessage;
+
     [SupplyParameterFromQuery]
     public string StatusMessage { get; set; } = "";
 
     [SupplyParameterFromForm]
     public SubscribeModel SubscribeForm { get; set; } = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ResetStatusMessage();
     }
@@ -85,32 +92,85 @@
         StatusMessage = standard;
     }
 
-    private async Task OnValidSubmit()
-    {
-        try
-        {
-            //logic for saving to database.
-            var result = await client.PostAsJsonAsync("myUrl", SubscribeForm);
-            if (result.IsSuccessStatusCode)
-            {
-                StatusMessage = success;            
-            }            
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = error;
-        }
-
-        SubscribeForm = new();
-        await Task.Delay(3000);
-        ResetStatusMessage();
-    }
-
-
     SubscribeViewModel Model = new()
         {
             Title = "Don't Want To Miss Anything?",
             Image = new() { ImageUrl = "./img/blue-squiggle.svg", AltText = "blue squiggle" },
             Subheading = "Sign Up For Newsletters"
         };
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+
+            htmlMessage = $@"We just wanted to extend a warm and heartfelt thank you for subscribing to our newsletter.<br> We truly appreciate
+                                                    your support and look forward to sharing our latest news, updates, and exclusive offers with you.<br><br>
+                                                    If you have any questions or feedback, please don't hesitate to reach out. We're here to assist you in any way<br>
+                                                    we can.<br><br>
+                                                    Thank you once again for your trust and engagement!<br><br>
+                                                    Best regards";
+
+            var newEmail = new SubscribeConfirmModel
+                {
+                    To = $"{SubscribeForm.Email}",
+                    Subject = "subscription",
+                    HtmlBody = SubscriptionHTML("Subscription", "", htmlMessage),
+                    PlainText = $"Thank you for subscribing!"
+                };
+
+            var servicebusResult = SendMessageToServiceBusQueue(newEmail, $"{_configuration["ConnectionStrings:EmailRequestQueue"]}", "email_request");
+            if (await servicebusResult == true)
+            {
+                StatusMessage = success;         
+                SubscribeForm = new();
+                await Task.Delay(3000);
+                ResetStatusMessage();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = error;
+        }
+    }
+
+    private async Task<bool> SendMessageToServiceBusQueue(SubscribeConfirmModel email, string key, string queue)
+    {
+        try
+        {
+            await using var client = new ServiceBusClient(key);
+            ServiceBusSender sender = client.CreateSender(queue);
+            var json = JsonConvert.SerializeObject(email);
+            ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
+            await sender.SendMessageAsync(message);
+
+            return true;
+        }
+        catch (Exception e) { Debug.WriteLine($"Error serverbusque ::: {e.Message}"); }
+        return false;
+    }
+
+    private string SubscriptionHTML(string title, string name, string text)
+    {
+        string htmlText = $@"<html lang='en'>
+                              <head>
+                                <meta charset='UTF-8' />
+                                <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+                                <title>{title}</title>
+                              </head>
+                              <body>
+                                <div style='border-radius:15px; padding:20px; background-color:#9495FF; margin-bottom:20px; box-shadow: 2px 2px 10px 2px #807b7b; max-width:750px;'>
+                                <div style='font-size: 30px; font-weight: 600; color:#000000;'>{title}<hr></div>
+                                <div style='font-size: 15px; font-weight: 400; color:#000000;'>
+                                   Hi,<br>
+                   {text},<br>
+                                   Sillicon-crew!
+                                   </div>
+                                </div>
+                               </body>
+                              </html>";
+
+        return htmlText;
+    }
 }

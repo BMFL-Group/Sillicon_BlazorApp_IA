@@ -72,13 +72,14 @@
 
             var result = await _userManager.CreateAsync(user, SignUpForm.Password);
             if (!result.Succeeded)
-            {
+            {      
                 StatusMsg = "Unable to register account. Please try again later...";
                 return;
             }
             else
             {
-                await using var client = new ServiceBusClient("Endpoint=sb://sb-silicon-bmfl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=4pAN219IVl27qAII06XXe7jdnFogMJNRY+ASbDrzT/w=");
+                await _userManager.AddToRoleAsync(user, "User");
+                await using var client = new ServiceBusClient($"{_configuration["ConnectionStrings:VerificationQueue"]}");
                 ServiceBusSender sender = client.CreateSender("verification_request");
                 var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = SignUpForm.Email });
                 ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };

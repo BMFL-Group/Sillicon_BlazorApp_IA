@@ -20,7 +20,6 @@ public class Course
     public int NumberOfLikes { get; set; }
     public virtual List<Author>? Authors { get; set; }
     public virtual Content? Content { get; set; }
-    public virtual ProgramDetails? ProgramDetails { get; set; }
 }
 
 public class Author
@@ -32,6 +31,7 @@ public class Content
 {
     public string? Description { get; set; }
     public string[]? Courseincludes { get; set; }
+    public string[]? WhatYouLearn { get; set; }
     public virtual List<ProgramDetails>? ProgramDetails { get; set; }
 }
 
@@ -54,28 +54,28 @@ public class GraphQLResponse
     public Data Data { get; set; } = new();
 }
 
-public class CourseModel
-{
-    [Key]
+//public class CourseModel
+//{
+//    [Key]
   
-    public string Id { get; set; } = null!;  
-    public string Title { get; set; } = null!; 
-    public string Author { get; set; } = null!;  
-    public string ImageUrl { get; set; } = null!;  
-    public string AltText { get; set; } = null!;
-    public bool BestSeller { get; set; } = false; 
-    public string Currency { get; set; } = null!; 
-    public decimal Price { get; set; }
-    public decimal? DiscountPrice { get; set; }   
-    public string LengthInHours { get; set; } = null!;
-    public int Rating { get; set; } = 0;
-    public int NumberOfReviews { get; set; } = 0;
-    public int NumberOfLikes { get; set; } = 0;
-    public string CourseDescription { get; set; } = null!;
-    public int? CategoryId { get; set; }
-    public CategoryModel Category { get; set; } = new();
-    public int? CourseContentId { get; set; }
-    public CourseContentModel CourseContent { get; set; } = new();
-    public virtual ICollection<ProgramDetailsModel> ProgramDetails { get; set; } = new List<ProgramDetailsModel>();
-    public virtual ICollection<CourseIncludesModel> CourseIncludes { get; set; } = new List<CourseIncludesModel>();
-}
+//    public string Id { get; set; } = null!;  
+//    public string Title { get; set; } = null!; 
+//    public string Author { get; set; } = null!;  
+//    public string ImageUrl { get; set; } = null!;  
+//    public string AltText { get; set; } = null!;
+//    public bool BestSeller { get; set; } = false; 
+//    public string Currency { get; set; } = null!; 
+//    public decimal Price { get; set; }
+//    public decimal? DiscountPrice { get; set; }   
+//    public string LengthInHours { get; set; } = null!;
+//    public int Rating { get; set; } = 0;
+//    public int NumberOfReviews { get; set; } = 0;
+//    public int NumberOfLikes { get; set; } = 0;
+//    public string CourseDescription { get; set; } = null!;
+//    public int? CategoryId { get; set; }
+//    public CategoryModel Category { get; set; } = new();
+//    public int? CourseContentId { get; set; }
+//    public CourseContentModel CourseContent { get; set; } = new();
+//    public virtual ICollection<ProgramDetailsModel> ProgramDetails { get; set; } = new List<ProgramDetailsModel>();
+//    public virtual ICollection<CourseIncludesModel> CourseIncludes { get; set; } = new List<CourseIncludesModel>();
+//}

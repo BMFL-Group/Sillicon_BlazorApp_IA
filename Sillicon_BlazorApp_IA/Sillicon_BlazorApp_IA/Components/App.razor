@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@HasDakrmodeCookie">
 
 <head>
     <meta charset="utf-8" />
@@ -12,13 +12,27 @@
     <link rel="icon" href="favicon.ico" />
     <script src="/js/localStorageInterop.js"></script>
 
-
     <HeadOutlet />
 </head>
 
-<body>
-    <Routes />
+<body >
+    <Routes  />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? hc { get; set; }
+
+    private string? HasDakrmodeCookie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (hc != null)
+        {
+            HasDakrmodeCookie = hc.Request.Cookies["darkmode"] ?? "light";
+        }
+    }
+}

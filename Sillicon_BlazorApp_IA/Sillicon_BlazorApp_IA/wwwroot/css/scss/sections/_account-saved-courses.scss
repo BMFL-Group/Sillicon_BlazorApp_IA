@@ -69,6 +69,7 @@
                 z-index: 2;
                 //@include card;
                 transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+                cursor: pointer;
 
 
                 &:hover {

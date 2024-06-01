@@ -9,7 +9,7 @@ namespace Sillicon_BlazorApp_IA.Components.Account
 
         private static readonly CookieBuilder StatusCookieBuilder = new()
         {
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.Lax,
             HttpOnly = true,
             IsEssential = true,
             MaxAge = TimeSpan.FromSeconds(5),

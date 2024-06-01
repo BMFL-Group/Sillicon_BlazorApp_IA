@@ -1,71 +1,90 @@
-﻿@using Sillicon_BlazorApp_IA.Controllers
-@inject SiteSettings siteSettings
+﻿@rendermode InteractiveServer
 
 <div id="menu">
     <nav>
         <NavLink class="menu-link" href="/#overview">Overview</NavLink>
         <NavLink class="menu-link" href="/#features">Features</NavLink>
         <NavLink class="menu-link" href="/contact">Contact</NavLink>
-
         <AuthorizeView>
             <Authorized>
                 <NavLink class="menu-link" href="/courses">Courses</NavLink>
             </Authorized>
         </AuthorizeView>
-
     </nav>
 </div>
 
-<div class="btn-switch">
+@* <div class="btn-switch">
     <span>Light</span>
     <label class="switch">
-        <input type="checkbox" id="switchMode" checked="@IsDarkMode" role="checkbox" @onclick="ToggleDarkMode">
+        <input type="checkbox" id="switchMode" @onclick="ChangeValue" @bind="Theme" role="checkbox">
         <span class="slider round"></span>
     </label>
     <span>Dark</span>
-</div>
-
-<p>@Theme</p>
+</div> *@
 
 <div class="account-buttons">
-
     <AuthorizeView>
         <Authorized>
             <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/images/doomguy.jpg" alt="Profile picture of user.FirstName user.LastName"></a>
         </Authorized>
         <NotAuthorized>
-            <NavLink class="btn-gray" href="/Account/Login?returnUrl=%2FAccount%2FManage"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
+            <NavLink class="btn-gray" href="/Account/Login"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
             <NavLink class="btn-theme" href="/Account/Register"><i class="fa-solid fa-user"></i>Sign up</NavLink>
         </NotAuthorized>
     </AuthorizeView>
-
 </div>
 
+@inject IHttpContextAccessor hca
+
 @code {
+    // [CascadingParameter]
+    // HttpContext httpContext { get; set; } = default!;
 
-    private bool IsDarkMode { get; set; } = false;
-    private string Theme { get; set; } = "light";
+    // private bool Theme;
+    // private string? ReturnUrl;
 
-    private void ToggleDarkMode()
-    {
-        IsDarkMode = !IsDarkMode;
-        Theme = IsDarkMode ? "dark" : "light";
-       ChangeTheme(Theme);
-    }
+    // private void CreateCookie()
+    // {
+    //     ReturnUrl = navigationManager.Uri;
+    //     navigationManager.NavigateTo($"/darkmode?ReturnUrl={ReturnUrl}");
+    // }
 
-    private void ChangeTheme(string Theme)
-    {
-        try
-        {
-            var response = siteSettings.ChangeTheme(Theme);
-            if (response != null)
-            {
-                navigationManager.Refresh();
-            }            
-        }
-        catch (Exception ex)
-        {
-            //Handle exception here
-        }
-    }
+    // private void DeleteCookie()
+    // {
+    //     ReturnUrl = navigationManager.Uri;
+    //     navigationManager.NavigateTo($"/deletedarkmode?ReturnUrl={ReturnUrl}");
+    // }
+
+    // private void ChangeValue()
+    // {
+    //     Theme = !Theme;
+    //     SetValue(Theme);
+    // }
+
+    // private void SetValue(bool value)
+    // {
+    //     if (value)
+    //         CreateCookie();
+    //     else
+    //         DeleteCookie();
+    // }
+
+    // private bool CheckValue()
+    // {
+    //     var HasCookie = hca.HttpContext!.Request.Cookies.ContainsKey("darkmode");
+
+    //     if (HasCookie)
+    //         return true;
+    //     else
+    //         return false;
+    // }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (hca != null)
+    //     {
+    //         ReturnUrl = navigationManager.Uri;
+    //         Theme = CheckValue();
+    //     }
+    // }
 }

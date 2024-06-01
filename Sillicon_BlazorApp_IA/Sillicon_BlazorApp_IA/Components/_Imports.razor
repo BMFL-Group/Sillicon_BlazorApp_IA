@@ -11,7 +11,7 @@
 @using Sillicon_BlazorApp_IA.Client
 @using Sillicon_BlazorApp_IA.Components
 
-@*----------- nya grejer för account --------------------------- *@
+@*-----------  account --------------------------- *@
 @using Sillicon_BlazorApp_IA.Components.Account
 @using Sillicon_BlazorApp_IA.Components.Account.Pages
 @using Sillicon_BlazorApp_IA.Data
@@ -25,8 +25,11 @@
 @using Azure.Messaging.ServiceBus
 @using Infrastructure.Models.Courses
 @using Sillicon_BlazorApp_IA.Client.Components
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using System.Text.Unicode
 
-
+@inject ILogger<ExternalLogin> _logger
 @inject UserManager<ApplicationUser> _userManager
 @inject IdentityRedirectManager _redirectManager
 @inject IUserStore<ApplicationUser> _userStore
@@ -36,6 +39,7 @@
 @inject IHttpContextAccessor _httpAccessor
 @inject ApplicationDbContext _dataContext
 @inject IJSRuntime JSRuntime
+@inject IdentityUserAccessor _userAccessor
 @* ------------------------------------------------------------ *@
 
 @using Sillicon_BlazorApp_IA.Components.Partials
@@ -59,3 +63,6 @@
 @using Infrastructure.Models.Forms
 @using Infrastructure.Models.Account
 @using Sillicon_BlazorApp_IA.Services
+
+
+@*  @inject SiteSettingsLocalStorage siteSettings *@
