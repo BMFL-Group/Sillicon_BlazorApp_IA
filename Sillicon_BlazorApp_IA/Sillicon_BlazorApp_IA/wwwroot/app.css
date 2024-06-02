@@ -743,17 +743,6 @@ a:hover {
   }
 }
 
-.input-group {
-  /*    span {
-
-          &.invalid {
-              color: var(--color-danger);
-              opacity: 0.6;
-              position: absolute;
-              right: 0;
-          }
-      }*/
-}
 .input-group input {
   padding: 10px 15px;
   border: 1px solid var(--color-gray-400);
@@ -3394,6 +3383,17 @@ footer .container .display-none {
     margin-left: 20px;
   }
 }
+.account-details .container .basic-details .details-form-group .is-external {
+  padding: 10px 15px;
+  border: 1px solid var(--color-gray-400);
+  border-radius: 7px !important;
+  overflow: hidden;
+  outline: none;
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: var(--color-background);
+  color: var(--color-gray-900);
+}
 .account-details .container .basic-details .details-form-group .valid.modified:not([type=checkbox]) {
   outline: none;
 }
@@ -3461,11 +3461,6 @@ footer .container .display-none {
 .account-details .buttons button {
   margin-bottom: 2rem;
   font-weight: bold;
-}
-.account-details .error-msg {
-  color: var(--color-gray-danger);
-  margin-bottom: 30px;
-  text-align: center;
 }
 .account-details span {
   color: var(--color-gray-500);

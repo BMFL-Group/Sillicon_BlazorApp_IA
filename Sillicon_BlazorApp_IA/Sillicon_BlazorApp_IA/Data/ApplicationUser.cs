@@ -16,6 +16,6 @@ namespace Sillicon_BlazorApp_IA.Data
         public AddressModel? Address { get; set; }
 
         public bool IsExternalAccount { get; set; } = false;
-        public string? ProfileImageUrl { get; set; } = "/img/user-profile-icon.svg";
+        public string? ProfileImageUrl { get; set; } = "/img/user-icon.png";
     }
 }

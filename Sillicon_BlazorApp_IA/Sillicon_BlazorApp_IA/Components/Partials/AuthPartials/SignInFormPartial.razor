@@ -1,6 +1,6 @@
 ﻿@if (!string.IsNullOrEmpty(StatusMsg))
 {
-    <div class="error">@StatusMsg</div>
+    <div class="error-message">@StatusMsg</div>
 }
 
 <EditForm FormName="signinform" Model="SignInForm" OnValidSubmit="OnValidSubmit" asp-route-returnUrl="@ReturnUrl" method="post" novalidate>

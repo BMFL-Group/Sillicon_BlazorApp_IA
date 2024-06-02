@@ -1,6 +1,6 @@
 ﻿@if (!string.IsNullOrEmpty(StatusMsg))
 {
-    <div class="error">@StatusMsg</div>
+    <div class="error-message">@StatusMsg</div>
 }
 
 <EditForm FormName="signupform" Model="SignUpForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
@@ -54,16 +54,10 @@
 
     public async Task OnValidSubmit(EditContext editContext)
     {
-        var user = new ApplicationUser
-            {
-                FirstName = SignUpForm.FirstName,
-                LastName = SignUpForm.LastName,
-                Email = SignUpForm.Email,
-                UserName = SignUpForm.Email,
-            };
+        var user = AutoMapper.MapNewApplicationUser(SignUpForm.FirstName, SignUpForm.LastName, SignUpForm.Email, SignUpForm.Email);
         try
         {
-            var alreadyInDataBase = await _userManager.FindByEmailAsync(user.Email);
+            var alreadyInDataBase = await _userManager.FindByEmailAsync(user.Email!);
             if (alreadyInDataBase != null)
             {
                 StatusMsg = "User already exists.";
@@ -79,23 +73,19 @@
             else
             {
                 await _userManager.AddToRoleAsync(user, "User");
-                await using var client = new ServiceBusClient($"{_configuration["ConnectionStrings:VerificationQueue"]}");
-                ServiceBusSender sender = client.CreateSender("verification_request");
-                var json = JsonConvert.SerializeObject(new VerifyEmailModel { Email = SignUpForm.Email });
-                ServiceBusMessage message = new ServiceBusMessage(json) { ContentType = "application/json" };
-                await sender.SendMessageAsync(message);
-
-                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                bool response = await _queuesAndHttpRequestsService.SendToVeificationlQueue(new VerifyEmailModel { Email = SignUpForm.Email }, $"{_configuration["ConnectionStrings:VerificationQueue"]}", "verification_request");
+                if(response == true)
                 {
-                    navigationManager.NavigateTo($"Account/RegisterConfirmation/?email={SignUpForm.Email}");
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        navigationManager.NavigateTo($"Account/RegisterConfirmation/?email={SignUpForm.Email}");
                 }
             }
         }
         catch (Exception e)
         {
-            Debug.WriteLine($"Error sending email to generate code to email: {e}");
-            StatusMsg = "An error occurred while creating the account.";
-            return;
+            Debug.WriteLine($"Error sending email to generate code to email: {e}");          
         }
+        StatusMsg = "An error occurred while creating the account.";
+        return;
     }
 }
