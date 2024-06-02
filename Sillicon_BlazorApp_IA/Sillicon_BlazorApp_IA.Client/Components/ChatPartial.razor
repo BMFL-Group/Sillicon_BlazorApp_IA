@@ -48,7 +48,6 @@
 @code {
 
     private HubConnection? connection;
-    private bool isConnected => connection?.State == HubConnectionState.Connected;
     private string? userName;
     private string? typingUser;
     private System.Timers.Timer? typingTimer;
@@ -63,19 +62,6 @@
         public DateTime Created { get; set; } = DateTime.Now;
     }
 
-    private async Task NotifyTyping() => await connection!.SendAsync("Typing", userName);
-
-    private async Task Send()
-    {
-        if (!string.IsNullOrEmpty(currentMessage))
-        {
-            var message = new ChatMessage { UserName = userName, Message = currentMessage };
-            await connection!.SendAsync("SendMessageToAll", message.UserName, message.Message, message.Created);
-            currentMessage = string.Empty;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
@@ -86,9 +72,13 @@
         else
             userName = "anonymous";
 
-        connection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/chathub")).Build();
+        connection = new HubConnectionBuilder()
+            .WithUrl(navigationManager.ToAbsoluteUri("/chathub"))
+            .WithAutomaticReconnect()
+            .Build();
 
-        connection.On<string, string, DateTime>("ReceiveMessage", (fromUser, message, dateTime) =>
+
+        connection.On<string, string?, string, DateTime>("ReceiveMessage", (fromUser, toUser, message, dateTime) =>
         {
             var newMessage = new ChatMessage { UserName = fromUser, Message = message, Created = dateTime };
             messages.Add(newMessage);
@@ -111,6 +101,30 @@
             typingTimer.Start();
         });
 
-        await connection.StartAsync();
+            await connection.StartAsync();
     }
+
+    private async Task NotifyTyping() => await connection!.SendAsync("Typing", userName);
+
+    private async Task Send()
+    {
+        if (!string.IsNullOrEmpty(currentMessage))
+        {
+            var message = new ChatMessage { UserName = userName, Message = currentMessage };
+            await connection!.SendAsync("SendMessageToAll", message.UserName, message.Message, message.Created);
+            currentMessage = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }    
+    
+    public bool isConnected => connection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (connection is not null)
+        {
+            await connection.DisposeAsync();
+        }
+    }
+
 }

@@ -21,7 +21,7 @@ namespace Sillicon_BlazorApp_IA.Hubs
 
         public async Task SendMessageToAll(string fromUser, string message, DateTime dateTime)
         {
-            await Clients.All.SendAsync("ReceiveMessage", fromUser, message, dateTime);
+            await Clients.All.SendAsync("ReceiveMessage", fromUser, string.Empty, message, dateTime);
         }
     }
 }

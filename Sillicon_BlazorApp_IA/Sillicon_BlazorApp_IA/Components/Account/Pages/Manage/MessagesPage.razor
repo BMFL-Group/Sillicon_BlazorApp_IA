@@ -1,11 +1,16 @@
 ﻿@page "/messages"
 @attribute [Authorize]
 
+@using Sillicon_BlazorApp_IA.Client.Components.BlazorChat
+
 <section id="message-page">
     <div class="container">
         <MenuPartial User="UserClient" />
-        <div class="chat">
-            <ChatPartial />
+        <div class="chat">            
+            @* <ChatPartial /> *@
+                @* <Sillicon_BlazorApp_IA.Client.Components.BlazorChat.ChatRoom /> *@
+                
+              
         </div>
     </div>
 </section>

@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SiliconBackOffice.Hubs;
 using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
 using Sillicon_BlazorApp_IA.Data;
@@ -87,7 +89,15 @@ builder.Services.AddAuthentication().AddGoogle(x =>
 
 builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddSignalR();
+
+//builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalRNegotiate"));
+//builder.Services.AddResponseCompression(opts =>
+//{
+//    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+//          new[] { "application/octet-stream" });
+//});
+
 
 var app = builder.Build();
 
@@ -107,7 +117,12 @@ else
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithRedirects("/Error");
 app.UseStaticFiles();
-app.MapControllers();
+
+app.UseRouting();
+
+//app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
@@ -115,8 +130,20 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Sillicon_BlazorApp_IA.Client._Imports).Assembly);
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapBlazorHub();
+    endpoints.MapHub<BlazorChatSampleHub>(BlazorChatSampleHub.HubUrl);
+    endpoints.MapControllers();
+    endpoints.MapAdditionalIdentityEndpoints();
+    //endpoints.MapRazorPages();
+    //endpoints.MapFallbackToPage("/Error");
+});
+
+
+//app.MapHub<ChatHub>("/chathub");
+
 // Add additional endpoints required by the Identity /Account Razor components.
+//app.MapControllers();
 app.MapAdditionalIdentityEndpoints();
-app.MapControllers();
-app.MapHub<ChatHub>("/chathub");
 app.Run();
