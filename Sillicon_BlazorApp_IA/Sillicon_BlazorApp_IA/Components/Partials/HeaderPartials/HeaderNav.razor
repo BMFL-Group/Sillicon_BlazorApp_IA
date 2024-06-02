@@ -16,7 +16,7 @@
 <div class="account-buttons">
     <AuthorizeView>
         <Authorized>
-            <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="@User!.ProfileImageUrl" alt="Profile picture of user.FirstName user.LastName"></a>
+            <a class="user-logged-in" href="/Account/Manage"><img class="user-profile-pic" src="/img/user-icon.png" alt="Profile picture of user.FirstName user.LastName"></a>
         </Authorized>
         <NotAuthorized>
             <NavLink class="btn-gray" href="/Account/Login"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Sign in</span></NavLink>
@@ -34,13 +34,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (hca != null)
-        {
-            var user = _dataContext.Users.FirstOrDefault(x => x.Email == hca.HttpContext!.User.Identity!.Name);
-            if (user != null)
-            {
-                User = user;
-            }
-        }
+        // if (hca != null)
+        // {
+        //     using var dataContext = new;
+
+        //     var user = _dataContext.Users.FirstOrDefault(x => x.Email == hca.HttpContext!.User.Identity!.Name);
+        //     if (user != null)
+        //     {
+        //         User = user;
+        //     }
+        // }
     }
 }
