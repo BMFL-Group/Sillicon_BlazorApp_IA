@@ -1,19 +1,15 @@
 using Blazored.LocalStorage;
+using Infrastructure.Hubs;
 using Infrastructure.Services;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SiliconBackOffice.Hubs;
 using Sillicon_BlazorApp_IA.Components;
 using Sillicon_BlazorApp_IA.Components.Account;
 using Sillicon_BlazorApp_IA.Data;
-using Sillicon_BlazorApp_IA.Hubs;
-using Sillicon_BlazorApp_IA.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,12 +87,14 @@ builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSende
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 //builder.Services.AddSignalR();
-builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalRNegotiate"));
-//builder.Services.AddResponseCompression(opts =>
-//{
-//    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-//          new[] { "application/octet-stream" });
-//});
+//builder.Services.AddSignalR().AddAzureSignalR();
+builder.Services.AddSignalR().AddAzureSignalR();
+//builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalRNegotiate"));
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+          new[] { "application/octet-stream" });
+});
 
 
 var app = builder.Build();
@@ -117,31 +115,34 @@ else
 app.UseHttpsRedirection();
 app.UseStatusCodePagesWithRedirects("/Error");
 app.UseStaticFiles();
-
 app.UseRouting();
 
-//app.MapControllers();
-app.UseAuthentication();
+app.MapControllers();
+
 app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()    
     .AddAdditionalAssemblies(typeof(Sillicon_BlazorApp_IA.Client._Imports).Assembly);
-
-app.UseEndpoints(endpoints =>
+//app.MapHub<ChatHub>("/chathub");
+app.MapHub<BlazorChatSampleHub>(BlazorChatSampleHub.HubUrl, options =>
 {
-    endpoints.MapBlazorHub();
-    endpoints.MapHub<BlazorChatSampleHub>(BlazorChatSampleHub.HubUrl);
-    endpoints.MapControllers();
-    endpoints.MapAdditionalIdentityEndpoints();
-    //endpoints.MapRazorPages();
-    //endpoints.MapFallbackToPage("/Error");
+    options.CloseOnAuthenticationExpiration = true;
 });
 
 
-//app.MapHub<ChatHub>("/chathub");
+
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapBlazorHub();
+//    endpoints.MapHub<BlazorChatSampleHub>(BlazorChatSampleHub.HubUrl);
+//    //endpoints.MapRazorPages();
+//    //endpoints.MapFallbackToPage("/Error");
+//});
+
+
 
 // Add additional endpoints required by the Identity /Account Razor components.
 //app.MapControllers();

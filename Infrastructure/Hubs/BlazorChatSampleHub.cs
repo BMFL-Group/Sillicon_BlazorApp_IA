@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace SiliconBackOffice.Hubs;
+namespace Infrastructure.Hubs;
 
 public class BlazorChatSampleHub : Hub
 {
-    public const string HubUrl = "/chat";
+    public const string HubUrl = "/chat1";
 
     public async Task Broadcast(string username, string message)
     {

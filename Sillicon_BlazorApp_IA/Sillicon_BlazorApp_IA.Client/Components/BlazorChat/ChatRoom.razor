@@ -2,6 +2,7 @@
 
 @rendermode InteractiveAuto
 
+@using Infrastructure.Hubs
 @using Microsoft.AspNetCore.SignalR.Client
 
 <h3>ChatRoom</h3>
@@ -100,7 +101,7 @@
             // Create the chat client
             string baseUrl = navigationManager.BaseUri;
 
-            _hubUrl = baseUrl.TrimEnd('/') + ("/chat");
+            _hubUrl = baseUrl.TrimEnd('/') + (BlazorChatSampleHub.HubUrl);
 
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(_hubUrl)
