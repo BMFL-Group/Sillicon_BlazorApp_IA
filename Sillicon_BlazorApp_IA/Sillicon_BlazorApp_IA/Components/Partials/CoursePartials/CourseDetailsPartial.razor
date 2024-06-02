@@ -298,8 +298,8 @@ else
             if (savedCourses != null && savedCourses.Count() > 0)
             {
                 SavedCourses = savedCourses;
-                Course = await GetOneCourse(Id);
             }
+            Course = await GetOneCourse(Id);
         }
     }
 
