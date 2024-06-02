@@ -1,6 +1,4 @@
 ﻿
-using System.Security.Cryptography.X509Certificates;
-
 namespace Infrastructure.Models.Account
 {
     public class VerifyCodeAndEmailModel

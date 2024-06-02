@@ -107,6 +107,7 @@
         user.FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName)!;
         user.LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname ?? "")!;
         user.EmailConfirmed = true; //ändra tillbaka?
+        user.IsExternalAccount = true;
 
         var result = await _userManager.CreateAsync(user);
         if (result.Succeeded)

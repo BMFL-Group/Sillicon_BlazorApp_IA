@@ -10,28 +10,33 @@
             <div class="names">
                 <div id="form-firstName" class="input-group">
                     <label for="FirstName">First name</label>
-
-                    @if (BasicFormModel.IsExternalAccount == true)
+                    @if (User != null)
                     {
-                        <InputText class="gray-background" id="FirstName" @bind-Value="BasicFormModel.FirstName" readonly placeholder="Enter your first name" />
-                    }
-                    else
-                    {
-                        <ValidationMessage For="() => BasicFormModel.FirstName" />
-                        <InputText @bind-Value="BasicFormModel.FirstName" id="FirstName" placeholder="Enter your first name" />
+                        @if (User.IsExternalAccount == true)
+                        {
+                            <div class="is-external">@BasicFormModel.FirstName</div>
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.FirstName" />
+                            <InputText @bind-Value="BasicFormModel.FirstName" id="FirstName" placeholder="Enter your first name" />
+                        }
                     }
                 </div>
 
                 <div id="form-lastName" class="input-group">
                     <label for="LastName">Last name</label>
-                    @if (BasicFormModel.IsExternalAccount)
+                    @if (User != null)
                     {
-                        <InputText @bind-Value="BasicFormModel.LastName" id="LastName" class="gray-background" readonly placeholder="Enter your last name" />
-                    }
-                    else
-                    {
-                        <ValidationMessage For="() => BasicFormModel.LastName" />
-                        <InputText @bind-Value="BasicFormModel.LastName" id="LastName" placeholder="Enter your last name" />
+                        @if (User != null && User.IsExternalAccount)
+                        {
+                            <div class="is-external">@BasicFormModel.LastName</div>
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.LastName" />
+                            <InputText @bind-Value="BasicFormModel.LastName" id="LastName" placeholder="Enter your last name" />
+                        }
                     }
                 </div>
             </div>
@@ -39,14 +44,17 @@
             <div class="email-phone">
                 <div id="form-email" class="input-group">
                     <label for="Email">Email address</label>
-                    @if (BasicFormModel.IsExternalAccount)
-                    {
-                        <InputText class="gray-background" id="Email" @bind-Vale="BasicFormModel.Email" readonly placeholder="Enter your email address" />
-                    }
-                    else
-                    {
-                        <ValidationMessage For="() => BasicFormModel.Email" />
-                        <InputText @bind-Value="BasicFormModel.Email" id="Email" placeholder="Enter your email address" />
+                    @if (User != null)
+                    { 
+                        @if (User != null && User.IsExternalAccount)
+                        {
+                            <div class="is-external">@BasicFormModel.Email</div>
+                        }
+                        else
+                        {
+                            <ValidationMessage For="() => BasicFormModel.Email" />
+                            <InputText @bind-Value="BasicFormModel.Email" id="Email" placeholder="Enter your email address" />
+                        }
                     }
                 </div>
 
@@ -115,8 +123,8 @@
                         timer.Elapsed += (s, e) =>
                         {
                             ReloadPage();
-                        };                  
-                    }              
+                        };
+                    }
                     else
                         ErrorMessage = "Update failed, try again later..";
                 }

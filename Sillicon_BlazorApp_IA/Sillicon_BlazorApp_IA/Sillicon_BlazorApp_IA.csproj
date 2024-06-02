@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Data\GraphQL queries\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>

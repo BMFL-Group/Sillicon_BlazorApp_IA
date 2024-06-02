@@ -2,12 +2,8 @@
 
 <aside class="profile-menu">
     <div class="name-email-img">
-        <img src="images/doomguy.jpg" />
+        <img src="@User!.ProfileImg" />
 
-        <form enctype="multipart/form-data" method="post">
-            <input id="fileUploarder" type="file" name="file" hidden />
-            <label class="btn-circle" for="fileUploarder"><i class="fa-regular fa-refresh"></i></label>
-        </form>
         <h5>@if(User != null)
             {
                 @User.FirstName
@@ -43,10 +39,11 @@
 
 </aside>
 
+@inject HttpClient client
+
 @code {
 
     [Parameter]
     public ClientUserModel? User { get; set; }
-
 }
 
